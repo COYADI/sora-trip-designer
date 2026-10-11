@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>日本本州 12 日 · 2026/10/22–11/2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="japan-ring-route.js"></script>
+
+<style>
+:root {
+  --bg: #0b0f14;
+  --bg-elev: #121820;
+  --bg-card: #161d27;
+  --bg-soft: #1c2530;
+  --line: rgba(232, 238, 242, 0.10);
+  --line-strong: rgba(232, 238, 242, 0.18);
+  --text: #e8eef2;
+  --text-dim: #9aa8b5;
+  --muted: #6d7b88;
+  --ice: #5ec8c7;
+  --ice-dim: #2f7f82;
+  --amber: #e0a35b;
+  --danger: #e07a5f;
+  --shadow: 0 18px 50px rgba(0,0,0,.38);
+  --shadow-soft: 0 8px 28px rgba(0,0,0,.28);
+  --radius: 18px;
+  --max: 1100px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: .42s;
+  --dur-fast: .22s;
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+}
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  interpolate-size: allow-keywords;
+}
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(94,200,199,.12), transparent 50%),
+    radial-gradient(700px 400px at 90% 5%, rgba(224,163,91,.08), transparent 45%),
+    var(--bg);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ice);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+a:hover { color: #8fe0df; }
+.wrap { width: min(var(--max), calc(100% - 2rem)); margin: 0 auto; }
+
+/* Reveal — default visible; hide only after JS enables motion */
+.reveal { opacity: 1; transform: none; }
+html.motion-on .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+}
+html.motion-on .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero */
+.hero {
+  padding: 3.75rem 0 2.5rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(22,29,39,.92), transparent 70%),
+    repeating-linear-gradient(-12deg, transparent, transparent 22px, rgba(255,255,255,.012) 22px, rgba(255,255,255,.012) 23px);
+}
+.kicker {
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ice);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeUp .8s var(--ease-out) .05s forwards;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 6.2vw, 3.9rem);
+  line-height: 1.12;
+  letter-spacing: 0.04em;
+  margin: 0 0 .9rem;
+  max-width: none; white-space: nowrap;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .12s forwards;
+}
+.hero h1 span { color: var(--ice); }
+.lead {
+  max-width: 38rem;
+  color: var(--text-dim);
+  margin: 0 0 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .22s forwards;
+}
+.chips, .toolbar {
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .32s forwards;
+}
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+.chip {
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .42rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255,255,255,.03);
+  color: var(--text-dim);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.chip:hover {
+  border-color: rgba(94,200,199,.35);
+  color: var(--text);
+  background: rgba(94,200,199,.06);
+  transform: translateY(-1px);
+}
+.toolbar { display: flex; flex-wrap: wrap; gap: .5rem; }
+.btn {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .58rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.btn:hover {
+  border-color: var(--ice-dim);
+  color: var(--ice);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+.btn:active { transform: translateY(0); }
+.btn.primary {
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  border-color: transparent;
+  color: #061112;
+}
+.btn.primary:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+  border-color: transparent;
+}
+
+/* Nav */
+.day-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11,15,20,.78);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.day-nav.scrolled {
+  background: rgba(11,15,20,.92);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.day-nav-inner {
+  display: flex;
+  gap: .35rem;
+  overflow-x: auto;
+  padding: .75rem 0;
+  scrollbar-width: thin;
+}
+.day-nav a {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .42rem .7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition:
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.day-nav a:hover {
+  color: var(--ice);
+  background: rgba(94,200,199,.08);
+  border-color: rgba(94,200,199,.18);
+}
+.day-nav a.active {
+  color: #061112;
+  background: var(--ice);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+section { padding: 2.6rem 0; }
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  letter-spacing: 0.03em;
+  margin: 0 0 .45rem;
+  font-weight: 600;
+}
+.section-sub { color: var(--muted); margin: 0 0 1.4rem; max-width: 42rem; line-height: 1.7; }
+
+.grid-2 { display: grid; gap: 1rem; grid-template-columns: 1.1fr .9fr; }
+.grid-3 { display: grid; gap: .8rem; grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.25rem;
+  box-shadow: var(--shadow);
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.card:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 55px rgba(0,0,0,.42);
+}
+.card h3 {
+  margin: 0 0 .55rem;
+  font-size: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.card p, .card li { color: var(--text-dim); font-size: .92rem; }
+.card ul { margin: 0; padding-left: 1.1rem; }
+
+#overviewMap {
+  height: 420px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+#overviewMap:hover {
+  border-color: rgba(94,200,199,.28);
+  box-shadow: var(--shadow-soft);
+}
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem 1rem;
+  margin-top: .85rem;
+  color: var(--muted);
+  font-size: .8rem;
+}
+.map-legend i {
+  display: inline-block;
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  margin-right: .35rem;
+  vertical-align: middle;
+}
+
+.stay-track {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .55rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 900px) { .stay-track { grid-template-columns: repeat(2, 1fr); } }
+.stay-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: .9rem;
+  color: inherit;
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.stay-pill:hover {
+  border-color: rgba(94,200,199,.4);
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, rgba(94,200,199,.06), var(--bg-card));
+  box-shadow: var(--shadow-soft);
+}
+.stay-pill .nights {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ice);
+}
+.stay-pill strong { display: block; margin: .25rem 0; font-size: .95rem; font-weight: 600; }
+.stay-pill span { font-size: .78rem; color: var(--muted); }
+
+table.route { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.route th, table.route td {
+  text-align: left;
+  padding: .75rem .5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  transition: background var(--dur-fast) var(--ease);
+}
+table.route tbody tr:hover td { background: rgba(255,255,255,.02); }
+table.route th {
+  color: var(--muted);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+table.route td { color: var(--text-dim); }
+table.route td:first-child { color: var(--text); font-weight: 600; }
+
+/* Day cards + animated details */
+.day {
+  scroll-margin-top: 4.2rem;
+  margin-bottom: 1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  overflow: clip;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.day:hover {
+  border-color: rgba(232,238,242,.16);
+  box-shadow: var(--shadow-soft);
+}
+.day[open] {
+  border-color: rgba(94,200,199,.38);
+  box-shadow: 0 16px 40px rgba(0,0,0,.32);
+}
+.day::details-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    height var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    content-visibility var(--dur) allow-discrete;
+}
+.day[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+.day-summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.05rem 1.2rem;
+  transition: background var(--dur) var(--ease);
+}
+.day-summary:hover { background: rgba(255,255,255,.015); }
+.day-summary::-webkit-details-marker { display: none; }
+.day-num {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--ice);
+  transition:
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.day:hover .day-num { transform: scale(1.04); }
+.day[open] .day-num {
+  box-shadow: 0 0 0 4px rgba(94,200,199,.12);
+}
+.day.highlight .day-num {
+  background: linear-gradient(145deg, #1f5c62, #2a8a88);
+  color: #e9fffe;
+  border-color: transparent;
+}
+.day-summary h2 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 600;
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}
+.day-summary p { margin: .25rem 0 0; color: var(--muted); font-size: .85rem; }
+.day-tags { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: flex-end; }
+.tag {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .28rem .55rem;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tag.stay { color: var(--ice); border-color: rgba(94,200,199,.25); }
+.tag.drive { color: var(--amber); border-color: rgba(224,163,91,.25); }
+.tag.flight { color: #b7c4d0; }
+
+.day-body { padding: 0 1.2rem 1.3rem; border-top: 1px solid var(--line); }
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .55rem;
+  margin-top: 1rem;
+}
+@media (max-width: 640px) {
+  .hero h1 { white-space: normal; }
+  .stat-row { grid-template-columns: 1fr; }
+  .day-summary { grid-template-columns: auto 1fr; }
+  .day-tags { grid-column: 1 / -1; justify-content: flex-start; }
+}
+.stat {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .75rem .85rem;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.stat:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-1px);
+}
+.stat b {
+  display: block;
+  font-size: .66rem;
+  color: var(--muted);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: .2rem;
+}
+.stat span { font-weight: 600; font-size: .88rem; color: var(--text); }
+
+.timeline { position: relative; margin: 1.2rem 0 0; padding-left: 1.15rem; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: .32rem;
+  top: .25rem;
+  bottom: .25rem;
+  width: 2px;
+  background: linear-gradient(var(--ice-dim), transparent);
+}
+.tl-item {
+  position: relative;
+  padding: 0 0 1rem .95rem;
+}
+.day[open] .tl-item {
+  animation: fadeSlide .55s var(--ease-out) both;
+}
+.day[open] .tl-item:nth-child(1) { animation-delay: .05s; }
+.day[open] .tl-item:nth-child(2) { animation-delay: .12s; }
+.day[open] .tl-item:nth-child(3) { animation-delay: .19s; }
+.day[open] .tl-item:nth-child(4) { animation-delay: .26s; }
+.day[open] .tl-item:nth-child(5) { animation-delay: .33s; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: -.92rem;
+  top: .42rem;
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--ice);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.tl-item:hover::before {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(94,200,199,.15);
+}
+.tl-item .time { font-size: .72rem; font-weight: 700; color: var(--ice); letter-spacing: .04em; }
+.tl-item strong { display: block; margin: .12rem 0; font-size: .95rem; font-weight: 600; }
+.tl-item p { margin: 0; color: var(--text-dim); font-size: .9rem; }
+
+.day-map {
+  height: 280px;
+  margin-top: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease);
+}
+.map-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .8rem; }
+
+.note {
+  margin-top: .9rem;
+  padding: .8rem .95rem;
+  border-radius: 12px;
+  background: rgba(94,200,199,.08);
+  border-left: 3px solid var(--ice);
+  font-size: .88rem;
+  color: var(--text-dim);
+  transition: background var(--dur-fast) var(--ease);
+}
+.note.warn {
+  background: rgba(224,122,95,.08);
+  border-left-color: var(--danger);
+}
+
+.poi-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .85rem;
+}
+.poi {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .3rem .65rem;
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.poi:hover {
+  color: var(--ice);
+  border-color: rgba(94,200,199,.35);
+  background: rgba(94,200,199,.08);
+  transform: translateY(-1px);
+}
+
+footer {
+  padding: 2.6rem 0 3.6rem;
+  color: var(--muted);
+  font-size: .82rem;
+  border-top: 1px solid var(--line);
+}
+
+.leaflet-container { background: #0a0e13; font: 12px/1.5 var(--font-sans); }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-soft) !important;
+  color: var(--ice) !important;
+}
+.leaflet-bar { border: 1px solid var(--line) !important; box-shadow: none !important; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow);
+}
+.leaflet-popup-content { margin: .7rem .85rem; font-size: .85rem; }
+.leaflet-popup-content strong { color: var(--ice); font-family: var(--font-serif); }
+.pin-label {
+  background: rgba(22,29,39,.92);
+  border: 1px solid rgba(94,200,199,.45);
+  color: var(--text);
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .kicker, .hero h1, .lead, .chips, .toolbar { opacity: 1; animation: none; }
+  .day::details-content { transition: none; }
+  .tl-item { opacity: 1 !important; transform: none !important; }
+}
+
+@media print {
+  .day-nav, .toolbar { display: none !important; }
+  body { background: #fff; color: #111; }
+  .card, .day { box-shadow: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">AoSora · Honshu · Late October 2026</div>
+    <h1>日本<span>本州</span>十二日</h1>
+    <p class="lead">2026/10/22–11/2 · 華航 CI222/221 · 橫濱起迄 · 熱海 → 河口湖（うぶや／トリイゲート）→ 鬼怒川 → 回橫濱。住宿依實際訂房填入。</p>
+    <div class="chips">
+      <span class="chip">12 天</span>
+      <span class="chip">CI222 / CI221</span>
+      <span class="chip">10/26–30 租車</span>
+      <span class="chip">橫濱 Mets／Richmond</span>
+      <span class="chip">熱海東橫 INN</span>
+      <span class="chip">うぶや</span>
+      <span class="chip">鬼怒川溫泉</span>
+    </div>
+    <div class="toolbar">
+      <button class="btn primary" type="button" id="expandAll">全部展開</button>
+      <button class="btn" type="button" id="collapseAll">全部收合</button>
+      <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
+      <a class="btn" href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉巡拜指南</a>
+      <a class="btn" href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">神玉地圖</a>
+    </div>
+  </div>
+</header>
+
+<nav class="day-nav"><div class="wrap day-nav-inner" id="dayNav"></div></nav>
+
+<main>
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">行程總覽地圖</h2>
+    <p class="section-sub">青＝住宿飯店、琥珀＝景點。路線含熱海伊豆、富士神玉、奧日光、鬼怒川→橫濱遺珠停點。</p>
+    <div id="overviewMap"></div>
+    <div class="map-legend">
+      <span><i style="background:#5ec8c7"></i>住宿 overnight</span>
+      <span><i style="background:#e0a35b"></i>重點景點</span>
+      <span><i style="background:#e07a5f"></i>神玉／花火／うぶや</span>
+      <span>底圖：CARTO Voyager · OSRM 預先計算</span>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">住宿（已訂）</h2>
+    <p class="section-sub">依訂單：橫濱 → 熱海 → うぶや → トリイゲート → 鬼怒川 → 橫濱 Richmond。</p>
+    <div class="stay-track">
+      <a class="stay-pill" href="#day-1"><div class="nights">2 晚</div><strong>Mets 橫濱</strong><span>10/22–23</span></a>
+      <a class="stay-pill" href="#day-3"><div class="nights">2 晚</div><strong>東橫 INN 熱海</strong><span>10/24–25</span></a>
+      <a class="stay-pill" href="#day-5"><div class="nights">1 晚</div><strong>うぶや</strong><span>10/26</span></a>
+      <a class="stay-pill" href="#day-6"><div class="nights">1 晚</div><strong>FUJiTORiiGATE</strong><span>10/27</span></a>
+      <a class="stay-pill" href="#day-7"><div class="nights">2 晚</div><strong>鬼怒川溫泉飯店</strong><span>10/28–29</span></a>
+      <a class="stay-pill" href="#day-9"><div class="nights">3 晚</div><strong>Richmond 橫濱</strong><span>10/30–11/1</span></a>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>核心體驗</h3>
+        <ul>
+          <li>橫濱起迄；10/23 Appier 上班＋京橋晚餐</li>
+          <li>熱海海岸／花火</li>
+          <li>うぶや富士景＋神玉七社（富士北麓當日）</li>
+          <li>鬼怒川基地走日光／奧日光</li>
+          <li>回程遺珠：大谷＋宇都宮餃子 → 橫濱</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>訂房對照</h3>
+        <ul>
+          <li>Mets 橫濱 10/22–24（24 日 11:00 退）</li>
+          <li>Toyoko Inn 熱海 10/24–26</li>
+          <li>UBUYA 10/26–27（T285E46A6A5B3）</li>
+          <li>FUJiTORiiGATE 10/27–28</li>
+          <li>鬼怒川溫泉飯店 10/28–30</li>
+          <li>Richmond 橫濱 10/30–11/2（2 日 11:00 退）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">租還車（已訂）</h2>
+    <p class="section-sub">預約號碼 99903133400 · C3 / AT / 禁煙 · 完整套餐（含保險） · WEB 信用卡已付清</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>取車 · 10/26 10:00</h3>
+        <ul>
+          <li><strong>熱海站前店</strong></li>
+          <li>静岡県熱海市春日町 16-63</li>
+          <li>TEL 0557-81-0100</li>
+          <li>東橫 INN 退房後直接取車，再開往うぶや</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>還車 · 10/30 20:00</h3>
+        <ul>
+          <li><strong>橫濱站中央西口店</strong></li>
+          <li>神奈川県橫濱市神奈川區鶴屋町 3-32-1</li>
+          <li>熱海站前取車 → 當店還車（異店還）</li>
+          <li>熱海出發後經河口湖・鬼怒川，當日 20:00 前還到橫濱</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">據點車程</h2>
+    <p class="section-sub">對齊訂房移動；含截圖距離作參考。</p>
+    <div class="card" style="overflow-x:auto">
+      <table class="route">
+        <thead><tr><th>路段</th><th>距離</th><th>純開</th><th>當天</th></tr></thead>
+        <tbody>
+          <tr><td>羽田 → 橫濱 Mets</td><td>—</td><td>約 30–60 分</td><td>10/22 CI222</td></tr>
+          <tr><td>橫濱 → 熱海</td><td>~76 km</td><td>~1.5h</td><td>10/24</td></tr>
+          <tr><td>熱海取車 → うぶや</td><td>~110 km</td><td>~2–2.5h</td><td>10/26 10:00 取車</td></tr>
+          <tr><td>富士北麓神玉循環</td><td>當日</td><td>5–7h 含參拜</td><td>10/27</td></tr>
+          <tr><td>トリイゲート → 鬼怒川</td><td>~238 km</td><td>~3h</td><td>10/28</td></tr>
+          <tr><td>鬼怒川 ↔ 東照宮／奧日光</td><td>當日</td><td>往返加景點</td><td>10/29</td></tr>
+          <tr><td>鬼怒川 → 橫濱還車</td><td>~201 km</td><td>~2h45</td><td>10/30 20:00 前還</td></tr>
+          <tr><td>橫濱 → 羽田</td><td>—</td><td>約 30–60 分</td><td>11/2 CI221</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="stay">
+  <div class="wrap">
+    <h2 class="section-title">住宿 overnight</h2>
+    <p class="section-sub">點進地圖可開 Google 飯店地名。</p>
+    <div class="grid-3" id="stayCards"></div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">逐日行程</h2>
+    <p class="section-sub">住宿已對訂單；景點為推薦填充。</p>
+    <div id="days"></div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">裝備與每日檢查</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>必裝</h3>
+        <ul>
+          <li>溫泉旅館／飯店備品外的輕便外出鞋</li>
+          <li>神玉現金（500／300 円級距）</li>
+          <li>租車：國際駕照、預約 99903133400、ETC、離線地圖</li>
+          <li>橫濱起迄：Suica／PASMO</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出發前</h3>
+        <ul>
+          <li>熱海花火場次</li>
+          <li>スバルライン（五合目）路況</li>
+          <li>鬼怒川→日光紅葉壅塞</li>
+          <li>去程 CI222（TSA→HND）、回程 CI221（HND→TSA）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">住宿依實際訂單 · 地圖 Leaflet + CARTO Voyager · 神玉僅富士北麓 · 遺珠僅鬼怒川→橫濱沿路。</div>
+</footer>
+
+<script>
+const P = {
+  tsa: { zh: "松山機場", orig: "Taipei Songshan TSA", lat: 25.0697, lng: 121.5525, gmaps: "Taipei Songshan Airport" },
+  hnd: { zh: "羽田機場", orig: "Tokyo Haneda HND", lat: 35.5494, lng: 139.7798, gmaps: "Haneda Airport" },
+  tpe: { zh: "桃園機場", orig: "TPE", lat: 25.0797, lng: 121.2342, gmaps: "Taiwan Taoyuan International Airport" },
+  appier: { zh: "Appier Japan（愛宕）", orig: "Appier Japan Atago Green Hills", lat: 35.6621, lng: 139.7489, gmaps: "Atago Green Hills MORI Tower" },
+  omino: { zh: "おみ乃 椿", orig: "Omino Tsubaki", lat: 35.6769, lng: 139.7703, gmaps: "おみ乃 椿 京橋" },
+  mets: { zh: "JR東日本飯店 Mets 橫濱", orig: "JR-EAST HOTEL METS YOKOHAMA", lat: 35.4659, lng: 139.6223, gmaps: "JR-EAST HOTEL METS YOKOHAMA" },
+  richmond: { zh: "橫濱站前里士滿酒店", orig: "Richmond Hotel Yokohama Ekimae", lat: 35.4665, lng: 139.6215, gmaps: "Richmond Hotel Yokohama Ekimae" },
+  minato: { zh: "橫濱港未來", orig: "Minato Mirai", lat: 35.4577, lng: 139.6322, gmaps: "Minato Mirai 21" },
+  chinatown: { zh: "橫濱中華街", orig: "Yokohama Chinatown", lat: 35.4429, lng: 139.6462, gmaps: "Yokohama Chinatown" },
+  redbrick: { zh: "紅磚倉庫", orig: "Red Brick Warehouse", lat: 35.4525, lng: 139.643, gmaps: "Yokohama Red Brick Warehouse" },
+  rentAtami: { zh: "租車・熱海站前店", orig: "Rental Atami Station Mae", lat: 35.1032, lng: 139.0762, gmaps: "トヨタレンタカー 熱海駅前店" },
+  rentYokohama: { zh: "還車・橫濱站中央西口店", orig: "Rental Yokohama Sta. Central West", lat: 35.4678, lng: 139.6205, gmaps: "トヨタレンタカー 橫浜駅中央西口店" },
+  atamiHotel: { zh: "東橫 INN 熱海站前", orig: "Toyoko Inn Atami Ekimae", lat: 35.1037, lng: 139.077, gmaps: "Toyoko Inn Atami Ekimae" },
+  atami: { zh: "熱海站", orig: "Atami Station", lat: 35.096, lng: 139.0716, gmaps: "Atami Station" },
+  omuro: { zh: "大室山", orig: "Mount Omuro", lat: 34.90306, lng: 139.09444, gmaps: "Omuroyama" },
+  jogasaki: { zh: "城ヶ崎海岸", orig: "Jogasaki Coast", lat: 34.8725, lng: 139.106, gmaps: "Jogasaki Coast" },
+  kinomiya: { zh: "來宮神社（大楠）", orig: "Kinomiya Shrine", lat: 35.0989, lng: 139.0638, gmaps: "Kinomiya Shrine" },
+  moa: { zh: "MOA美術館", orig: "MOA Museum of Art", lat: 35.109313, lng: 139.075204, gmaps: "MOA Museum of Art" },
+  castle: { zh: "熱海城", orig: "Atami Castle", lat: 35.08644, lng: 139.07866, gmaps: "Atami Castle" },
+  izusan: { zh: "伊豆山神社", orig: "Izusan Shrine", lat: 35.1356, lng: 139.0917, gmaps: "Izusan Jinja" },
+  hanabi: { zh: "熱海 Sun Beach（花火）", orig: "Atami Sun Beach", lat: 35.0945, lng: 139.074, gmaps: "Atami Sun Beach" },
+  ubuya: { zh: "河口湖溫泉鄉 うぶや", orig: "UBUYA", lat: 35.5158, lng: 138.7595, gmaps: "Ubuya Kawaguchiko" },
+  fujitory: { zh: "HOTEL FUJiTORiiGATE", orig: "HOTEL FUJiTORiiGATE", lat: 35.4878, lng: 138.7948, gmaps: "HOTEL FUJiTORiiGATE" },
+  kawaguchi: { zh: "河口湖", orig: "Lake Kawaguchiko", lat: 35.517, lng: 138.751, gmaps: "Lake Kawaguchiko" },
+  oishi: { zh: "大石公園", orig: "Oishi Park", lat: 35.5235, lng: 138.7568, gmaps: "Oishi Park Kawaguchiko" },
+  chureito: { zh: "新倉山忠靈塔", orig: "Chureito Pagoda", lat: 35.5012, lng: 138.8015, gmaps: "Arakurayama Sengen Park" },
+  fujiOmuro: { zh: "冨士御室淺間神社", orig: "Fuji Omuro Sengen Shrine", lat: 35.4894, lng: 138.7472, gmaps: "Fuji Omuro Sengen Jinja" },
+  kitaguchi: { zh: "北口本宮冨士淺間神社", orig: "Kitaguchi Hongu Fuji Sengen", lat: 35.4734, lng: 138.7945, gmaps: "Kitaguchi Hongu Fuji Sengen Shrine" },
+  arakura: { zh: "新倉富士淺間神社", orig: "Arakura Fuji Sengen Shrine", lat: 35.5007, lng: 138.8001, gmaps: "Arakura Fuji Sengen Shrine" },
+  omuroSen: { zh: "小室淺間神社", orig: "Omuro Sengen Shrine", lat: 35.4793, lng: 138.8038, gmaps: "Fujisan Shimomiya Omuro Sengen Jinja" },
+  arayayama: { zh: "新屋山神社", orig: "Arayayama Shrine", lat: 35.4698, lng: 138.7852, gmaps: "Arayayama Jinja" },
+  yamanaka: { zh: "山中諏訪神社", orig: "Yamanaka Suwa Shrine", lat: 35.4128, lng: 138.8575, gmaps: "Yamanakako Suwa Shrine" },
+  komitake: { zh: "冨士山小御嶽神社（五合目）", orig: "Fujisan Komitake Shrine", lat: 35.3606, lng: 138.7273, gmaps: "Fujisan Komitake Shrine" },
+  oshino: { zh: "忍野八海", orig: "Oshino Hakkai", lat: 35.46, lng: 138.8328, gmaps: "Oshino Hakkai" },
+  kinugawa: { zh: "鬼怒川溫泉飯店", orig: "Kinugawa Onsen Hotel", lat: 36.8245, lng: 139.711, gmaps: "Kinugawa Onsen Hotel" },
+  nikko: { zh: "日光東照宮", orig: "Nikko Toshogu", lat: 36.7581, lng: 139.5988, gmaps: "Nikko Toshogu" },
+  shinkyo: { zh: "神橋", orig: "Shinkyo Bridge", lat: 36.7537, lng: 139.6007, gmaps: "Shinkyo Bridge" },
+  kegon: { zh: "華嚴瀑布", orig: "Kegon Falls", lat: 36.7378, lng: 139.4498, gmaps: "Kegon Falls" },
+  chuzenji: { zh: "中禪寺湖", orig: "Lake Chuzenji", lat: 36.739, lng: 139.465, gmaps: "Lake Chuzenji" },
+  akechi: { zh: "明智平展望台", orig: "Akechidaira Observatory", lat: 36.7365, lng: 139.4558, gmaps: "Akechidaira Observatory" },
+  otani: { zh: "大谷資料館", orig: "Oya History Museum", lat: 36.5975, lng: 139.8258, gmaps: "Oya History Museum" },
+  utsunomiya: { zh: "宇都宮（餃子）", orig: "Utsunomiya", lat: 36.5551, lng: 139.8828, gmaps: "Utsunomiya Station" },
+  tyo: { zh: "東京站", orig: "Tokyo Station", lat: 35.6812, lng: 139.7671, gmaps: "Tokyo Station" },
+  shibuya: { zh: "澀谷", orig: "Shibuya", lat: 35.6595, lng: 139.7005, gmaps: "Shibuya Crossing" }
+};
+function placeLabel(p) { return `${p.zh} · ${p.orig}`; }
+function placeShort(p) { return p.zh; }
+function mapsName(p) { return p.gmaps || p.orig || p.zh; }
+function mapsPlaceUrl(p) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsName(p))}`;
+}
+function mapsDirUrl(keys) {
+  const pts = (keys || []).map(k => P[k]).filter(Boolean);
+  if (pts.length < 2) return null;
+  const origin = encodeURIComponent(mapsName(pts[0]));
+  const destination = encodeURIComponent(mapsName(pts[pts.length - 1]));
+  const via = pts.slice(1, -1).slice(0, 9).map(p => encodeURIComponent(mapsName(p)));
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  if (via.length) url += `&waypoints=${via.join("%7C")}`;
+  return url;
+}
+
+const stays = [
+  { key: "mets", nights: "2 晚", tip: "10/22–23 · 已確認" },
+  { key: "atamiHotel", nights: "2 晚", tip: "10/24–25 · 東橫 INN" },
+  { key: "ubuya", nights: "1 晚", tip: "10/26 · UBUYA" },
+  { key: "fujitory", nights: "1 晚", tip: "10/27 · FUJiTORiiGATE" },
+  { key: "kinugawa", nights: "2 晚", tip: "10/28–29 · 鬼怒川" },
+  { key: "richmond", nights: "3 晚", tip: "10/30–11/1 · Richmond" }
+];
+
+const days = [
+  {
+    id: "day-1", date: "10/22（四）", title: "CI222 抵達・橫濱", summary: "華航 CI222 松山→羽田 → Mets 橫濱",
+    tags: [["stay","Mets 橫濱"],["flight","CI222"]], stay: "JR-EAST HOTEL METS YOKOHAMA",
+    drive: "羽田→橫濱約 30–60 分（京急／巴士）", daylight: "—",
+    places: ["tsa","hnd","mets"], route: ["hnd","mets"], center: "mets", zoom: 11,
+    timeline: [
+      { time: "18:05", title: "CI222 松山起飛", desc: "華航 China Airlines；TSA T1 → HND T3（約 3h10）。" },
+      { time: "22:15", title: "羽田落地", desc: "入境後前往橫濱；晚現，直接入住即可。" },
+      { time: "23:00+", title: "入住 Mets 橫濱", desc: "已確認（官網 check-in 15:00 起，晚到通常可；建議先電話告知前台）。" }
+    ],
+    notes: ["班機：CI222 TSA→HND（10/22 18:05–22:15，時刻以當日為準）","住宿：JR-EAST HOTEL METS YOKOHAMA"]
+  },
+  {
+    id: "day-2", date: "10/23（五）", title: "Appier 上班・京橋晚餐", summary: "白天 Appier Japan；19:30 おみ乃 椿（京橋）",
+    tags: [["stay","Mets 橫濱"],["drive","電車"]], stay: "JR-EAST HOTEL METS YOKOHAMA",
+    drive: "橫濱→愛宕／京橋（約 30–50 分）", daylight: "約 11h", highlight: true,
+    places: ["mets","appier","omino"], route: ["mets","appier","omino","mets"], center: "appier", zoom: 12,
+    timeline: [
+      { time: "上午", title: "Appier Japan 上班", desc: "港區愛宕 2-5-1 愛宕グリーンヒルズ MORIタワー 40F；御成門駅 A5 出口步行約 4 分。建議橫濱早出（東京・橫濱線／港區線等）。" },
+      { time: "下班後", title: "移動京橋", desc: "自愛宕到京橋約 15–25 分；預留步行找 B1。" },
+      { time: "19:30–22:00", title: "おみ乃 椿", desc: "おまかせコース、7人・カウンター。京橋 SKビル B1F（中央区京橋 2-5-17）。預約 1FWHGHUN。" },
+      { time: "晚", title: "回 Mets 橫濱", desc: "晚間電車回橫濱站前飯店。" }
+    ],
+    notes: [
+      "Appier Japan：愛宕グリーンヒルズ MORIタワー 40F",
+      "晚餐預約：おみ乃 椿（1FWHGHUN）・7人・カウンター",
+      "住宿：Mets 橫濱續住"
+    ]
+  },
+  {
+    id: "day-3", date: "10/24（六）", title: "橫濱 → 熱海", summary: "東橫 INN 熱海站前；伊豆海岸",
+    tags: [["stay","熱海 ①"],["drive","約 1.5h／76km"]], stay: "Toyoko Inn Atami Ekimae",
+    drive: "橫濱→熱海約 1h30–2h（截圖約 76km）", daylight: "約 11h", highlight: true,
+    places: ["mets","atamiHotel","omuro","jogasaki","kinomiya"], route: ["mets","atamiHotel","omuro","jogasaki","atamiHotel"], center: "omuro", zoom: 11,
+    timeline: [
+      { time: "11:00", title: "Mets 退房", desc: "開往／轉往熱海；15:00 後入住東橫 INN。" },
+      { time: "午－午後", title: "大室山・城ヶ崎", desc: "行李可先放旅館／置物櫃再出遊。" },
+      { time: "晚", title: "來宮大楠／熱海街", desc: "站前散步；入住 Toyoko Inn Atami Ekimae（已確認至 10/26）。" }
+    ],
+    notes: ["住宿已確認：Toyoko Inn Atami Ekimae（10/24 15:00–10/26 10:00）"]
+  },
+  {
+    id: "day-4", date: "10/25（日）", title: "熱海文化・花火", summary: "MOA → 伊豆山／熱海城 → 花火",
+    tags: [["stay","熱海 ②"],["drive","市區"]], stay: "Toyoko Inn Atami Ekimae",
+    drive: "巴士／計程車", daylight: "約 11h", highlight: true,
+    places: ["moa","izusan","castle","hanabi","atamiHotel"], route: ["moa","izusan","castle","hanabi"], center: "atami", zoom: 12,
+    timeline: [
+      { time: "早", title: "MOA美術館", desc: "站前巴士約 7 分。" },
+      { time: "午", title: "伊豆山神社（推薦）", desc: "時間緊可改熱海城。" },
+      { time: "午後", title: "熱海城", desc: "海灣展望。" },
+      { time: "晚", title: "熱海花火", desc: "查當日場次；觀煙火優先 Sun Beach／港周邊。" }
+    ],
+    notes: ["住宿：東橫 INN 續住"]
+  },
+  {
+    id: "day-5", date: "10/26（一）", title: "取車・熱海 → うぶや", summary: "10:00 熱海站前取車，開往河口湖 UBUYA",
+    tags: [["stay","うぶや"],["drive","取車日"]], stay: "UBUYA（河口湖）",
+    drive: "熱海→河口湖約 2–2.5h", daylight: "約 11h", highlight: true,
+    places: ["atamiHotel","rentAtami","ubuya","oishi","chureito"], route: ["rentAtami","ubuya","oishi","chureito"], center: "ubuya", zoom: 11,
+    timeline: [
+      { time: "10:00", title: "熱海站前取車", desc: "東橫 INN 10:00 退房後取車；預約 99903133400、C3/AT、完整套餐。TEL 0557-81-0100。" },
+      { time: "午前–午", title: "開往河口湖", desc: "確認保險／ETC／油箱規則後出發。" },
+      { time: "15:00", title: "入住 UBUYA", desc: "已確認（T285E46A6A5B3）。" },
+      { time: "傍晚", title: "大石公園／忠靈塔", desc: "視天色；旅館晚餐優先。" }
+    ],
+    notes: ["租車：10/26 10:00 熱海站前取 → 10/30 20:00 橫濱站中央西口還","住宿：UBUYA 10/26–10/27"]
+  },
+  {
+    id: "day-6", date: "10/27（二）", title: "神玉巡拜・換宿トリイゲート", summary: "富士北麓神玉當日完成；晚住富士山站前",
+    tags: [["stay","FUJiTORiiGATE"],["drive","湖周"]], stay: "HOTEL FUJiTORiiGATE",
+    drive: "神玉循環＋換宿", daylight: "約 11h", highlight: true,
+    places: ["ubuya","fujiOmuro","kitaguchi","arakura","omuroSen","arayayama","yamanaka","komitake","fujitory","oshino"],
+    route: ["fujiOmuro","kitaguchi","arakura","omuroSen","arayayama","yamanaka","komitake","fujitory"],
+    center: "kitaguchi", zoom: 11,
+    timeline: [
+      { time: "早", title: "うぶや退房", desc: "行李可先寄 FUJiTORiiGATE（富士山站徒步約 1 分）再巡社。" },
+      { time: "整天", title: "神玉七社（只在富士）", desc: "御室→北口本宮→新倉→小室→新屋山→山中諏訪；スバルライン開才上五合目小御嶽。" },
+      { time: "彈性", title: "忍野八海", desc: "非七社，有餘力再停。" },
+      { time: "15:00+", title: "入住 FUJiTORiiGATE", desc: "已確認至 10/28 10:00；緊鄰金鳥居／北口參道，補拍很方便。" }
+    ],
+    notes: [
+      "神玉只在富士山／北麓完成，不留到回程。",
+      "住宿已確認：HOTEL FUJiTORiiGATE（10/27–10/28）",
+      '<a href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉指南</a> · <a href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">七社地圖</a>'
+    ]
+  },
+  {
+    id: "day-7", date: "10/28（三）", title: "河口湖 → 鬼怒川", summary: "開往鬼怒川溫泉飯店",
+    tags: [["stay","鬼怒川 ①"],["drive","約 3h／238km"]], stay: "Kinugawa Onsen Hotel",
+    drive: "截圖約 3h06／238km", daylight: "約 10.8h",
+    places: ["fujitory","kinugawa"], route: ["fujitory","kinugawa"], center: "kinugawa", zoom: 10,
+    timeline: [
+      { time: "10:00", title: "トリイゲート退房", desc: "東行往日光／鬼怒川；預留紅葉車潮。" },
+      { time: "15:00+", title: "入住鬼怒川溫泉飯店", desc: "已確認至 10/30 10:00；今晚泡湯養明天體力。" }
+    ],
+    notes: ["住宿已確認：Kinugawa Onsen Hotel（10/28–10/30）"]
+  },
+  {
+    id: "day-8", date: "10/29（四）", title: "日光・奧日光（鬼怒川基地）", summary: "東照宮＋華嚴／中禪寺",
+    tags: [["stay","鬼怒川 ②"],["drive","鬼怒川↔日光"]], stay: "Kinugawa Onsen Hotel",
+    drive: "鬼怒川→東照宮約 40–50 分", daylight: "約 10.7h", highlight: true,
+    places: ["kinugawa","nikko","shinkyo","kegon","chuzenji","akechi"],
+    route: ["kinugawa","nikko","shinkyo","akechi","kegon","chuzenji","kinugawa"],
+    center: "nikko", zoom: 10,
+    timeline: [
+      { time: "早", title: "日光東照宮", desc: "自鬼怒川早出發；預留 2–3h。" },
+      { time: "午後", title: "奧日光", desc: "華嚴瀑、明智平、中禪寺湖。" },
+      { time: "晚", title: "回鬼怒川溫泉", desc: "飯店泡湯收工。" }
+    ],
+    notes: ["紅葉季車位難找，東照宮盡量早到。"]
+  },
+  {
+    id: "day-9", date: "10/30（五）", title: "遺珠・還車橫濱", summary: "鬼怒川→橫濱沿路；20:00 前還車後入住 Richmond",
+    tags: [["stay","Richmond 橫濱"],["drive","還車日"]], stay: "Richmond Hotel Yokohama Ekimae",
+    drive: "約 2h45／201km；加宇都宮停點請留還車 buffer", daylight: "約 10.7h",
+    places: ["kinugawa","otani","utsunomiya","rentYokohama","richmond"], route: ["kinugawa","otani","utsunomiya","rentYokohama"], center: "utsunomiya", zoom: 8,
+    timeline: [
+      { time: "10:00", title: "鬼怒川退房南下", desc: "遺珠＝回程停點，不補神玉。" },
+      { time: "上午／午", title: "大谷資料館・宇都宮餃子", desc: "停留後繼開橫濱；勿挪過 20:00 還車。" },
+      { time: "20:00 前", title: "橫濱站中央西口還車", desc: "鶴屋町 3-32-1；熱海取車的車還到此店。燒油／檢查依套餐規則。" },
+      { time: "還車後", title: "入住 Richmond 橫濱站前", desc: "已確認至 11/2 11:00；站前步行圈。" }
+    ],
+    notes: ["還車：10/30 20:00 橫濱站中央西口店（預約 99903133400）","遺珠只限鬼怒川→橫濱路程"]
+  },
+  {
+    id: "day-10", date: "10/31（六）", title: "橫濱逛街①", summary: "港未來・逛街；可電車衝東京半日",
+    tags: [["stay","Richmond 橫濱"],["drive","電車"]], stay: "Richmond Hotel Yokohama Ekimae",
+    drive: "橫濱市區；東京約 30 分", daylight: "約 10.6h",
+    places: ["richmond","minato","redbrick","chinatown"], route: ["richmond","minato","chinatown"], center: "minato", zoom: 13,
+    timeline: [
+      { time: "整天", title: "橫濱主場", desc: "港未來、紅磚、中華街補買。" },
+      { time: "彈性", title: "東京半日", desc: "想逛澀谷／東京站可當天來回（行李放橫濱飯店）。" }
+    ],
+    notes: ["租車：前晚 20:00 前已還於橫濱站中央西口"]
+  },
+  {
+    id: "day-11", date: "11/1（日）", title: "橫濱逛街②／東京補買", summary: "自由日；伴手禮收尾",
+    tags: [["stay","Richmond 橫濱"],["drive","電車"]], stay: "Richmond Hotel Yokohama Ekimae",
+    drive: "電車", daylight: "約 10.6h",
+    places: ["richmond","tyo","shibuya"], route: ["richmond","tyo","shibuya"], center: "tyo", zoom: 11,
+    timeline: [
+      { time: "方案 A", title: "續逛橫濱", desc: "百貨、藥妝、臨海。" },
+      { time: "方案 B", title: "東京站・澀谷", desc: "伴手禮／藥妝；晚上回橫濱站前飯店。" }
+    ],
+    notes: ["隔天 11:00 退房，注意行李。"]
+  },
+  {
+    id: "day-12", date: "11/2（一）", title: "CI221 離境", summary: "Richmond 11:00 退房 → 羽田 CI221 回松山",
+    tags: [["stay","離境"],["flight","CI221"]], stay: "—",
+    drive: "橫濱→羽田約 30–60 分", daylight: "—",
+    places: ["richmond","hnd","tsa"], route: ["richmond","hnd"], center: "hnd", zoom: 10,
+    timeline: [
+      { time: "11:00", title: "Richmond 退房", desc: "已確認 11:00 check-out；行李直送羽田。" },
+      { time: "14:15", title: "CI221 羽田起飛", desc: "華航 HND T3 → TSA T1（約 3h–4h）；建議 11:30 前到機場。" },
+      { time: "17:15", title: "松山落地", desc: "時刻以當日班表為準（冬季表常為 14:15–17:15）。" }
+    ],
+    notes: ["班機：CI221 HND→TSA（11/2）","羽田離橫濱較近，不用跑成田"]
+  }
+];
+
+
+const darkTiles = (map) => {
+  const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_4hbr_1_36eb6f469b628a5a8d5c116b", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 20
+  });
+  base.addTo(map);
+  return base;
+};
+function circleIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #e8eef2;box-shadow:0 0 0 4px rgba(0,0,0,.35)"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -8]
+  });
+}
+function labelIcon(text, color) {
+  return L.divIcon({
+    className: "",
+    html: `<div class="pin-label" style="border-color:${color}">${text}</div>`,
+    iconSize: [0, 0], iconAnchor: [-8, 10]
+  });
+}
+
+const stayKeys = ["mets","atamiHotel","ubuya","fujitory","kinugawa","richmond"];
+const highlightKeys = ["minato","omuro","jogasaki","moa","hanabi","chureito","kitaguchi","kegon","chuzenji","otani"];
+const specialKeys = ["hanabi","ubuya","kitaguchi","chureito","kegon"];
+const routeOrder = ["mets", "atamiHotel", "omuro", "jogasaki", "atamiHotel", "ubuya", "chureito", "fujiOmuro", "kitaguchi", "fujitory", "komitake", "yamanaka", "kinugawa", "nikko", "kegon", "chuzenji", "kinugawa", "otani", "utsunomiya", "richmond"];
+const latlngs = routeOrder.map(k => [P[k].lat, P[k].lng]);
+let overviewMap = null;
+const stayInfo = {
+  mets: "10/22–23 · Mets 橫濱",
+  atamiHotel: "10/24–25 · 東橫 INN 熱海",
+  ubuya: "10/26 · うぶや",
+  fujitory: "10/27 · FUJiTORiiGATE",
+  kinugawa: "10/28–29 · 鬼怒川溫泉飯店",
+  richmond: "10/30–11/1 · Richmond 橫濱"
+};
+
+function initOverviewMap() {
+  if (typeof L === "undefined") {
+    const el = document.getElementById("overviewMap");
+    if (el) el.innerHTML = '<div style="display:grid;place-items:center;height:100%;color:var(--muted);padding:1rem;text-align:center">地圖載入失敗</div>';
+    return null;
+  }
+  const map = L.map("overviewMap", { scrollWheelZoom: true, zoomControl: true });
+  darkTiles(map);
+  stayKeys.forEach(k => {
+    const p = P[k];
+    L.marker([p.lat, p.lng], { icon: circleIcon("#5ec8c7") })
+      .addTo(map)
+      .bindPopup(`<strong>${placeLabel(p)}</strong><br>${stayInfo[k] || "住宿"}`);
+    L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), "#5ec8c7"), interactive: false }).addTo(map);
+  });
+  highlightKeys.forEach(k => {
+    const p = P[k];
+    if (!p) return;
+    const color = specialKeys.includes(k) ? "#e07a5f" : "#e0a35b";
+    L.marker([p.lat, p.lng], { icon: circleIcon(color) })
+      .addTo(map)
+      .bindPopup(`<strong>${placeLabel(p)}</strong>`);
+  });
+  map.fitBounds(L.latLngBounds(latlngs).pad(0.18));
+  return map;
+}
+try { overviewMap = initOverviewMap(); } catch (e) { overviewMap = null; }
+
+async function loadPrecomputedRingRoute() {
+  if (Array.isArray(window.PRECOMPUTED_RING_ROUTE) && window.PRECOMPUTED_RING_ROUTE.length > 2) return window.PRECOMPUTED_RING_ROUTE;
+  try {
+    const res = await fetch("japan-ring-route.json");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) { return null; }
+}
+async function fetchOsrmRoute(points) {
+  if (points.length < 2) return null;
+  const coords = points.map(([lat, lng]) => `${lng},${lat}`).join(";");
+  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=false`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("osrm");
+  const data = await res.json();
+  return data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+}
+async function drawOverviewRoute() {
+  if (!overviewMap || typeof L === "undefined") return;
+  try {
+    let all = await loadPrecomputedRingRoute();
+    if (!all || all.length < 2) {
+      all = [];
+      for (let i = 0; i < routeOrder.length - 1; i++) {
+        const a = routeOrder[i], b = routeOrder[i + 1];
+        const seg = await fetchOsrmRoute([[P[a].lat, P[a].lng], [P[b].lat, P[b].lng]]);
+        if (seg && seg.length) { if (all.length) seg.shift(); all.push(...seg); }
+      }
+    }
+    if (!all || all.length < 2) throw new Error("empty");
+    L.polyline(all, { color: "#5ec8c7", weight: 8, opacity: 0.16, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    L.polyline(all, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    const fit = L.latLngBounds(all);
+    [...stayKeys, ...highlightKeys].forEach(k => { const p = P[k]; if (p) fit.extend([p.lat, p.lng]); });
+    overviewMap.fitBounds(fit.pad(0.1));
+  } catch (e) {
+    L.polyline(latlngs, { color: "#5ec8c7", weight: 3, opacity: 0.45, dashArray: "6 10" }).addTo(overviewMap);
+    overviewMap.fitBounds(L.latLngBounds(latlngs).pad(0.12));
+  }
+}
+drawOverviewRoute();
+
+const stayCards = document.getElementById("stayCards");
+stays.forEach(s => {
+  const p = P[s.key];
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = `<h3>${placeLabel(p)}</h3><p><strong style="color:var(--ice)">${s.nights}</strong> · ${s.tip}<br><a class="btn" style="margin-top:.6rem" target="_blank" rel="noopener" href="${mapsPlaceUrl(p)}">Google 地圖</a></p>`;
+  stayCards.appendChild(el);
+});
+
+const daysRoot = document.getElementById("days");
+const nav = document.getElementById("dayNav");
+const dayMaps = new Map();
+days.forEach((d, i) => {
+  const a = document.createElement("a");
+  a.href = `#${d.id}`; a.textContent = `D${i + 1}`; a.title = `${d.date} ${d.title}`;
+  nav.appendChild(a);
+  const el = document.createElement("details");
+  el.className = "day" + (d.highlight ? " highlight" : "");
+  el.id = d.id;
+  if (d.highlight || i < 2) el.open = true;
+  const tags = d.tags.map(([k, t]) => `<span class="tag ${k}">${t}</span>`).join("");
+  const timeline = d.timeline.map(t => `<div class="tl-item"><div class="time">${t.time}</div><strong>${t.title}</strong><p>${t.desc || ""}</p></div>`).join("");
+  const notes = (d.notes || []).map(n => `<div class="note">${n}</div>`).join("");
+  const pois = d.places.filter(k => P[k]).map(k => `<span class="poi">${placeLabel(P[k])}</span>`).join("");
+  const dirHref = mapsDirUrl(d.route || null);
+  const dirBtn = dirHref ? `<a class="btn primary" target="_blank" rel="noopener" href="${dirHref}">Google 導航</a>` : "";
+  const gmapsList = d.places.filter(k => P[k]).map(k => `<a class="btn" target="_blank" rel="noopener" href="${mapsPlaceUrl(P[k])}">${placeShort(P[k])}</a>`).join("");
+  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>車程</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div></div>`;
+  daysRoot.appendChild(el);
+  const initMap = () => {
+    if (typeof L === "undefined") return;
+    if (dayMaps.has(d.id)) { dayMaps.get(d.id).invalidateSize(); return; }
+    const mapEl = document.getElementById(`map-${d.id}`);
+    if (!mapEl || mapEl.clientHeight < 40) return;
+    const map = L.map(mapEl, { scrollWheelZoom: false });
+    darkTiles(map);
+    const bounds = [];
+    d.places.forEach((k, idx) => {
+      const p = P[k];
+      const color = specialKeys.includes(k) ? "#e07a5f" : (stayKeys.includes(k) ? "#5ec8c7" : "#e0a35b");
+      L.marker([p.lat, p.lng], { icon: circleIcon(color) }).addTo(map).bindPopup(`<strong>${p.zh}</strong><br>${p.orig}`);
+      if (idx === 0 || stayKeys.includes(k) || specialKeys.includes(k)) {
+        L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), color), interactive: false }).addTo(map);
+      }
+      bounds.push([p.lat, p.lng]);
+    });
+    if (bounds.length > 1) {
+      map.fitBounds(bounds, { padding: [28, 28] });
+      fetchOsrmRoute(bounds).then(seg => {
+        if (seg && seg.length > 1) {
+          L.polyline(seg, { color: "#5ec8c7", weight: 8, opacity: 0.14, smoothFactor: 0 }).addTo(map);
+          L.polyline(seg, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, smoothFactor: 0 }).addTo(map);
+          map.fitBounds(seg, { padding: [28, 28] });
+        } else L.polyline(bounds, { color: "#5ec8c7", weight: 2.5, opacity: 0.45, dashArray: "6 8" }).addTo(map);
+      }).catch(() => L.polyline(bounds, { color: "#5ec8c7", weight: 2.5, opacity: 0.45, dashArray: "6 8" }).addTo(map));
+    } else map.setView(bounds[0], d.zoom || 10);
+    dayMaps.set(d.id, map);
+    setTimeout(() => map.invalidateSize(), 80);
+  };
+  el.addEventListener("toggle", () => { if (el.open) setTimeout(initMap, 60); });
+  if (el.open) setTimeout(initMap, 120);
+});
+
+document.getElementById("expandAll").onclick = () => document.querySelectorAll("details.day").forEach(d => { d.open = true; setTimeout(() => { const m = dayMaps.get(d.id); if (m) m.invalidateSize(); }, 100); });
+document.getElementById("collapseAll").onclick = () => document.querySelectorAll("details.day").forEach(d => d.open = false);
+const navLinks = [...nav.querySelectorAll("a")];
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === `#${en.target.id}`));
+  });
+}, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+document.querySelectorAll("details.day").forEach(d => io.observe(d));
+window.addEventListener("load", () => { if (overviewMap) overviewMap.invalidateSize(); });
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!reduceMotion) {
+  document.documentElement.classList.add("motion-on");
+  document.querySelectorAll("section.reveal").forEach((el, i) => { el.style.transitionDelay = Math.min(i * 0.05, 0.25) + "s"; });
+  const revealIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); revealIO.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll(".reveal").forEach(el => revealIO.observe(el));
+  setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(el => el.classList.add("in")), 1200);
+}
+const navEl = document.querySelector(".day-nav");
+if (navEl) {
+  const onScroll = () => navEl.classList.toggle("scrolled", window.scrollY > 24);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+</script>
+</body>
+</html>
