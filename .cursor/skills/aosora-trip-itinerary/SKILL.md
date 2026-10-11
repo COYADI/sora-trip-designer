@@ -85,7 +85,8 @@ aosora-trip/
   - Simplify dense OSRM output (RDP ~40 m)
 - **UX**: progressive enhancement; try/catch around Leaflet; never leave `.reveal` stuck at `opacity: 0`
 - **Hub**: brand-first; trip titles one line (`white-space: nowrap` where needed)
-- **Trip pages**: fixed top-left `<a class="back-hub" href="/">← 行程總覽</a>` (not buried in toolbar)
+- **Trip pages**: sticky `.topbar` with back link + expand/collapse/print/links + day nav (`#dayNav`); keep hero free of action buttons
+- If renaming a trip slug, leave a tiny redirect folder at the old path (meta refresh + `location.replace`)
 
 ## Ingest: spreadsheet + bookings
 1. Sparse sheet = skeleton (dates / 住 / 租車 / 早午晚). Fill recommended POIs; honor user constraints.

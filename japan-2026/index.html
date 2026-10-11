@@ -76,33 +76,49 @@ html.motion-on .reveal.in {
   transform: none;
 }
 
-/* Back to hub — fixed top-left */
-.back-hub {
-  position: fixed;
-  top: 0.85rem;
-  left: 0.85rem;
+/* Sticky top actions + day nav */
+.topbar {
+  position: sticky;
+  top: 0;
   z-index: 60;
+  background: rgba(11,15,20,.92);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 8px 28px rgba(0,0,0,.22);
+}
+.topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 0 .35rem;
+}
+.topbar-back {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
+  gap: .3rem;
+  padding: .45rem .85rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #061112;
   text-decoration: none;
-  border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: rgba(11, 15, 20, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-soft);
-  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  border: 1px solid transparent;
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  margin-right: .15rem;
 }
-.back-hub:hover {
-  border-color: var(--ice-dim);
-  color: var(--ice);
-  background: rgba(16, 22, 30, 0.92);
+.topbar-back:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
 }
+.topbar .btn { padding: .45rem .85rem; font-size: .8rem; }
+.topbar .day-nav-inner {
+  padding: .2rem 0 .55rem;
+  border-top: 1px solid var(--line);
+  margin-top: .15rem;
+}
+.topbar .day-nav-inner a { flex: 0 0 auto; }
 
 /* Hero */
 .hero {
@@ -205,20 +221,8 @@ html.motion-on .reveal.in {
 }
 
 /* Nav */
-.day-nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(11,15,20,.78);
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
-  border-bottom: 1px solid var(--line);
-  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-}
-.day-nav.scrolled {
-  background: rgba(11,15,20,.92);
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-}
+.day-nav { display: contents; }
+.day-nav.scrolled { box-shadow: none; }
 .day-nav-inner {
   display: flex;
   gap: .35rem;
@@ -663,7 +667,7 @@ footer {
 }
 
 @media print {
-  .day-nav, .toolbar, .back-hub { display: none !important; }
+  .topbar { display: none !important; }
   body { background: #fff; color: #111; }
   .card, .day { box-shadow: none; }
   .reveal { opacity: 1; transform: none; }
@@ -672,7 +676,20 @@ footer {
 
 </head>
 <body>
-<a class="back-hub" href="/">← 行程總覽</a>
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar-actions">
+      <a class="topbar-back" href="/">← 行程總覽</a>
+<button class="btn primary" type="button" id="expandAll">全部展開</button>
+      <button class="btn" type="button" id="collapseAll">全部收合</button>
+      <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
+      <a class="btn" href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉巡拜指南</a>
+      <a class="btn" href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">神玉地圖</a>
+    </div>
+    <nav class="day-nav"><div class="day-nav-inner" id="dayNav"></div></nav>
+  </div>
+</div>
+
 <header class="hero">
   <div class="wrap">
     <div class="kicker">AoSora · Honshu · Late October 2026</div>
@@ -687,17 +704,8 @@ footer {
       <span class="chip">うぶや</span>
       <span class="chip">鬼怒川溫泉</span>
     </div>
-    <div class="toolbar">
-      <button class="btn primary" type="button" id="expandAll">全部展開</button>
-      <button class="btn" type="button" id="collapseAll">全部收合</button>
-      <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
-      <a class="btn" href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉巡拜指南</a>
-      <a class="btn" href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">神玉地圖</a>
-    </div>
   </div>
 </header>
-
-<nav class="day-nav"><div class="wrap day-nav-inner" id="dayNav"></div></nav>
 
 <main>
 <section class="reveal">
