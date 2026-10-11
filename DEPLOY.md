@@ -5,7 +5,7 @@ Repo：`https://github.com/COYADI/sora-trip-designer`
 ## 上傳（網頁）
 1. 開啟 https://github.com/COYADI/sora-trip-designer/upload
 2. 把本機資料夾 `aosora-trip` 裡的檔案全部拖進去：
-   - `index.html`、`CNAME`、`.nojekyll`、`iceland-2026/`（整個資料夾）
+   - `index.html`、`CNAME`、`.nojekyll`、`iceland-2027/`（整個資料夾）
 3. Commit changes
 
 ## GitHub Pages

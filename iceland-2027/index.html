@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>冰島環島 15 日 · 2026/10/17–10/31</title>
+<title>冰島環島 15 日 · 2027/10/17–10/31</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -646,9 +646,9 @@ footer {
 <body>
 <header class="hero">
   <div class="wrap">
-    <div class="kicker">AoSora · Ring Road · Late October 2026</div>
+    <div class="kicker">AoSora · Ring Road · Late October 2027</div>
     <h1>冰島<span>環島</span>十五日</h1>
-    <p class="lead">2026/10/17–10/31 · 台北出發 · 含飛機 · 順時針。南岸連住、赫本兩晚、冰洞核心日、米湖細逛、西半島環線收尾。</p>
+    <p class="lead">2027/10/17–10/31 · 台北出發 · 含飛機 · 順時針。南岸連住、赫本兩晚、冰洞核心日、米湖細逛、西半島環線收尾。</p>
     <div class="chips">
       <span class="chip">15 天含飛</span>
       <span class="chip">4WD 建議</span>
@@ -871,18 +871,18 @@ const stays = [
 
 const days = [
   {
-    id: "day-1", date: "10/17（六）", title: "台北出發", summary: "桃園起飛，歐洲轉機前往 KEF",
+    id: "day-1", date: "10/17（日）", title: "台北出發", summary: "桃園起飛，歐洲轉機前往 KEF",
     tags: [["flight","飛行日"],["stay","機上"]], stay: "機上", drive: "—", daylight: "—",
     places: ["tpe"], center: "tpe", zoom: 10,
     dir: null,
     timeline: [
       { time: "依班機", title: "TPE 出發", desc: "盡量讓 10/18 下午抵達 KEF。" },
-      { time: "機上", title: "休息 + 時差", desc: "冰島比台北慢 8 小時；歐洲 10/25 冬令注意銜接。" }
+      { time: "機上", title: "休息 + 時差", desc: "冰島比台北慢 8 小時；歐洲 10/31 冬令注意銜接。" }
     ],
     notes: ["窗內備援：11/1 可當延誤彈性。"]
   },
   {
-    id: "day-2", date: "10/18（日）", title: "抵達 · 雷克雅維克", summary: "KEF 取車，溫泉或市區輕鬆落地",
+    id: "day-2", date: "10/18（一）", title: "抵達 · 雷克雅維克", summary: "KEF 取車，溫泉或市區輕鬆落地",
     tags: [["stay","雷市 ①"],["drive","KEF→雷市 ~50分"]], stay: "雷克雅維克（101）",
     drive: "KEF → 雷市約 45–55 分 / 50 km", daylight: "約 08:27–17:57（~9.5h）",
     places: ["kef","sky","hallgrim","rvk"], route: ["kef","sky","rvk"], center: "rvk", zoom: 10,
@@ -894,7 +894,7 @@ const days = [
     notes: ["住宿：Reykjavik center / 101","這天不硬排景點，把體力留給之後長途。"]
   },
   {
-    id: "day-3", date: "10/19（一）", title: "金圈當日來回", summary: "Þingvellir → 藍秘境 → 間歇泉 → 古佛斯 → 凱里德",
+    id: "day-3", date: "10/19（二）", title: "金圈當日來回", summary: "Þingvellir → 藍秘境 → 間歇泉 → 古佛斯 → 凱里德",
     tags: [["stay","雷市 ②"],["drive","往返約 3–4h 純開"]], stay: "雷克雅維克",
     drive: "金圈純開約 3–4h，含逛一整天", daylight: "約 9.3h",
     places: ["rvk","thing","bruar","geysir","gullfoss","kerid"], route: ["rvk","thing","bruar","geysir","gullfoss","kerid","rvk"], center: "geysir", zoom: 8,
@@ -909,7 +909,7 @@ const days = [
     notes: ["金圈不過夜，省一次換宿。","十月底建議 08:30 前上路，避免回程摸黑。"]
   },
   {
-    id: "day-4", date: "10/20（二）", title: "南岸 · 維克", summary: "雙瀑布、Elliðaey 空拍、黑沙灘",
+    id: "day-4", date: "10/20（三）", title: "南岸 · 維克", summary: "雙瀑布、Elliðaey 空拍、黑沙灘",
     tags: [["stay","維克 ①"],["drive","雷市→維克 ~2.5h"]], stay: "維克 Vík",
     drive: "雷市→維克約 2.5h；沿路整天", daylight: "約 9.2h", highlight: true,
     places: ["selja","glju","ellidaeyView","skoga","reyni","vik"], route: ["rvk","selja","skoga","reyni","vik"], center: "skoga", zoom: 9,
@@ -924,7 +924,7 @@ const days = [
     warn: "黑沙灘大浪；無人機遇強風立刻收。"
   },
   {
-    id: "day-5", date: "10/21（三）", title: "維克基地日 · 南岸緩衝", summary: "補拍／休息；想充實可加卡特拉冰洞半日",
+    id: "day-5", date: "10/21（四）", title: "維克基地日 · 南岸緩衝", summary: "補拍／休息；想充實可加卡特拉冰洞半日",
     tags: [["stay","維克 ②"],["drive","短程／可零車程"]], stay: "維克 Vík",
     drive: "維克半徑通常 <2h；卡特拉團另計", daylight: "約 9.1h",
     places: ["vik","reyni","dyrho"], route: ["vik","reyni","dyrho","vik"], center: "vik", zoom: 11,
@@ -936,7 +936,7 @@ const days = [
     notes: ["羽毛河峽谷改放隔天東行路過。","這天是體力／天氣緩衝；風浪太大就待市區。"]
   },
   {
-    id: "day-6", date: "10/22（四）", title: "維克 → 赫本", summary: "峽谷 → 菲亞德拉／杰古沙龍冰河湖 → 鑽石沙灘",
+    id: "day-6", date: "10/22（五）", title: "維克 → 赫本", summary: "峽谷 → 菲亞德拉／杰古沙龍冰河湖 → 鑽石沙灘",
     tags: [["stay","赫本 ①"],["drive","約 3.5–5h 含停留"]], stay: "赫本 Höfn",
     drive: "純開約 3–3.5h；含景點半日至整天", daylight: "約 9.0h",
     places: ["vik","fjad","fjall","jokul","diamond","hofn"], route: ["vik","fjad","fjall","jokul","diamond","hofn"], center: "jokul", zoom: 8,
@@ -950,7 +950,7 @@ const days = [
     notes: ["可改住 Hali / 冰湖附近更近集合點。","Skaftafell／黑瀑布步道十月日照緊，寧可不硬加。","Mulagljúfur 碎石支線，開了才考慮。"]
   },
   {
-    id: "day-7", date: "10/23（五）", title: "冰川健行 + 藍冰洞", summary: "Hali · Blue Ice Cave Adventure",
+    id: "day-7", date: "10/23（六）", title: "冰川健行 + 藍冰洞", summary: "Hali · Blue Ice Cave Adventure",
     tags: [["stay","赫本 ②"],["drive","赫本↔Hali ~55分"]], stay: "赫本 Höfn",
     drive: "赫本 → Hali 約 50–55 分 / 66 km", daylight: "約 8.9h", highlight: true,
     places: ["hofn","hali","jokul","diamond"], route: ["hofn","hali","jokul","hofn"], center: "hali", zoom: 10,
@@ -963,7 +963,7 @@ const days = [
     warn: "洞況每年不同；熱門洞可能擁擠。這天是行程核心，前後日已留緩衝。"
   },
   {
-    id: "day-8", date: "10/24（六）", title: "Vestrahorn → 東峽", summary: "清晨西角山，東行入住；傍晚可加塞濟斯菲厄澤",
+    id: "day-8", date: "10/24（日）", title: "Vestrahorn → 東峽", summary: "清晨西角山，東行入住；傍晚可加塞濟斯菲厄澤",
     tags: [["stay","埃伊爾斯塔濟"],["drive","約 3.5–4.5h"]], stay: "埃伊爾斯塔濟",
     drive: "Stokksnes 後東行約 3.5–4h；塞濟斯來回另加 ~1h", daylight: "約 8.8h",
     places: ["hofn","stokk","egils","seydis"], route: ["hofn","stokk","egils"], center: "stokk", zoom: 7,
@@ -975,7 +975,7 @@ const days = [
     notes: ["東峽只住一晚，景點以「路過品質」為主。","塞濟斯菲厄澤是值得加的短支線，不是必去加班。"]
   },
   {
-    id: "day-9", date: "10/25（日）", title: "北上 → 阿克雷里", summary: "黛提 → 納馬地熱 → 眾神瀑布（米湖細逛留明天）",
+    id: "day-9", date: "10/25（一）", title: "北上 → 阿克雷里", summary: "黛提 → 納馬地熱 → 眾神瀑布（米湖細逛留明天）",
     tags: [["stay","阿克雷里 ①"],["drive","約 3–3.5h+景點"]], stay: "阿克雷里",
     drive: "加景點接近整天；北島早出門", daylight: "北島更短，務必早出發",
     places: ["egils","detti","namaf","goda","aku"], route: ["egils","detti","namaf","goda","aku"], center: "detti", zoom: 7,
@@ -989,7 +989,7 @@ const days = [
     warn: "北島清晨易黑冰；Dettifoss 西岸路若關閉改東岸或跳過。"
   },
   {
-    id: "day-10", date: "10/26（一）", title: "米湖全日（或市區備援）", summary: "迪姆堡、偽火山口、自然溫泉；天候差改阿克雷里",
+    id: "day-10", date: "10/26（二）", title: "米湖全日（或市區備援）", summary: "迪姆堡、偽火山口、自然溫泉；天候差改阿克雷里",
     tags: [["stay","阿克雷里 ②"],["drive","來回約 2–3h"]], stay: "阿克雷里",
     drive: "單程米湖約 1–1.25h", daylight: "短日照，精選 2–3 點", highlight: true,
     places: ["aku","dimmu","myvatn","baths","goda"], route: ["aku","dimmu","baths","goda","aku"], center: "myvatn", zoom: 10,
@@ -1003,7 +1003,7 @@ const days = [
     notes: ["鯨豚賞船十月班次視海況，想排就放這天上午、米湖改半日。"]
   },
   {
-    id: "day-11", date: "10/27（二）", title: "西行 → Borgarnes", summary: "長途移動，加科魯峽谷；天候好可加白盔岩",
+    id: "day-11", date: "10/27（三）", title: "西行 → Borgarnes", summary: "長途移動，加科魯峽谷；天候好可加白盔岩",
     tags: [["stay","Borgarnes ①"],["drive","約 4.5–6h 含停留"]], stay: "Borgarnes",
     drive: "純開約 4–4.5h；加景點半日節奏", daylight: "偏開車日，早出發",
     places: ["aku","kolu","hvit","borg"], route: ["aku","kolu","borg"], center: "kolu", zoom: 7,
@@ -1016,7 +1016,7 @@ const days = [
     notes: ["這天以前幾乎是純開車，補上科魯峽谷就不「空白移動」。","西峽灣太遠，十月不建議硬加進這趟。"]
   },
   {
-    id: "day-12", date: "10/28（三）", title: "西半島全日", summary: "教會山 → 阿納斯塔皮 → 深潟湖 → 黑教堂",
+    id: "day-12", date: "10/28（四）", title: "西半島全日", summary: "教會山 → 阿納斯塔皮 → 深潟湖 → 黑教堂",
     tags: [["stay","Borgarnes ②"],["drive","半島環線"]], stay: "Borgarnes 或半島內",
     drive: "全日含停常見 6–8h", daylight: "約 8.3h", highlight: true,
     places: ["borg","kirk","arnar","djupa","budir"], route: ["borg","kirk","arnar","djupa","budir","borg"], center: "kirk", zoom: 9,
@@ -1031,7 +1031,7 @@ const days = [
     notes: ["只排教會山＋黑教堂會太空，已補南岸兩大點。","半島道路曝風，早上查 vedur.is 風級。"]
   },
   {
-    id: "day-13", date: "10/29（四）", title: "回雷市 · 緩衝日", summary: "消化延誤；藍湖／天空之湖／市區／雷克雅內斯備援",
+    id: "day-13", date: "10/29（五）", title: "回雷市 · 緩衝日", summary: "消化延誤；藍湖／天空之湖／市區／雷克雅內斯備援",
     tags: [["stay","雷市"],["drive","~1–1.5h"]], stay: "雷克雅維克",
     drive: "Borgarnes→雷市約 1–1.5h", daylight: "約 8.2h",
     places: ["borg","rvk","sky","hallgrim"], route: ["borg","rvk"], center: "rvk", zoom: 9,
@@ -1043,7 +1043,7 @@ const days = [
     notes: ["全行程最重要彈性日：前面任何暴風雪延誤都往這裡消化。"]
   },
   {
-    id: "day-14", date: "10/30（五）", title: "還車 · 離境", summary: "KEF 起飛返台",
+    id: "day-14", date: "10/30（六）", title: "還車 · 離境", summary: "KEF 起飛返台",
     tags: [["flight","飛行日"]], stay: "機上",
     drive: "雷市→KEF 約 45–55 分", daylight: "—",
     places: ["rvk","kef"], route: ["rvk","kef"], center: "kef", zoom: 9,
@@ -1054,7 +1054,7 @@ const days = [
     notes: ["國際線建議起飛前 2.5–3h 到 KEF。"]
   },
   {
-    id: "day-15", date: "10/31（六）", title: "抵達台北", summary: "行程結束",
+    id: "day-15", date: "10/31（日）", title: "抵達台北", summary: "行程結束",
     tags: [["flight","返抵"]], stay: "家", drive: "—", daylight: "—",
     places: ["tpe"], center: "tpe", zoom: 10,
     dir: null,
