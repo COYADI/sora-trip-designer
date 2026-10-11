@@ -17,14 +17,41 @@ description: >-
 - Local working tree: `aosora-trip/` (often under the Cursor project). Prefer absolute paths; do **not** call `move_agent_to_root` unless the user asks
 - Reply to the user in Traditional Chinese (zh-TW) unless they request another language
 
-## Privacy (public site)
-**Never publish personal data** on hub or trip pages (or in this skill):
-- No full names, emails, phone numbers of travelers
-- No booking / reservation / confirmation codes (hotels, cars, restaurants, flights PNR)
-- No passport / license / payment details
-- OK on the public page: hotel **names**, city nights, **shop locations** + pick/return **clock times**, restaurant **name** + meal time, airport codes + flight **numbers** if the user wants them on the itinerary (times as “check day-of”), public POI addresses
-- When the user pastes booking screenshots, extract logistics into the itinerary but **strip codes and PII** before commit/deploy
-- Do not hard-code one traveler’s private bookings as skill defaults
+## Privacy — whole repo (hard rule)
+**Scope:** every file under the git root that may be committed or already tracked — hub/trip HTML/JS/JSON, `DEPLOY.md`, `.cursor/skills/**`, comments, scratch files. Not only the trip page.
+
+**Never store or commit the traveler’s personal data:**
+- Legal / full names, nicknames used as identity, emails, personal phone numbers
+- Booking / reservation / confirmation / PNR / order IDs (hotel, car, restaurant, flight, rail)
+- Passport, license, membership IDs, payment method details, card last-4, “paid by …”
+- Home address, private URLs, personal calendar invite text, screenshots that embed the above
+- Employer-specific internal notes, employee IDs, badge numbers
+
+**OK for a public itinerary (logistics only):**
+- Hotel **brand/name**, city, night dates (no confirmation code)
+- Car **pick/return shop name + area + clock times** (prefer Google place link; **omit shop phone** unless user asks)
+- Restaurant **name + meal time + area**; party size only if useful and user is fine with it
+- Airport codes + flight **numbers** / day-of times (remind to re-check schedule)
+- Public POIs and tourist addresses
+- Workplace: prefer a **district / public landmark building** pin (e.g. 愛宕／MORIタワー). Put a company name on the public site **only if the user explicitly wants it**
+
+**When ingesting booking screenshots / sheets:** extract logistics → **strip all PII and codes** before writing files. Never paste emails or reservation IDs into HTML, JS, MD, or this skill.
+
+### Mandatory scan before every commit / push
+From repo root, search tracked + about-to-add files (adjust path). Fail the publish if anything personal matches:
+
+```text
+email-like:   @gmail @icloud @yahoo @hotmail @outlook
+ids:          預約號碼|訂編|確認番号|confirmation|予約番号|PNR|booking ref
+phones:       TEL |Phone |\+886|\+81[0-9\-]{8,}
+obvious PII:  passport|駕照|license no|credit card|信用卡
+```
+
+Also spot-check for traveler names the user has used in chat. Do **not** commit `*-preview.html`, local notes, or `_*.py` dumps that may contain paste residue.
+
+**Git history:** scrubbing the working tree does not erase old commits. If PII was already pushed, scrub files and commit; warn the user that history may still contain it (history rewrite only if they explicitly ask).
+
+Do not hard-code one person’s private bookings as skill defaults.
 
 ## Site structure
 ```
@@ -52,44 +79,42 @@ aosora-trip/
 - **Days**: `places` (markers) + `route` (Google 導航 order) + optional `highlight`
 - **Stays**: prefer **hotel keys** in `stayKeys` / stay pills when bookings exist (not only city centroids)
 - **Overview route**: precompute driving via OSRM into `PRECOMPUTED_RING_ROUTE`
-  - Include **itinerary spurs** (day loops, pick-up→stay, return-leg stops) — not only the “main highway”
+  - Include **itinerary spurs** (day loops, pick-up→stay, return-leg stops)
   - `fitBounds` = **route ∪ stay markers ∪ highlight markers**
   - Load `*-ring-route.js` via `<script>` before main logic; JSON as fetch fallback
   - Simplify dense OSRM output (RDP ~40 m)
 - **UX**: progressive enhancement; try/catch around Leaflet; never leave `.reveal` stuck at `opacity: 0`
 - **Hub**: brand-first; trip titles one line (`white-space: nowrap` where needed)
 
-## Ingest: spreadsheet + bookings (learned workflow)
-1. **Sparse sheet is a skeleton** (dates / 住 / 租車 / 早午晚). Fill recommended POIs per day; keep sheet constraints when the user clarifies them.
-2. **Booking screenshots override the sheet** for stays, airports, car pick/return, fixed dinners, office days.
-3. **Google Sheet export**: shared CSV/gviz may mojibake in consoles; if cells look wrong, use the browser view or write CSV to a UTF-8 file and `Read` it. Prefer the live sheet UI for Chinese text.
-4. **Stale tourism URLs**: verify before linking. Example — Fuji **神玉巡拜** (not 「神珠」):
-   - Guide: `https://fujiyoshida.net/course/index.php?p=course-530`
-   - Map: `https://kamitamajunpai.com/kamitamamap-cat/fujisan/`
-   - Old `…/zh_TW/highlight/kamitamajunpai_TC/…` paths often **404**
-5. **Semantic labels**: if the user separates “collection activity” vs “return-drive free stops”, do not merge them (e.g. finish a pilgrimage only in its region; “遺珠”-style days = stops **on the drive home**, not a second trip back).
-6. **Flights**: confirm airport codes (e.g. Songshan↔Haneda vs Narita). Late inbound → hotel late check-in note; outbound → checkout + transfer buffer.
-7. **Car**: record pick shop / return shop / clock times; align day timelines (checkout→pick-up, return deadline before hotel).
-8. **Work / dinner days**: office as a `P` + map pin; restaurant with time + area; commute from the night’s hotel.
+## Ingest: spreadsheet + bookings
+1. Sparse sheet = skeleton (dates / 住 / 租車 / 早午晚). Fill recommended POIs; honor user constraints.
+2. Booking screenshots override the sheet for stays, airports, car windows, fixed meals, office days — after PII strip.
+3. Sheet CSV/gviz may mojibake in terminals; use browser view or UTF-8 file + `Read` for Chinese.
+4. Verify tourism links (no stale 404 locales). Fuji **神玉巡拜** (not 「神珠」):
+   - `https://fujiyoshida.net/course/index.php?p=course-530`
+   - `https://kamitamajunpai.com/kamitamamap-cat/fujisan/`
+5. Keep user semantics (e.g. pilgrimage only in Fuji region; “遺珠” = stops on the drive home).
+6. Flights: confirm airport codes; late inbound / outbound buffers.
+7. Car: shop **names** + clock times; no reservation number; shop phone optional—default omit.
+8. Work / dinner: map pins + times; company name on public HTML only if user explicitly wants it.
 
 ## New trip / edit workflow
-1. Create or edit `aosora-trip/<trip-slug>/` — **UTF-8 only** (never UTF-16). On Windows, if an editor writes UTF-16 (`NUL` bytes), convert with Python before serving.
-2. Prefer copying structure/CSS/JS helpers from an existing trip (`iceland-2026` / `japan-2026`), then replace `P` / `days` / stays / copy.
-3. Update `routeOrder` for the real path; regenerate OSRM (`router.project-osrm.org` OK for personal use).
-4. Link from hub `index.html` (one-line title + short meta chips).
-5. Local preview: `python -m http.server` from `aosora-trip/` (MCP browser may not reach localhost).
-6. Deploy (below). Do **not** commit `*-preview.html`, compare PNGs, or `_*.py` scratch scripts unless asked.
+1. Edit `aosora-trip/<trip-slug>/` — **UTF-8 only** (never UTF-16). On Windows, convert UTF-16 dumps before serve/commit.
+2. Copy helpers from an existing trip, replace `P` / `days` / stays / copy.
+3. Regenerate OSRM when the path changes (`router.project-osrm.org` OK for personal use).
+4. Link from hub `index.html`.
+5. Local preview: `python -m http.server` from `aosora-trip/`.
+6. **Privacy scan (above)** → deploy. Do not commit previews / scratch scripts unless asked.
 
 ## Deploy
-1. Commit **only** site files (`CNAME`, `.nojekyll`, hub `index.html`, `<slug>/`) to `COYADI/sora-trip-designer` `main`
-2. Pages: branch `main` / `/ (root)`; custom domain `trip.aosora.photography`; Enforce HTTPS when DNS ready
-3. Root `CNAME` must be exactly `trip.aosora.photography`
-4. After push: `gh api repos/COYADI/sora-trip-designer/pages/builds -X POST`
-5. Verify: `https://trip.aosora.photography/<slug>/` (cert may lag)
+1. Commit **only** site files (`CNAME`, `.nojekyll`, hub `index.html`, `<slug>/`) plus skill files if the user asked to update the skill — never PII
+2. Pages: `main` / `/ (root)`; custom domain `trip.aosora.photography`
+3. Root `CNAME` exactly `trip.aosora.photography`
+4. After push: `gh api repos/COYADI/sora-trip-designer/pages/builds -X POST` (needs Pages enabled; private repos need a plan that allows Pages)
+5. Verify: `https://trip.aosora.photography/<slug>/`
 
-Windows PowerShell: `C:\Program Files\Git\bin\git.exe`, `C:\Program Files\GitHub CLI\gh.exe`  
-No bash heredocs;  
-`git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "message"`
+Windows: `C:\Program Files\Git\bin\git.exe`, `C:\Program Files\GitHub CLI\gh.exe`  
+`git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "message"` (no bash heredocs)
 
 ## GoDaddy DNS (zh-TW UI)
 **我的產品** → 網域 → **DNS** → **新增記錄**：
@@ -98,19 +123,18 @@ No bash heredocs;
 
 ## Do not
 - Retarget apex/`www` to GitHub Pages while Portfolio is live
-- Publish PII or booking confirmation codes
+- Commit **any** traveler PII anywhere in the repo
 - Use ambiguous Google search strings; use `gmaps` place names
-- Fit overview map to a simplified trunk route when spurs/stays would be cropped
-- Commit secrets (`.env`, tokens). CARTO keys are client-side — Referer-lock; don’t paste keys into chat unnecessarily
+- Crop overview bounds so spur stays disappear
+- Commit secrets (`.env`, tokens). CARTO keys are client-side — Referer-lock
 - Serve UTF-16 site files
-- Treat spreadsheet city labels as final when hotel/airport/car bookings disagree
+- Prefer spreadsheet cities over conflicting hotel/airport/car bookings
 
 ## Quick checks
+- [ ] Whole-repo privacy scan clean (no emails, names, booking codes, personal phones)
 - [ ] Hub + trip titles one line where intended
-- [ ] No emails / traveler names / reservation codes on public HTML
-- [ ] Overview line includes major drives + day loops + return-leg stops
-- [ ] Overview bounds include all stay hotels and key highlights
-- [ ] Basemap shows roads (Voyager); CARTO attribution visible
-- [ ] Google buttons open named places, not coordinate pins
-- [ ] External tourism links return 200 (not stale locale paths)
-- [ ] Pages served from `COYADI.github.io` / custom domain
+- [ ] Overview includes major drives + loops + return stops; bounds cover stays
+- [ ] Voyager basemap + CARTO attribution
+- [ ] Google buttons use place names
+- [ ] External links not 404
+- [ ] Pages live on custom domain when DNS/plan allow
