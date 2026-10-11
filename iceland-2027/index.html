@@ -76,6 +76,34 @@ html.motion-on .reveal.in {
   transform: none;
 }
 
+/* Back to hub — fixed top-left */
+.back-hub {
+  position: fixed;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(11, 15, 20, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-soft);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.back-hub:hover {
+  border-color: var(--ice-dim);
+  color: var(--ice);
+  background: rgba(16, 22, 30, 0.92);
+}
+
 /* Hero */
 .hero {
   padding: 3.75rem 0 2.5rem;
@@ -635,7 +663,7 @@ footer {
 }
 
 @media print {
-  .day-nav, .toolbar { display: none !important; }
+  .day-nav, .toolbar, .back-hub { display: none !important; }
   body { background: #fff; color: #111; }
   .card, .day { box-shadow: none; }
   .reveal { opacity: 1; transform: none; }
@@ -644,6 +672,7 @@ footer {
 
 </head>
 <body>
+<a class="back-hub" href="/">← 行程總覽</a>
 <header class="hero">
   <div class="wrap">
     <div class="kicker">AoSora · Ring Road · Late October 2027</div>
@@ -657,8 +686,7 @@ footer {
       <span class="chip">深色地圖</span>
     </div>
     <div class="toolbar">
-      <a class="btn primary" href="/">← 行程總覽</a>
-      <button class="btn" type="button" id="expandAll">全部展開</button>
+      <button class="btn primary" type="button" id="expandAll">全部展開</button>
       <button class="btn" type="button" id="collapseAll">全部收合</button>
       <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
       <a class="btn" href="https://www.road.is" target="_blank" rel="noopener">road.is</a>

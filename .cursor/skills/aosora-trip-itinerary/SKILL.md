@@ -85,7 +85,7 @@ aosora-trip/
   - Simplify dense OSRM output (RDP ~40 m)
 - **UX**: progressive enhancement; try/catch around Leaflet; never leave `.reveal` stuck at `opacity: 0`
 - **Hub**: brand-first; trip titles one line (`white-space: nowrap` where needed)
-- **Trip pages**: toolbar first control is `<a class="btn primary" href="/">← 行程總覽</a>` back to hub
+- **Trip pages**: fixed top-left `<a class="back-hub" href="/">← 行程總覽</a>` (not buried in toolbar)
 
 ## Ingest: spreadsheet + bookings
 1. Sparse sheet = skeleton (dates / 住 / 租車 / 早午晚). Fill recommended POIs; honor user constraints.
