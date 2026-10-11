@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>啤酒節中歐 11 日 · 2026/9/25–10/5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="oktoberfest-ring-route.js"></script>
+
+<style>
+:root {
+  --bg: #0b0f14;
+  --bg-elev: #121820;
+  --bg-card: #161d27;
+  --bg-soft: #1c2530;
+  --line: rgba(232, 238, 242, 0.10);
+  --line-strong: rgba(232, 238, 242, 0.18);
+  --text: #e8eef2;
+  --text-dim: #9aa8b5;
+  --muted: #6d7b88;
+  --ice: #5ec8c7;
+  --ice-dim: #2f7f82;
+  --amber: #e0a35b;
+  --danger: #e07a5f;
+  --shadow: 0 18px 50px rgba(0,0,0,.38);
+  --shadow-soft: 0 8px 28px rgba(0,0,0,.28);
+  --radius: 18px;
+  --max: 1100px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: .42s;
+  --dur-fast: .22s;
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+}
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  interpolate-size: allow-keywords;
+}
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(94,200,199,.12), transparent 50%),
+    radial-gradient(700px 400px at 90% 5%, rgba(224,163,91,.08), transparent 45%),
+    var(--bg);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ice);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+a:hover { color: #8fe0df; }
+.wrap { width: min(var(--max), calc(100% - 2rem)); margin: 0 auto; }
+
+/* Reveal — default visible; hide only after JS enables motion */
+.reveal { opacity: 1; transform: none; }
+html.motion-on .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+}
+html.motion-on .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sticky action bar (swaps out when day-nav sticks) */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2001;
+  isolation: isolate;
+  background: rgba(11,15,20,.96);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 8px 28px rgba(0,0,0,.22);
+  transition: transform .28s var(--ease), opacity .2s var(--ease);
+}
+.topbar.is-swapped {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.leaflet-container { z-index: 1; }
+.topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 0;
+}
+.topbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .45rem .85rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #061112;
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  margin-right: .15rem;
+}
+.topbar-back:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+}
+.topbar .btn { padding: .45rem .85rem; font-size: .8rem; }
+
+/* Hero */
+.hero {
+  padding: 3.75rem 0 2.5rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(22,29,39,.92), transparent 70%),
+    repeating-linear-gradient(-12deg, transparent, transparent 22px, rgba(255,255,255,.012) 22px, rgba(255,255,255,.012) 23px);
+}
+.kicker {
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ice);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeUp .8s var(--ease-out) .05s forwards;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 6.2vw, 3.9rem);
+  line-height: 1.12;
+  letter-spacing: 0.04em;
+  margin: 0 0 .9rem;
+  max-width: none; white-space: nowrap;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .12s forwards;
+}
+.hero h1 span { color: var(--ice); }
+.lead {
+  max-width: 38rem;
+  color: var(--text-dim);
+  margin: 0 0 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .22s forwards;
+}
+.chips, .toolbar {
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .32s forwards;
+}
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+.chip {
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .42rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255,255,255,.03);
+  color: var(--text-dim);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.chip:hover {
+  border-color: rgba(94,200,199,.35);
+  color: var(--text);
+  background: rgba(94,200,199,.06);
+  transform: translateY(-1px);
+}
+.toolbar { display: flex; flex-wrap: wrap; gap: .5rem; }
+.btn {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .58rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.btn:hover {
+  border-color: var(--ice-dim);
+  color: var(--ice);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+.btn:active { transform: translateY(0); }
+.btn.primary {
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  border-color: transparent;
+  color: #061112;
+}
+.btn.primary:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+  border-color: transparent;
+}
+
+/* Nav — original place under hero; sticks and replaces topbar when scrolled */
+.day-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  isolation: isolate;
+  background: rgba(11,15,20,.78);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.day-nav.scrolled {
+  background: rgba(11,15,20,.96);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.day-nav-inner {
+  display: flex;
+  gap: .35rem;
+  overflow-x: auto;
+  padding: .75rem 0;
+  scrollbar-width: thin;
+}
+.day-nav a {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .42rem .7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition:
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.day-nav a:hover {
+  color: var(--ice);
+  background: rgba(94,200,199,.08);
+  border-color: rgba(94,200,199,.18);
+}
+.day-nav a.active {
+  color: #061112;
+  background: var(--ice);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+section { padding: 2.6rem 0; }
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  letter-spacing: 0.03em;
+  margin: 0 0 .45rem;
+  font-weight: 600;
+}
+.section-sub { color: var(--muted); margin: 0 0 1.4rem; max-width: 42rem; line-height: 1.7; }
+
+.grid-2 { display: grid; gap: 1rem; grid-template-columns: 1.1fr .9fr; }
+.grid-3 { display: grid; gap: .8rem; grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.25rem;
+  box-shadow: var(--shadow);
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.card:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 55px rgba(0,0,0,.42);
+}
+.card h3 {
+  margin: 0 0 .55rem;
+  font-size: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.card p, .card li { color: var(--text-dim); font-size: .92rem; }
+.card ul { margin: 0; padding-left: 1.1rem; }
+
+#overviewMap {
+  height: 420px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+#overviewMap:hover {
+  border-color: rgba(94,200,199,.28);
+  box-shadow: var(--shadow-soft);
+}
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem 1rem;
+  margin-top: .85rem;
+  color: var(--muted);
+  font-size: .8rem;
+}
+.map-legend i {
+  display: inline-block;
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  margin-right: .35rem;
+  vertical-align: middle;
+}
+
+.stay-track {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .55rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 900px) { .stay-track { grid-template-columns: repeat(2, 1fr); } }
+.stay-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: .9rem;
+  color: inherit;
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.stay-pill:hover {
+  border-color: rgba(94,200,199,.4);
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, rgba(94,200,199,.06), var(--bg-card));
+  box-shadow: var(--shadow-soft);
+}
+.stay-pill .nights {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ice);
+}
+.stay-pill strong { display: block; margin: .25rem 0; font-size: .95rem; font-weight: 600; }
+.stay-pill span { font-size: .78rem; color: var(--muted); }
+
+table.route { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.route th, table.route td {
+  text-align: left;
+  padding: .75rem .5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  transition: background var(--dur-fast) var(--ease);
+}
+table.route tbody tr:hover td { background: rgba(255,255,255,.02); }
+table.route th {
+  color: var(--muted);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+table.route td { color: var(--text-dim); }
+table.route td:first-child { color: var(--text); font-weight: 600; }
+
+/* Day cards + animated details */
+.day {
+  scroll-margin-top: 4.2rem;
+  margin-bottom: 1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  overflow: clip;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.day:hover {
+  border-color: rgba(232,238,242,.16);
+  box-shadow: var(--shadow-soft);
+}
+.day[open] {
+  border-color: rgba(94,200,199,.38);
+  box-shadow: 0 16px 40px rgba(0,0,0,.32);
+}
+.day::details-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    height var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    content-visibility var(--dur) allow-discrete;
+}
+.day[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+.day-summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.05rem 1.2rem;
+  transition: background var(--dur) var(--ease);
+}
+.day-summary:hover { background: rgba(255,255,255,.015); }
+.day-summary::-webkit-details-marker { display: none; }
+.day-num {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--ice);
+  transition:
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.day:hover .day-num { transform: scale(1.04); }
+.day[open] .day-num {
+  box-shadow: 0 0 0 4px rgba(94,200,199,.12);
+}
+.day.highlight .day-num {
+  background: linear-gradient(145deg, #1f5c62, #2a8a88);
+  color: #e9fffe;
+  border-color: transparent;
+}
+.day-summary h2 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 600;
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}
+.day-summary p { margin: .25rem 0 0; color: var(--muted); font-size: .85rem; }
+.day-tags { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: flex-end; }
+.tag {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .28rem .55rem;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tag.stay { color: var(--ice); border-color: rgba(94,200,199,.25); }
+.tag.drive { color: var(--amber); border-color: rgba(224,163,91,.25); }
+.tag.flight { color: #b7c4d0; }
+
+.day-body { padding: 0 1.2rem 1.3rem; border-top: 1px solid var(--line); }
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .55rem;
+  margin-top: 1rem;
+}
+@media (max-width: 640px) {
+  .hero h1 { white-space: normal; }
+  .stat-row { grid-template-columns: 1fr; }
+  .day-summary { grid-template-columns: auto 1fr; }
+  .day-tags { grid-column: 1 / -1; justify-content: flex-start; }
+}
+.stat {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .75rem .85rem;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.stat:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-1px);
+}
+.stat b {
+  display: block;
+  font-size: .66rem;
+  color: var(--muted);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: .2rem;
+}
+.stat span { font-weight: 600; font-size: .88rem; color: var(--text); }
+
+.timeline { position: relative; margin: 1.2rem 0 0; padding-left: 1.15rem; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: .32rem;
+  top: .25rem;
+  bottom: .25rem;
+  width: 2px;
+  background: linear-gradient(var(--ice-dim), transparent);
+}
+.tl-item {
+  position: relative;
+  padding: 0 0 1rem .95rem;
+}
+.day[open] .tl-item {
+  animation: fadeSlide .55s var(--ease-out) both;
+}
+.day[open] .tl-item:nth-child(1) { animation-delay: .05s; }
+.day[open] .tl-item:nth-child(2) { animation-delay: .12s; }
+.day[open] .tl-item:nth-child(3) { animation-delay: .19s; }
+.day[open] .tl-item:nth-child(4) { animation-delay: .26s; }
+.day[open] .tl-item:nth-child(5) { animation-delay: .33s; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: -.92rem;
+  top: .42rem;
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--ice);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.tl-item:hover::before {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(94,200,199,.15);
+}
+.tl-item .time { font-size: .72rem; font-weight: 700; color: var(--ice); letter-spacing: .04em; }
+.tl-item strong { display: block; margin: .12rem 0; font-size: .95rem; font-weight: 600; }
+.tl-item p { margin: 0; color: var(--text-dim); font-size: .9rem; }
+
+.day-map {
+  height: 280px;
+  margin-top: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease);
+}
+.map-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .8rem; }
+
+.note {
+  margin-top: .9rem;
+  padding: .8rem .95rem;
+  border-radius: 12px;
+  background: rgba(94,200,199,.08);
+  border-left: 3px solid var(--ice);
+  font-size: .88rem;
+  color: var(--text-dim);
+  transition: background var(--dur-fast) var(--ease);
+}
+.note.warn {
+  background: rgba(224,122,95,.08);
+  border-left-color: var(--danger);
+}
+
+.poi-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .85rem;
+}
+.poi {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .3rem .65rem;
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.poi:hover {
+  color: var(--ice);
+  border-color: rgba(94,200,199,.35);
+  background: rgba(94,200,199,.08);
+  transform: translateY(-1px);
+}
+
+footer {
+  padding: 2.6rem 0 3.6rem;
+  color: var(--muted);
+  font-size: .82rem;
+  border-top: 1px solid var(--line);
+}
+
+.leaflet-container { background: #0a0e13; font: 12px/1.5 var(--font-sans); }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-soft) !important;
+  color: var(--ice) !important;
+}
+.leaflet-bar { border: 1px solid var(--line) !important; box-shadow: none !important; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow);
+}
+.leaflet-popup-content { margin: .7rem .85rem; font-size: .85rem; }
+.leaflet-popup-content strong { color: var(--ice); font-family: var(--font-serif); }
+.pin-label {
+  background: rgba(22,29,39,.92);
+  border: 1px solid rgba(94,200,199,.45);
+  color: var(--text);
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .kicker, .hero h1, .lead, .chips, .toolbar { opacity: 1; animation: none; }
+  .day::details-content { transition: none; }
+  .tl-item { opacity: 1 !important; transform: none !important; }
+}
+
+@media print {
+  .topbar, .day-nav { display: none !important; }
+  body { background: #fff; color: #111; }
+  .card, .day { box-shadow: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+
+</head>
+
+<body>
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar-actions">
+      <a class="topbar-back" href="/">← 行程總覽</a>
+      <button class="btn primary" type="button" id="expandAll">全部展開</button>
+      <button class="btn" type="button" id="collapseAll">全部收合</button>
+      <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
+      <a class="btn" href="https://www.oktoberfest.de/en" target="_blank" rel="noopener">Oktoberfest 官網</a>
+      <a class="btn" href="https://www.bahn.com/" target="_blank" rel="noopener">DB / 火車</a>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">AoSora · Central Europe · Sep–Oct 2026</div>
+    <h1>啤酒節<span>中歐</span>十一日</h1>
+    <p class="lead">2026/9/25–10/5 · 布拉格 → 慕尼黑 Oktoberfest → 維也納 · 火車串聯 · 住宿城市級（飯店名待補）。</p>
+    <div class="chips">
+      <span class="chip">11 天</span>
+      <span class="chip">PRG → CI64 VIE</span>
+      <span class="chip">布拉格 3 晚</span>
+      <span class="chip">慕尼黑 3 晚</span>
+      <span class="chip">維也納 4 晚</span>
+      <span class="chip">Oktoberfest</span>
+      <span class="chip">國王湖</span>
+    </div>
+  </div>
+</header>
+
+<nav class="day-nav"><div class="wrap day-nav-inner" id="dayNav"></div></nav>
+
+<main>
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">行程總覽地圖</h2>
+    <p class="section-sub">青＝住宿城市、琥珀＝景點、珊瑚＝啤酒節／湖／經典地標。路線含庫倫洛夫往返、慕尼黑↔國王湖、維也納美泉／美景支線。</p>
+    <div id="overviewMap"></div>
+    <div class="map-legend">
+      <span><i style="background:#5ec8c7"></i>住宿 overnight</span>
+      <span><i style="background:#e0a35b"></i>重點景點</span>
+      <span><i style="background:#e07a5f"></i>啤酒節／湖／經典</span>
+      <span>底圖：CARTO Voyager · OSRM 預先計算</span>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">住宿（城市）</h2>
+    <p class="section-sub">目前僅定城市與晚數；飯店名待補。</p>
+    <div class="stay-track">
+      <a class="stay-pill" href="#day-1"><div class="nights">3 晚</div><strong>布拉格</strong><span>9/25–27</span></a>
+      <a class="stay-pill" href="#day-4"><div class="nights">3 晚</div><strong>慕尼黑</strong><span>9/28–30</span></a>
+      <a class="stay-pill" href="#day-7"><div class="nights">4 晚</div><strong>維也納</strong><span>10/1–4</span></a>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>核心體驗</h3>
+        <ul>
+          <li>布拉格舊城／城堡＋庫倫洛夫日歸</li>
+          <li>慕尼黑 Oktoberfest 主日＋Theresienwiese</li>
+          <li>國王湖 Bayern-Ticket 日歸</li>
+          <li>維也納美泉、美景宮《吻》、霍夫堡／藝術史</li>
+          <li>火車：布拉格→慕尼黑→維也納</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>移動對照</h3>
+        <ul>
+          <li>9/25 抵達 PRG 06:45</li>
+          <li>9/28 Praha hl.n. → München Hbf（約 5.5–6h）</li>
+          <li>10/1 München Hbf → Wien Hbf Railjet（約 4h）</li>
+          <li>10/5 VIE：建議 09:00 前到；CI64 11:25</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">據點移動</h2>
+    <p class="section-sub">以火車／日票為主；距離時間僅供參考。</p>
+    <div class="card" style="overflow-x:auto">
+      <table class="route">
+        <thead><tr><th>路段</th><th>方式</th><th>約時</th><th>當天</th></tr></thead>
+        <tbody>
+          <tr><td>PRG → 布拉格舊城</td><td>機場交通</td><td>約 30–45 分</td><td>9/25</td></tr>
+          <tr><td>布拉格 ↔ 庫倫洛夫</td><td>巴士／火車</td><td>單程約 2.5–3h</td><td>9/26</td></tr>
+          <tr><td>Praha hl.n. → München Hbf</td><td>RegioJet／DB</td><td>約 5.5–6h</td><td>9/28</td></tr>
+          <tr><td>慕尼黑 ↔ 國王湖</td><td>Bayern-Ticket</td><td>單程約 2–2.5h</td><td>9/30</td></tr>
+          <tr><td>München Hbf → Wien Hbf</td><td>Railjet</td><td>約 4h</td><td>10/1</td></tr>
+          <tr><td>維也納市區 → VIE</td><td>CAT／ÖBB／計程車</td><td>約 30–50 分</td><td>10/5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="stay">
+  <div class="wrap">
+    <h2 class="section-title">住宿 overnight</h2>
+    <p class="section-sub">城市針腳；飯店名待補後可換成實際店名。</p>
+    <div class="grid-3" id="stayCards"></div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">逐日行程</h2>
+    <p class="section-sub">住宿為城市級；景點與咖啡／店舖為推薦填充。</p>
+    <div id="days"></div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">自由清單・想去／想買</h2>
+    <p class="section-sub">未綁死日程；有空再插。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>布拉格 · 店舖</h3>
+        <ul>
+          <li>THE DESIGN</li>
+          <li>CZECHDESIGN</li>
+          <li>MANUFAKTURA（可詢問退稅／duty-free）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>布拉格 · 咖啡／甜點</h3>
+        <ul>
+          <li>Eska（Karlín）</li>
+          <li>Cafe Louvre</li>
+          <li>Cafe Imperial</li>
+          <li>Terasa U Prince</li>
+          <li>artic Bakehouse</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>慕尼黑 · 想去／店舖</h3>
+        <ul>
+          <li>新天鵝堡（Neuschwanstein）— 時間夠再排</li>
+          <li>BMW Museum</li>
+          <li>Kustermann</li>
+          <li>Manufactum</li>
+          <li>F. Radspieler</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>維也納 · 店舖</h3>
+        <ul>
+          <li>J. &amp; L. Lobmeyr</li>
+          <li>Vinothek St. Stephan</li>
+          <li>Julius Meinl am Graben</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">裝備與每日檢查</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>必裝</h3>
+        <ul>
+          <li>舒適步行鞋（城堡／湖岸／啤酒節）</li>
+          <li>薄外套：9 月底中歐早晚涼</li>
+          <li>悠遊／交通卡或預載票 App（PID、MVV、Wiener Linien）</li>
+          <li>現金小額（捷克克朗／歐元零錢）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出發前</h3>
+        <ul>
+          <li>Oktoberfest 帳篷訂位</li>
+          <li>長程火車座位預留</li>
+          <li>Bayern-Ticket／國王湖船班</li>
+          <li>回程 CI64：09:00 前到 VIE</li>
+          <li>10/3 德國統一日店休／交通備註</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">住宿城市級 · 飯店名待補 · 地圖 Leaflet + CARTO Voyager · 隱私：不含個人訂房資訊與聯絡方式。</div>
+</footer>
+
+<script>
+const P = {
+  prg: { zh: "布拉格機場", orig: "PRG", lat: 50.1008, lng: 14.26, gmaps: "Vaclav Havel Airport Prague" },
+  pragueStay: { zh: "布拉格（市區住宿）", orig: "Prague Old Town", lat: 50.0875, lng: 14.4214, gmaps: "Old Town Square Prague" },
+  prahaHln: { zh: "布拉格中央車站", orig: "Praha hl.n.", lat: 50.0832, lng: 14.435, gmaps: "Praha hlavni nadrazi" },
+  oldTown: { zh: "舊城廣場", orig: "Old Town Square", lat: 50.0875, lng: 14.4214, gmaps: "Old Town Square Prague" },
+  astro: { zh: "天文鐘", orig: "Astronomical Clock", lat: 50.087, lng: 14.4208, gmaps: "Prague Astronomical Clock" },
+  charles: { zh: "查理大橋", orig: "Charles Bridge", lat: 50.0865, lng: 14.4114, gmaps: "Charles Bridge" },
+  castle: { zh: "布拉格城堡", orig: "Prague Castle", lat: 50.0911, lng: 14.4016, gmaps: "Prague Castle" },
+  vitus: { zh: "聖維特大教堂", orig: "St. Vitus Cathedral", lat: 50.0909, lng: 14.4005, gmaps: "St. Vitus Cathedral Prague" },
+  golden: { zh: "黃金小巷", orig: "Golden Lane", lat: 50.092, lng: 14.4045, gmaps: "Golden Lane Prague" },
+  mala: { zh: "小區（馬拉斯特拉納）", orig: "Mala Strana", lat: 50.0878, lng: 14.4037, gmaps: "Mala Strana Prague" },
+  ck: { zh: "庫倫洛夫", orig: "Cesky Krumlov", lat: 48.8127, lng: 14.3175, gmaps: "Cesky Krumlov" },
+  munichStay: { zh: "慕尼黑（市區住宿）", orig: "Munich Center", lat: 48.1374, lng: 11.5755, gmaps: "Marienplatz Munich" },
+  munichHbf: { zh: "慕尼黑中央車站", orig: "Munchen Hbf", lat: 48.1402, lng: 11.5583, gmaps: "Munchen Hauptbahnhof" },
+  marien: { zh: "瑪利亞廣場", orig: "Marienplatz", lat: 48.1374, lng: 11.5755, gmaps: "Marienplatz Munich" },
+  oktoberfest: { zh: "啤酒節會場", orig: "Theresienwiese", lat: 48.1319, lng: 11.5497, gmaps: "Theresienwiese Munich" },
+  viktualien: { zh: "谷物市場", orig: "Viktualienmarkt", lat: 48.1351, lng: 11.5762, gmaps: "Viktualienmarkt Munich" },
+  residenz: { zh: "王宮 Residenz", orig: "Munich Residenz", lat: 48.1405, lng: 11.5789, gmaps: "Munich Residenz" },
+  konigssee: { zh: "國王湖", orig: "Konigssee", lat: 47.5914, lng: 12.9875, gmaps: "Konigssee Berchtesgaden" },
+  barth: { zh: "聖巴多羅買教堂", orig: "St. Bartholoma", lat: 47.5547, lng: 12.9728, gmaps: "St. Bartholoma Konigssee" },
+  obersee: { zh: "上湖 Obersee", orig: "Obersee", lat: 47.528, lng: 12.968, gmaps: "Obersee Konigssee" },
+  berch: { zh: "貝希特斯加登站", orig: "Berchtesgaden Hbf", lat: 47.629, lng: 13.001, gmaps: "Berchtesgaden Hauptbahnhof" },
+  neuschwanstein: { zh: "新天鵝堡", orig: "Neuschwanstein", lat: 47.5576, lng: 10.7498, gmaps: "Neuschwanstein Castle" },
+  bmw: { zh: "寶馬博物館", orig: "BMW Museum", lat: 48.1767, lng: 11.559, gmaps: "BMW Museum Munich" },
+  viennaStay: { zh: "維也納（市區住宿）", orig: "Vienna Center", lat: 48.2085, lng: 16.3731, gmaps: "Stephansplatz Vienna" },
+  wienHbf: { zh: "維也納中央車站", orig: "Wien Hbf", lat: 48.1851, lng: 16.3785, gmaps: "Wien Hauptbahnhof" },
+  stephans: { zh: "史蒂芬大教堂", orig: "Stephansdom", lat: 48.2085, lng: 16.3731, gmaps: "St. Stephens Cathedral Vienna" },
+  schoenbrunn: { zh: "美泉宮", orig: "Schonbrunn", lat: 48.1845, lng: 16.3119, gmaps: "Schonbrunn Palace" },
+  belvedere: { zh: "美景宮", orig: "Belvedere", lat: 48.1915, lng: 16.3808, gmaps: "Belvedere Palace Vienna" },
+  hofburg: { zh: "霍夫堡", orig: "Hofburg", lat: 48.2056, lng: 16.3658, gmaps: "Hofburg Palace Vienna" },
+  khM: { zh: "藝術史博物館", orig: "Kunsthistorisches Museum", lat: 48.2038, lng: 16.3614, gmaps: "Kunsthistorisches Museum Vienna" },
+  mq: { zh: "博物館區", orig: "MuseumsQuartier", lat: 48.2035, lng: 16.3589, gmaps: "MuseumsQuartier Vienna" },
+  naschmarkt: { zh: "納許市場", orig: "Naschmarkt", lat: 48.1986, lng: 16.3635, gmaps: "Naschmarkt Vienna" },
+  prater: { zh: "普拉特摩天輪", orig: "Wiener Riesenrad", lat: 48.2166, lng: 16.3956, gmaps: "Wiener Riesenrad" },
+  vie: { zh: "維也納機場", orig: "VIE", lat: 48.1103, lng: 16.5697, gmaps: "Vienna International Airport" },
+  cafeLouvre: { zh: "羅浮咖啡", orig: "Cafe Louvre", lat: 50.0817, lng: 14.4195, gmaps: "Cafe Louvre Prague" },
+  cafeImperial: { zh: "帝國咖啡館", orig: "Cafe Imperial", lat: 50.091, lng: 14.4325, gmaps: "Cafe Imperial Prague" },
+  eska: { zh: "Eska Karlin", orig: "Eska", lat: 50.0928, lng: 14.4515, gmaps: "Eska Karlin Prague" },
+  lobmeyr: { zh: "Lobmeyr", orig: "J. and L. Lobmeyr", lat: 48.2078, lng: 16.3695, gmaps: "J. and L. Lobmeyr Vienna" },
+  meinl: { zh: "Julius Meinl am Graben", orig: "Julius Meinl", lat: 48.209, lng: 16.3685, gmaps: "Julius Meinl am Graben" },
+};
+
+function placeLabel(p) { return `${p.zh} · ${p.orig}`; }
+function placeShort(p) { return p.zh; }
+function mapsName(p) { return p.gmaps || p.orig || p.zh; }
+function mapsPlaceUrl(p) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsName(p))}`;
+}
+function mapsDirUrl(keys) {
+  const pts = (keys || []).map(k => P[k]).filter(Boolean);
+  if (pts.length < 2) return null;
+  const origin = encodeURIComponent(mapsName(pts[0]));
+  const destination = encodeURIComponent(mapsName(pts[pts.length - 1]));
+  const via = pts.slice(1, -1).slice(0, 9).map(p => encodeURIComponent(mapsName(p)));
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=transit`;
+  if (via.length) url += `&waypoints=${via.join("%7C")}`;
+  return url;
+}
+
+const stays = [
+  { key: "pragueStay", nights: "3 晚", tip: "9/25–27 · 飯店名待補" },
+  { key: "munichStay", nights: "3 晚", tip: "9/28–30 · 飯店名待補" },
+  { key: "viennaStay", nights: "4 晚", tip: "10/1–4 · 飯店名待補" }
+];
+
+const days = [
+  {
+    id: "day-1", date: "9/25（五）", title: "抵達布拉格・舊城日落", summary: "PRG 06:45 落地 → 舊城廣場／天文鐘 → 查理大橋日落",
+    tags: [["stay","布拉格"],["flight","PRG"]], stay: "布拉格（市區）· 飯店名待補",
+    drive: "機場→舊城約 30–45 分", daylight: "約 12h", highlight: true,
+    places: ["prg","pragueStay","oldTown","astro","charles"], route: ["prg","oldTown","charles"],
+    center: "oldTown", zoom: 14,
+    timeline: [
+      { time: "06:45", title: "抵達布拉格機場 PRG", desc: "入境後前往市區；可先寄行李再出遊。" },
+      { time: "午前–午", title: "舊城廣場・天文鐘", desc: "廣場散步、整點天文鐘；咖啡休息補眠。" },
+      { time: "傍晚", title: "查理大橋日落", desc: "預留黃金時段過橋；人潮多可改側道／橋頭取景。" },
+      { time: "晚", title: "入住布拉格", desc: "市區住宿（飯店名待補）。" }
+    ],
+    notes: ["班機時刻以當日為準","住宿：布拉格市區 · 飯店名待補"]
+  },
+  {
+    id: "day-2", date: "9/26（六）", title: "庫倫洛夫一日", summary: "Cesky Krumlov 日歸；晚回布拉格",
+    tags: [["stay","布拉格"],["drive","日歸"]], stay: "布拉格（市區）· 飯店名待補",
+    drive: "布拉格↔庫倫洛夫約 2.5–3h（單程）", daylight: "約 12h", highlight: true,
+    places: ["pragueStay","ck"], route: ["pragueStay","ck","pragueStay"],
+    center: "ck", zoom: 14,
+    timeline: [
+      { time: "早", title: "出發庫倫洛夫", desc: "巴士／自助；盡量早到避開人潮。" },
+      { time: "整天", title: "城堡・舊城河彎", desc: "城堡門票可涵蓋兩日參觀時段，依票種確認。" },
+      { time: "晚", title: "回布拉格入住", desc: "同飯店續住。" }
+    ],
+    notes: ["城堡票可能可跨兩日使用，現場／官網再確認","住宿：布拉格續住 · 飯店名待補"]
+  },
+  {
+    id: "day-3", date: "9/27（日）", title: "城堡區・小區", summary: "布拉格城堡、聖維特、黃金小巷、馬拉斯特拉納",
+    tags: [["stay","布拉格"],["drive","步行／電車"]], stay: "布拉格（市區）· 飯店名待補",
+    drive: "市區步行／tram", daylight: "約 12h", highlight: true,
+    places: ["castle","vitus","golden","mala","pragueStay"], route: ["castle","vitus","golden","mala"],
+    center: "castle", zoom: 15,
+    timeline: [
+      { time: "早", title: "布拉格城堡區", desc: "聖維特大教堂、城堡庭院；彈性節奏。" },
+      { time: "午前", title: "黃金小巷", desc: "窄巷拍照；可併城堡套票。" },
+      { time: "午後", title: "小區（馬拉斯特拉納）", desc: "下山散步、咖啡；可回舊城。" },
+      { time: "晚", title: "布拉格最後一晚", desc: "隔日轉慕尼黑；整理行李。" }
+    ],
+    notes: ["行程彈性，可插咖啡／伴手禮","住宿：布拉格續住 · 飯店名待補"]
+  },
+  {
+    id: "day-4", date: "9/28（一）", title: "布拉格 → 慕尼黑", summary: "Praha hl.n. → München Hbf（RegioJet／DB 約 5.5–6h）→ 瑪利亞廣場 → 傍晚 Theresienwiese 探路",
+    tags: [["stay","慕尼黑"],["drive","火車"]], stay: "慕尼黑（市區）· 飯店名待補",
+    drive: "火車約 5.5–6h", daylight: "約 12h", highlight: true,
+    places: ["prahaHln","munichHbf","munichStay","marien","oktoberfest"],
+    route: ["prahaHln","munichHbf","marien","oktoberfest"],
+    center: "marien", zoom: 13,
+    timeline: [
+      { time: "上午", title: "布拉格中央站出發", desc: "RegioJet／DB 往慕尼黑；預留到站時間。" },
+      { time: "午後", title: "慕尼黑 Hbf 抵達", desc: "入住市區（飯店名待補）；行李放下。" },
+      { time: "傍晚", title: "瑪利亞廣場", desc: "新舊市政廳、市中心散步。" },
+      { time: "晚", title: "Theresienwiese 探路", desc: "啤酒節會場外圍熟悉動線；正式進帳篷留明天。" }
+    ],
+    notes: ["車次／班表以當日為準","住宿：慕尼黑市區 · 飯店名待補"]
+  },
+  {
+    id: "day-5", date: "9/29（二）", title: "Oktoberfest 主日", summary: "帳篷為主；午後 Viktualienmarkt／Marienplatz／Residenz 再進帳篷",
+    tags: [["stay","慕尼黑"],["drive","步行／U-Bahn"]], stay: "慕尼黑（市區）· 飯店名待補",
+    drive: "市區", daylight: "約 12h", highlight: true,
+    places: ["oktoberfest","viktualien","marien","residenz","munichStay"],
+    route: ["marien","viktualien","residenz","oktoberfest"],
+    center: "oktoberfest", zoom: 14,
+    timeline: [
+      { time: "午前后", title: "啤酒節帳篷", desc: "座位建議事先預約；無訂位則早到拼長桌。" },
+      { time: "午後", title: "谷物市場・廣場・王宮", desc: "喘口氣、散步；視體力回帳篷。" },
+      { time: "晚", title: "再進帳篷／市區晚餐", desc: "同飯店續住。" }
+    ],
+    notes: ["帳篷座位請提前預約","住宿：慕尼黑續住 · 飯店名待補"]
+  },
+  {
+    id: "day-6", date: "9/30（三）", title: "國王湖一日", summary: "Bayern-Ticket 日歸：船、聖巴多羅買、Obersee；晚回慕尼黑",
+    tags: [["stay","慕尼黑"],["drive","Bayern-Ticket"]], stay: "慕尼黑（市區）· 飯店名待補",
+    drive: "慕尼黑↔國王湖約 2–2.5h（單程）", daylight: "約 11.5h", highlight: true,
+    places: ["munichStay","berch","konigssee","barth","obersee"],
+    route: ["munichHbf","berch","konigssee"],
+    center: "konigssee", zoom: 12,
+    timeline: [
+      { time: "早", title: "Bayern-Ticket 南下", desc: "往 Berchtesgaden／Königssee；票種涵蓋多人更划算。" },
+      { time: "午前–午", title: "國王湖遊船", desc: "聖巴多羅買教堂；有餘力再往 Obersee。" },
+      { time: "晚", title: "回慕尼黑同飯店", desc: "隔日轉維也納；早點休息。" }
+    ],
+    notes: ["Bayern-Ticket 時段／人數以當日規則為準","住宿：慕尼黑續住 · 飯店名待補"]
+  },
+  {
+    id: "day-7", date: "10/1（四）", title: "慕尼黑 → 維也納", summary: "München Hbf → Wien Hbf Railjet 約 4h；史蒂芬大教堂、咖啡館",
+    tags: [["stay","維也納"],["drive","Railjet"]], stay: "維也納（市區）· 飯店名待補",
+    drive: "Railjet 約 4h", daylight: "約 11.5h", highlight: true,
+    places: ["munichHbf","wienHbf","viennaStay","stephans"],
+    route: ["munichHbf","wienHbf","stephans"],
+    center: "stephans", zoom: 14,
+    timeline: [
+      { time: "上午", title: "慕尼黑 Hbf 出發", desc: "Railjet 往 Wien Hbf。" },
+      { time: "午後", title: "抵達維也納", desc: "入住市區（飯店名待補）。" },
+      { time: "傍晚", title: "史蒂芬大教堂・咖啡館", desc: "市中心散步，適應節奏。" }
+    ],
+    notes: ["車次以當日為準","住宿：維也納市區 · 飯店名待補"]
+  },
+  {
+    id: "day-8", date: "10/2（五）", title: "美泉・美景・環城大道", summary: "Schönbrunn、Belvedere（克林姆《吻》）、Ringstrasse",
+    tags: [["stay","維也納"],["drive","地鐵／電車"]], stay: "維也納（市區）· 飯店名待補",
+    drive: "市區地鐵／tram", daylight: "約 11.5h", highlight: true,
+    places: ["schoenbrunn","belvedere","viennaStay"],
+    route: ["viennaStay","schoenbrunn","belvedere","viennaStay"],
+    center: "schoenbrunn", zoom: 12,
+    timeline: [
+      { time: "早–午", title: "美泉宮", desc: "花園／宮殿依票種；預留步行量。" },
+      { time: "午後", title: "美景宮", desc: "上宮看克林姆《吻》等收藏。" },
+      { time: "傍晚", title: "環城大道", desc: "Ringstrasse 電車或步行一段。" }
+    ],
+    notes: ["博物館票／時段可預購","住宿：維也納續住 · 飯店名待補"]
+  },
+  {
+    id: "day-9", date: "10/3（六）", title: "霍夫堡・藝術史・MQ", summary: "Hofburg、Kunsthistorisches、博物館區、Naschmarkt；德國統一日留意慕尼黑／德境動態",
+    tags: [["stay","維也納"],["drive","步行"]], stay: "維也納（市區）· 飯店名待補",
+    drive: "市區步行", daylight: "約 11h", highlight: true,
+    places: ["hofburg","khM","mq","naschmarkt","viennaStay"],
+    route: ["hofburg","khM","mq","naschmarkt"],
+    center: "hofburg", zoom: 14,
+    timeline: [
+      { time: "上午", title: "霍夫堡", desc: "皇宮區外觀／展覽依興趣。" },
+      { time: "午", title: "藝術史博物館", desc: "與 MQ 博物館區相鄰，可串走。" },
+      { time: "午後", title: "納許市場", desc: "小吃與散步。" },
+      { time: "備註", title: "德國統一日", desc: "今日為德國國慶；若行程仍牽涉德境交通／店休，多留彈性（人在維也納影響較小）。" }
+    ],
+    notes: ["10/3 德國統一日：德境可能店休或人潮","住宿：維也納續住 · 飯店名待補"]
+  },
+  {
+    id: "day-10", date: "10/4（日）", title: "深挖維也納或一日遊", summary: "普拉特／購物／咖啡，或 Wachau／Bratislava／Salzburg 日歸",
+    tags: [["stay","維也納"],["drive","彈性"]], stay: "維也納（市區）· 飯店名待補",
+    drive: "市區或一日遊火車", daylight: "約 11h",
+    places: ["prater","viennaStay","stephans"],
+    route: ["viennaStay","prater"],
+    center: "prater", zoom: 13,
+    timeline: [
+      { time: "方案 A", title: "深挖維也納", desc: "普拉特摩天輪、購物、咖啡館補遺。" },
+      { time: "方案 B", title: "一日遊", desc: "Wachau 河谷／Bratislava／Salzburg 擇一；早出晚歸。" },
+      { time: "晚", title: "整理行李", desc: "隔日早赴機場。" }
+    ],
+    notes: ["一日遊請預留回程緩衝","住宿：維也納續住 · 飯店名待補"]
+  },
+  {
+    id: "day-11", date: "10/5（一）", title: "退房・VIE 離境", summary: "退房 → 維也納機場；建議 09:00 前到；CI64 11:25",
+    tags: [["stay","離境"],["flight","CI64"]], stay: "—",
+    drive: "市區→VIE 約 30–50 分", daylight: "—",
+    places: ["viennaStay","vie"], route: ["viennaStay","vie"],
+    center: "vie", zoom: 11,
+    timeline: [
+      { time: "早", title: "退房出發", desc: "市區前往 VIE；建議 09:00 前到機場。" },
+      { time: "11:25", title: "CI64 起飛", desc: "華航；時刻以當日班表為準。" }
+    ],
+    notes: ["班機：CI64（10/5 11:25）","機場建議 09:00 前抵達"]
+  }
+];
+
+
+const darkTiles = (map) => {
+  const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_4hbr_1_36eb6f469b628a5a8d5c116b", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 20
+  });
+  base.addTo(map);
+  return base;
+};
+function circleIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #e8eef2;box-shadow:0 0 0 4px rgba(0,0,0,.35)"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -8]
+  });
+}
+function labelIcon(text, color) {
+  return L.divIcon({
+    className: "",
+    html: `<div class="pin-label" style="border-color:${color}">${text}</div>`,
+    iconSize: [0, 0], iconAnchor: [-8, 10]
+  });
+}
+
+const stayKeys = ["pragueStay","munichStay","viennaStay"];
+const highlightKeys = ["oldTown","charles","ck","castle","oktoberfest","konigssee","stephans","schoenbrunn","belvedere","hofburg"];
+const specialKeys = ["oktoberfest","charles","konigssee","schoenbrunn"];
+const routeOrder = ["pragueStay","ck","pragueStay","munichStay","konigssee","munichStay","viennaStay","schoenbrunn","belvedere","viennaStay"];
+const latlngs = routeOrder.map(k => [P[k].lat, P[k].lng]);
+let overviewMap = null;
+const stayInfo = {
+  pragueStay: "9/25–27 · 布拉格 · 飯店名待補",
+  munichStay: "9/28–30 · 慕尼黑 · 飯店名待補",
+  viennaStay: "10/1–4 · 維也納 · 飯店名待補"
+};
+
+function initOverviewMap() {
+  if (typeof L === "undefined") {
+    const el = document.getElementById("overviewMap");
+    if (el) el.innerHTML = '<div style="display:grid;place-items:center;height:100%;color:var(--muted);padding:1rem;text-align:center">地圖載入失敗</div>';
+    return null;
+  }
+  const map = L.map("overviewMap", { scrollWheelZoom: true, zoomControl: true });
+  darkTiles(map);
+  stayKeys.forEach(k => {
+    const p = P[k];
+    L.marker([p.lat, p.lng], { icon: circleIcon("#5ec8c7") })
+      .addTo(map)
+      .bindPopup(`<strong>${placeLabel(p)}</strong><br>${stayInfo[k] || "住宿"}`);
+    L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), "#5ec8c7"), interactive: false }).addTo(map);
+  });
+  highlightKeys.forEach(k => {
+    const p = P[k];
+    if (!p) return;
+    const color = specialKeys.includes(k) ? "#e07a5f" : "#e0a35b";
+    L.marker([p.lat, p.lng], { icon: circleIcon(color) })
+      .addTo(map)
+      .bindPopup(`<strong>${placeLabel(p)}</strong>`);
+  });
+  map.fitBounds(L.latLngBounds(latlngs).pad(0.18));
+  return map;
+}
+try { overviewMap = initOverviewMap(); } catch (e) { overviewMap = null; }
+
+async function loadPrecomputedRingRoute() {
+  if (Array.isArray(window.PRECOMPUTED_RING_ROUTE) && window.PRECOMPUTED_RING_ROUTE.length > 2) return window.PRECOMPUTED_RING_ROUTE;
+  try {
+    const res = await fetch("oktoberfest-ring-route.json");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) { return null; }
+}
+async function fetchOsrmRoute(points) {
+  if (points.length < 2) return null;
+  const coords = points.map(([lat, lng]) => `${lng},${lat}`).join(";");
+  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=false`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("osrm");
+  const data = await res.json();
+  return data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+}
+async function drawOverviewRoute() {
+  if (!overviewMap || typeof L === "undefined") return;
+  try {
+    let all = await loadPrecomputedRingRoute();
+    if (!all || all.length < 2) {
+      all = [];
+      for (let i = 0; i < routeOrder.length - 1; i++) {
+        const a = routeOrder[i], b = routeOrder[i + 1];
+        const seg = await fetchOsrmRoute([[P[a].lat, P[a].lng], [P[b].lat, P[b].lng]]);
+        if (seg && seg.length) { if (all.length) seg.shift(); all.push(...seg); }
+      }
+    }
+    if (!all || all.length < 2) throw new Error("empty");
+    L.polyline(all, { color: "#5ec8c7", weight: 8, opacity: 0.16, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    L.polyline(all, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    const fit = L.latLngBounds(all);
+    [...stayKeys, ...highlightKeys].forEach(k => { const p = P[k]; if (p) fit.extend([p.lat, p.lng]); });
+    overviewMap.fitBounds(fit.pad(0.1));
+  } catch (e) {
+    L.polyline(latlngs, { color: "#5ec8c7", weight: 3, opacity: 0.45, dashArray: "6 10" }).addTo(overviewMap);
+    overviewMap.fitBounds(L.latLngBounds(latlngs).pad(0.12));
+  }
+}
+drawOverviewRoute();
+
+const stayCards = document.getElementById("stayCards");
+stays.forEach(s => {
+  const p = P[s.key];
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = `<h3>${placeLabel(p)}</h3><p><strong style="color:var(--ice)">${s.nights}</strong> · ${s.tip}<br><a class="btn" style="margin-top:.6rem" target="_blank" rel="noopener" href="${mapsPlaceUrl(p)}">Google 地圖</a></p>`;
+  stayCards.appendChild(el);
+});
+
+const daysRoot = document.getElementById("days");
+const nav = document.getElementById("dayNav");
+const dayMaps = new Map();
+days.forEach((d, i) => {
+  const a = document.createElement("a");
+  a.href = `#${d.id}`; a.textContent = `D${i + 1}`; a.title = `${d.date} ${d.title}`;
+  nav.appendChild(a);
+  const el = document.createElement("details");
+  el.className = "day" + (d.highlight ? " highlight" : "");
+  el.id = d.id;
+  if (d.highlight || i < 2) el.open = true;
+  const tags = d.tags.map(([k, t]) => `<span class="tag ${k}">${t}</span>`).join("");
+  const timeline = d.timeline.map(t => `<div class="tl-item"><div class="time">${t.time}</div><strong>${t.title}</strong><p>${t.desc || ""}</p></div>`).join("");
+  const notes = (d.notes || []).map(n => `<div class="note">${n}</div>`).join("");
+  const pois = d.places.filter(k => P[k]).map(k => `<span class="poi">${placeLabel(P[k])}</span>`).join("");
+  const dirHref = mapsDirUrl(d.route || null);
+  const dirBtn = dirHref ? `<a class="btn primary" target="_blank" rel="noopener" href="${dirHref}">Google 導航</a>` : "";
+  const gmapsList = d.places.filter(k => P[k]).map(k => `<a class="btn" target="_blank" rel="noopener" href="${mapsPlaceUrl(P[k])}">${placeShort(P[k])}</a>`).join("");
+  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>移動</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div></div>`;
+  daysRoot.appendChild(el);
+  const initMap = () => {
+    if (typeof L === "undefined") return;
+    if (dayMaps.has(d.id)) { dayMaps.get(d.id).invalidateSize(); return; }
+    const mapEl = document.getElementById(`map-${d.id}`);
+    if (!mapEl || mapEl.clientHeight < 40) return;
+    const map = L.map(mapEl, { scrollWheelZoom: false });
+    darkTiles(map);
+    const bounds = [];
+    d.places.forEach((k, idx) => {
+      const p = P[k];
+      const color = specialKeys.includes(k) ? "#e07a5f" : (stayKeys.includes(k) ? "#5ec8c7" : "#e0a35b");
+      L.marker([p.lat, p.lng], { icon: circleIcon(color) }).addTo(map).bindPopup(`<strong>${p.zh}</strong><br>${p.orig}`);
+      if (idx === 0 || stayKeys.includes(k) || specialKeys.includes(k)) {
+        L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), color), interactive: false }).addTo(map);
+      }
+      bounds.push([p.lat, p.lng]);
+    });
+    if (bounds.length > 1) {
+      map.fitBounds(bounds, { padding: [28, 28] });
+      fetchOsrmRoute(bounds).then(seg => {
+        if (seg && seg.length > 1) {
+          L.polyline(seg, { color: "#5ec8c7", weight: 8, opacity: 0.14, smoothFactor: 0 }).addTo(map);
+          L.polyline(seg, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, smoothFactor: 0 }).addTo(map);
+          map.fitBounds(seg, { padding: [28, 28] });
+        } else L.polyline(bounds, { color: "#5ec8c7", weight: 2.5, opacity: 0.45, dashArray: "6 8" }).addTo(map);
+      }).catch(() => L.polyline(bounds, { color: "#5ec8c7", weight: 2.5, opacity: 0.45, dashArray: "6 8" }).addTo(map));
+    } else map.setView(bounds[0], d.zoom || 10);
+    dayMaps.set(d.id, map);
+    setTimeout(() => map.invalidateSize(), 80);
+  };
+  el.addEventListener("toggle", () => { if (el.open) setTimeout(initMap, 60); });
+  if (el.open) setTimeout(initMap, 120);
+});
+
+document.getElementById("expandAll").onclick = () => document.querySelectorAll("details.day").forEach(d => { d.open = true; setTimeout(() => { const m = dayMaps.get(d.id); if (m) m.invalidateSize(); }, 100); });
+document.getElementById("collapseAll").onclick = () => document.querySelectorAll("details.day").forEach(d => d.open = false);
+const navLinks = [...nav.querySelectorAll("a")];
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === `#${en.target.id}`));
+  });
+}, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+document.querySelectorAll("details.day").forEach(d => io.observe(d));
+window.addEventListener("load", () => { if (overviewMap) overviewMap.invalidateSize(); });
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!reduceMotion) {
+  document.documentElement.classList.add("motion-on");
+  document.querySelectorAll("section.reveal").forEach((el, i) => { el.style.transitionDelay = Math.min(i * 0.05, 0.25) + "s"; });
+  const revealIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); revealIO.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll(".reveal").forEach(el => revealIO.observe(el));
+  setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(el => el.classList.add("in")), 1200);
+}
+const actionBar = document.querySelector(".topbar");
+const navEl = document.querySelector(".day-nav");
+if (actionBar && navEl) {
+  const syncChrome = () => {
+    const stuck = navEl.getBoundingClientRect().top <= 0.5;
+    actionBar.classList.toggle("is-swapped", stuck);
+    navEl.classList.toggle("scrolled", stuck);
+  };
+  syncChrome();
+  window.addEventListener("scroll", syncChrome, { passive: true });
+  window.addEventListener("resize", syncChrome);
+} else if (navEl) {
+  const onScroll = () => navEl.classList.toggle("scrolled", window.scrollY > 24);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+</script>
+</body>
+</html>
