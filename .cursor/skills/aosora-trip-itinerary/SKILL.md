@@ -85,7 +85,7 @@ aosora-trip/
   - Simplify dense OSRM output (RDP ~40 m)
 - **UX**: progressive enhancement; try/catch around Leaflet; never leave `.reveal` stuck at `opacity: 0`
 - **Hub**: brand-first; trip titles one line (`white-space: nowrap` where needed)
-- **Trip pages**: sticky `.topbar` with back link + expand/collapse/print/links + day nav (`#dayNav`); keep hero free of action buttons
+- **Trip pages**: sticky `.topbar` (back + expand/collapse/print/links) at top; `.day-nav` stays under hero like before. On scroll, when day-nav sticks, topbar slides away (`.is-swapped`) so D1–Dn replace the action bar
 - If renaming a trip slug, leave a tiny redirect folder at the old path (meta refresh + `location.replace`)
 
 ## Ingest: spreadsheet + bookings

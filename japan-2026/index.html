@@ -76,17 +76,23 @@ html.motion-on .reveal.in {
   transform: none;
 }
 
-/* Sticky top actions + day nav */
+/* Sticky action bar (swaps out when day-nav sticks) */
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 2000; /* above Leaflet panes/controls (~200–1000) */
+  z-index: 2001;
   isolation: isolate;
   background: rgba(11,15,20,.96);
   backdrop-filter: blur(18px) saturate(1.2);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 8px 28px rgba(0,0,0,.22);
+  transition: transform .28s var(--ease), opacity .2s var(--ease);
+}
+.topbar.is-swapped {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 .leaflet-container { z-index: 1; }
 .topbar-actions {
@@ -94,7 +100,7 @@ html.motion-on .reveal.in {
   flex-wrap: wrap;
   align-items: center;
   gap: .4rem;
-  padding: .55rem 0 .35rem;
+  padding: .55rem 0;
 }
 .topbar-back {
   display: inline-flex;
@@ -115,12 +121,6 @@ html.motion-on .reveal.in {
   color: #061112;
 }
 .topbar .btn { padding: .45rem .85rem; font-size: .8rem; }
-.topbar .day-nav-inner {
-  padding: .2rem 0 .55rem;
-  border-top: 1px solid var(--line);
-  margin-top: .15rem;
-}
-.topbar .day-nav-inner a { flex: 0 0 auto; }
 
 /* Hero */
 .hero {
@@ -222,9 +222,22 @@ html.motion-on .reveal.in {
   border-color: transparent;
 }
 
-/* Nav */
-.day-nav { display: contents; }
-.day-nav.scrolled { box-shadow: none; }
+/* Nav — original place under hero; sticks and replaces topbar when scrolled */
+.day-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  isolation: isolate;
+  background: rgba(11,15,20,.78);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.day-nav.scrolled {
+  background: rgba(11,15,20,.96);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
 .day-nav-inner {
   display: flex;
   gap: .35rem;
@@ -669,7 +682,7 @@ footer {
 }
 
 @media print {
-  .topbar { display: none !important; }
+  .topbar, .day-nav { display: none !important; }
   body { background: #fff; color: #111; }
   .card, .day { box-shadow: none; }
   .reveal { opacity: 1; transform: none; }
@@ -688,7 +701,6 @@ footer {
       <a class="btn" href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉巡拜指南</a>
       <a class="btn" href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">神玉地圖</a>
     </div>
-    <nav class="day-nav"><div class="day-nav-inner" id="dayNav"></div></nav>
   </div>
 </div>
 
@@ -708,6 +720,8 @@ footer {
     </div>
   </div>
 </header>
+
+<nav class="day-nav"><div class="wrap day-nav-inner" id="dayNav"></div></nav>
 
 <main>
 <section class="reveal">
@@ -1300,8 +1314,18 @@ if (!reduceMotion) {
   document.querySelectorAll(".reveal").forEach(el => revealIO.observe(el));
   setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(el => el.classList.add("in")), 1200);
 }
+const actionBar = document.querySelector(".topbar");
 const navEl = document.querySelector(".day-nav");
-if (navEl) {
+if (actionBar && navEl) {
+  const syncChrome = () => {
+    const stuck = navEl.getBoundingClientRect().top <= 0.5;
+    actionBar.classList.toggle("is-swapped", stuck);
+    navEl.classList.toggle("scrolled", stuck);
+  };
+  syncChrome();
+  window.addEventListener("scroll", syncChrome, { passive: true });
+  window.addEventListener("resize", syncChrome);
+} else if (navEl) {
   const onScroll = () => navEl.classList.toggle("scrolled", window.scrollY > 24);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
