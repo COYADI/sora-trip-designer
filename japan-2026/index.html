@@ -705,6 +705,7 @@ footer {
           <li>熱海海岸／花火</li>
           <li>うぶや富士景＋神玉七社（富士北麓當日）</li>
           <li>鬼怒川基地走日光／奧日光</li>
+          <li>橫濱出發鎌倉一日（10/31，可改 11/1）</li>
           <li>回程遺珠：大谷＋宇都宮餃子 → 橫濱</li>
         </ul>
       </div>
@@ -826,6 +827,11 @@ const P = {
   appier: { zh: "Appier Japan（愛宕）", orig: "Appier Japan Atago Green Hills", lat: 35.6621, lng: 139.7489, gmaps: "Atago Green Hills MORI Tower" },
   omino: { zh: "おみ乃 椿", orig: "Omino Tsubaki", lat: 35.6769, lng: 139.7703, gmaps: "おみ乃 椿 京橋" },
   mets: { zh: "JR東日本飯店 Mets 橫濱", orig: "JR-EAST HOTEL METS YOKOHAMA", lat: 35.4659, lng: 139.6223, gmaps: "JR-EAST HOTEL METS YOKOHAMA" },
+  kamakura: { zh: "鎌倉站", orig: "Kamakura Station", lat: 35.3192, lng: 139.5503, gmaps: "Kamakura Station" },
+  hachiman: { zh: "鶴岡八幡宮", orig: "Tsurugaoka Hachimangu", lat: 35.3256, lng: 139.5565, gmaps: "Tsurugaoka Hachimangu" },
+  daibutsu: { zh: "鎌倉大佛", orig: "Kotoku-in Great Buddha", lat: 35.3167, lng: 139.5358, gmaps: "Kotoku-in" },
+  hasedera: { zh: "長谷寺", orig: "Hasedera Kamakura", lat: 35.3127, lng: 139.5332, gmaps: "Hasedera Temple Kamakura" },
+  komachi: { zh: "小町通り", orig: "Komachi-dori", lat: 35.3205, lng: 139.5528, gmaps: "Komachi Street Kamakura" },
   richmond: { zh: "橫濱站前里士滿酒店", orig: "Richmond Hotel Yokohama Ekimae", lat: 35.4665, lng: 139.6215, gmaps: "Richmond Hotel Yokohama Ekimae" },
   minato: { zh: "橫濱港未來", orig: "Minato Mirai", lat: 35.4577, lng: 139.6322, gmaps: "Minato Mirai 21" },
   chinatown: { zh: "橫濱中華街", orig: "Yokohama Chinatown", lat: 35.4429, lng: 139.6462, gmaps: "Yokohama Chinatown" },
@@ -1017,26 +1023,35 @@ const days = [
     notes: ["還車：10/30 20:00 橫濱站中央西口店","遺珠只限鬼怒川→橫濱路程"]
   },
   {
-    id: "day-10", date: "10/31（六）", title: "橫濱逛街①", summary: "港未來・逛街；可電車衝東京半日",
+    id: "day-10", date: "10/31（六）", title: "鎌倉一日", summary: "橫濱出發電車日歸；若改 11/1 也可",
     tags: [["stay","Richmond 橫濱"],["drive","電車"]], stay: "Richmond Hotel Yokohama Ekimae",
-    drive: "橫濱市區；東京約 30 分", daylight: "約 10.6h",
-    places: ["richmond","minato","redbrick","chinatown"], route: ["richmond","minato","chinatown"], center: "minato", zoom: 13,
+    drive: "橫濱→鎌倉約 25–40 分（JR 橫須賀線等）", daylight: "約 10.6h", highlight: true,
+    places: ["richmond","kamakura","hachiman","komachi","daibutsu","hasedera"],
+    route: ["kamakura","hachiman","komachi","hasedera","daibutsu"],
+    center: "kamakura", zoom: 13,
     timeline: [
-      { time: "整天", title: "橫濱主場", desc: "港未來、紅磚、中華街補買。" },
-      { time: "彈性", title: "東京半日", desc: "想逛澀谷／東京站可當天來回（行李放橫濱飯店）。" }
+      { time: "早", title: "橫濱出發", desc: "行李留 Richmond；JR 至鎌倉站約 25–40 分。週末人潮，盡量早到。" },
+      { time: "上午", title: "鶴岡八幡宮・小町通り", desc: "參道與市區散步；午餐可在小町一帶。" },
+      { time: "午後", title: "長谷寺・大佛", desc: "江ノ電或步行至長谷；大佛（高德院）為經典。" },
+      { time: "彈性", title: "江之島", desc: "體力與時間夠可加；否則回鎌倉衣食後返橫濱。" },
+      { time: "晚", title: "回 Richmond", desc: "晚餐可留鎌倉或回橫濱站前。" }
     ],
-    notes: ["租車：前晚 20:00 前已還於橫濱站中央西口"]
+    notes: [
+      "推薦排 10/31；若想改 11/1，兩天互換即可。",
+      "不開車；Suica／PASMO 即可。"
+    ]
   },
   {
-    id: "day-11", date: "11/1（日）", title: "橫濱逛街②／東京補買", summary: "自由日；伴手禮收尾",
+    id: "day-11", date: "11/1（日）", title: "橫濱／東京補買", summary: "自由日；若鎌倉改這天就把 10/31 當街日",
     tags: [["stay","Richmond 橫濱"],["drive","電車"]], stay: "Richmond Hotel Yokohama Ekimae",
     drive: "電車", daylight: "約 10.6h",
-    places: ["richmond","tyo","shibuya"], route: ["richmond","tyo","shibuya"], center: "tyo", zoom: 11,
+    places: ["richmond","minato","tyo","shibuya"], route: ["richmond","minato"], center: "minato", zoom: 12,
     timeline: [
-      { time: "方案 A", title: "續逛橫濱", desc: "百貨、藥妝、臨海。" },
-      { time: "方案 B", title: "東京站・澀谷", desc: "伴手禮／藥妝；晚上回橫濱站前飯店。" }
+      { time: "方案 A", title: "橫濱", desc: "港未來、紅磚、中華街、百貨藥妝。" },
+      { time: "方案 B", title: "東京站・澀谷", desc: "伴手禮／藥妝；晚上回橫濱站前飯店。" },
+      { time: "備援", title: "鎌倉改排", desc: "若 10/31 天氣差或想週日去鎌倉，將 day-10 與這天互換。" }
     ],
-    notes: ["隔天 11:00 退房，注意行李。"]
+    notes: ["隔天 11:00 退房；大件行李可先寄飯店。"]
   },
   {
     id: "day-12", date: "11/2（一）", title: "CI221 離境", summary: "Richmond 11:00 退房 → 羽田 CI221 回松山",
@@ -1078,7 +1093,7 @@ function labelIcon(text, color) {
 }
 
 const stayKeys = ["mets","atamiHotel","ubuya","fujitory","kinugawa","richmond"];
-const highlightKeys = ["minato","omuro","jogasaki","moa","hanabi","chureito","kitaguchi","kegon","chuzenji","otani"];
+const highlightKeys = ["minato","omuro","jogasaki","moa","hanabi","chureito","kitaguchi","kegon","chuzenji","otani","hachiman","daibutsu","hasedera"];
 const specialKeys = ["hanabi","ubuya","kitaguchi","chureito","kegon"];
 const routeOrder = ["mets", "atamiHotel", "omuro", "jogasaki", "atamiHotel", "ubuya", "chureito", "fujiOmuro", "kitaguchi", "fujitory", "komitake", "yamanaka", "kinugawa", "nikko", "kegon", "chuzenji", "kinugawa", "otani", "utsunomiya", "richmond"];
 const latlngs = routeOrder.map(k => [P[k].lat, P[k].lng]);
