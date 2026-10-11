@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="iceland-ring-route.js"></script>
 
 <style>
 :root {
@@ -677,7 +678,7 @@ footer {
       <span><i style="background:#5ec8c7"></i>住宿 overnight</span>
       <span><i style="background:#e0a35b"></i>重點景點</span>
       <span><i style="background:#e07a5f"></i>冰川 / 冰洞日</span>
-      <span>底圖：Esri Dark Gray · 路線預先以 OSRM 計算（約 1.6 萬路點，貼 Ring Road）</span>
+      <span>底圖：Esri Dark Gray · 路線預先以 OSRM 計算（Ring Road＋西半島 Snæfellsnes 支線）</span>
     </div>
   </div>
 </section>
@@ -789,7 +790,7 @@ footer {
 </main>
 
 <footer>
-  <div class="wrap">行程草案 · 地圖為 Leaflet + Esri Dark Gray；點標記看名稱與座標，下方可開 Google 導航。車程為估計值，現場以 road.is 為準。</div>
+  <div class="wrap">行程草案 · 地圖為 Leaflet + Esri Dark Gray；總覽含 Borgarnes／西半島支線。點標記看名稱與座標，下方可開 Google 導航。車程為估計值，現場以 road.is 為準。</div>
 </footer>
 
 <script>
@@ -1099,8 +1100,9 @@ function labelIcon(text, color) {
 }
 
 const stayKeys = ["rvk","vik","hofn","egils","aku","borg"];
-const highlightKeys = ["hali","jokul","stokk","kirk","budir","selja","skoga","reyni","detti","myvatn","goda","thing","gullfoss","arnar","dimmu","fjad"];
-const routeOrder = ["rvk","vik","hofn","egils","aku","borg","rvk"];
+const highlightKeys = ["hali","jokul","stokk","kirk","budir","selja","skoga","reyni","detti","myvatn","goda","thing","gullfoss","arnar","djupa","dimmu","fjad"];
+/* Overview path includes Snæfellsnes day loop (why we stay in Borgarnes) */
+const routeOrder = ["rvk","vik","hofn","egils","aku","borg","kirk","arnar","djupa","budir","borg","rvk"];
 const latlngs = routeOrder.map(k => [P[k].lat, P[k].lng]);
 let overviewMap = null;
 
@@ -1201,10 +1203,17 @@ async function drawOverviewRoute() {
       lineCap: "round",
       smoothFactor: 0
     }).addTo(overviewMap);
-    overviewMap.fitBounds(line.getBounds().pad(0.1));
+    // Fit to route + stays + highlights so west peninsula is never cropped
+    const fit = L.latLngBounds(all);
+    [...stayKeys, ...highlightKeys].forEach(k => {
+      const p = P[k];
+      if (p) fit.extend([p.lat, p.lng]);
+    });
+    overviewMap.fitBounds(fit.pad(0.1));
   } catch (e) {
     console.warn("route fallback", e);
     L.polyline(latlngs, { color: "#5ec8c7", weight: 3, opacity: 0.45, dashArray: "6 10" }).addTo(overviewMap);
+    overviewMap.fitBounds(L.latLngBounds(latlngs).pad(0.12));
   }
 }
 drawOverviewRoute();
