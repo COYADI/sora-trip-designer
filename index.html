@@ -64,9 +64,33 @@ h1 span { color: var(--ice); }
 .lead {
   max-width: 32rem;
   color: var(--text-dim);
-  margin: 0 0 2.5rem;
+  margin: 0 0 2.25rem;
   font-size: 1.02rem;
 }
+.trip-section {
+  margin-bottom: 2.25rem;
+}
+.trip-section[hidden] { display: none !important; }
+.section-label {
+  display: flex;
+  align-items: baseline;
+  gap: .65rem;
+  margin: 0 0 .85rem;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+  transform: translateY(-0.15em);
+}
+.section-ongoing .section-label { color: var(--ice); }
+.section-future .section-label { color: var(--amber); }
 .trips { display: grid; gap: 1rem; }
 .trip {
   display: grid;
@@ -79,13 +103,18 @@ h1 span { color: var(--ice); }
   background: linear-gradient(145deg, rgba(94,200,199,.06), var(--card) 40%);
   color: inherit;
   text-decoration: none;
-  transition: border-color .25s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease);
+  transition: border-color .25s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease), opacity .25s var(--ease);
+}
+.section-past .trip {
+  opacity: .72;
+  background: linear-gradient(145deg, rgba(255,255,255,.02), var(--card) 45%);
 }
 .trip:hover {
   border-color: rgba(94,200,199,.4);
   transform: translateY(-2px);
   box-shadow: 0 18px 40px rgba(0,0,0,.35);
   color: inherit;
+  opacity: 1;
 }
 .trip h2 {
   font-family: var(--font-serif);
@@ -122,7 +151,7 @@ h1 span { color: var(--ice); }
 .trip:hover .arrow { transform: translateX(4px); }
 footer {
   margin-top: auto;
-  padding-top: 3rem;
+  padding-top: 2rem;
   color: var(--muted);
   font-size: .8rem;
 }
@@ -139,9 +168,10 @@ footer {
     <div class="wrap">
       <div class="kicker">AoSora · Photography trips</div>
       <h1>行程<span>筆記</span></h1>
-      <p class="lead">自駕路線、住宿節點與地圖備忘。先從這一趟開始。</p>
-      <div class="trips">
-        <a class="trip" href="/japan-2026/">
+      <p class="lead">自駕路線、住宿節點與地圖備忘。依進行中、即將出發、已結束排列。</p>
+
+      <div id="tripSource" hidden>
+        <a class="trip" href="/japan-2026/" data-start="2026-10-22" data-end="2026-11-02">
           <div>
             <h2>日本本州 · 2026</h2>
             <p>10/22–11/2 · 橫濱起迄 · 熱海 · うぶや · 鬼怒川</p>
@@ -153,7 +183,7 @@ footer {
           </div>
           <div class="arrow" aria-hidden="true">→</div>
         </a>
-        <a class="trip" href="/iceland-2027/">
+        <a class="trip" href="/iceland-2027/" data-start="2027-10-17" data-end="2027-10-31">
           <div>
             <h2>冰島環島 · 2027</h2>
             <p>10/17–10/31 · 台北出發 · 15 日含飛 · 順時針</p>
@@ -166,8 +196,60 @@ footer {
           <div class="arrow" aria-hidden="true">→</div>
         </a>
       </div>
+
+      <section class="trip-section section-ongoing" data-bucket="ongoing" hidden>
+        <h2 class="section-label">Ongoing · 進行中</h2>
+        <div class="trips" data-list="ongoing"></div>
+      </section>
+      <section class="trip-section section-future" data-bucket="future" hidden>
+        <h2 class="section-label">Future · 即將出發</h2>
+        <div class="trips" data-list="future"></div>
+      </section>
+      <section class="trip-section section-past" data-bucket="past" hidden>
+        <h2 class="section-label">Past · 已結束</h2>
+        <div class="trips" data-list="past"></div>
+      </section>
+
       <footer>trip.aosora.photography</footer>
     </div>
   </div>
+  <script>
+  (function () {
+    const source = document.getElementById("tripSource");
+    if (!source) return;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const parseDay = (s) => {
+      const [y, m, d] = s.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    };
+
+    const trips = [...source.querySelectorAll(".trip")].map((el) => {
+      const start = parseDay(el.dataset.start);
+      const end = parseDay(el.dataset.end);
+      let bucket = "future";
+      if (end < today) bucket = "past";
+      else if (start <= today && today <= end) bucket = "ongoing";
+      return { el, start, end, bucket };
+    });
+
+    // ongoing / future: earliest start first; past: most recent end first
+    const order = {
+      ongoing: (a, b) => a.start - b.start,
+      future: (a, b) => a.start - b.start,
+      past: (a, b) => b.end - a.end
+    };
+
+    ["ongoing", "future", "past"].forEach((key) => {
+      const list = document.querySelector('[data-list="' + key + '"]');
+      const section = document.querySelector('[data-bucket="' + key + '"]');
+      const items = trips.filter((t) => t.bucket === key).sort(order[key]);
+      if (!items.length) return;
+      section.hidden = false;
+      items.forEach((t) => list.appendChild(t.el));
+    });
+  })();
+  </script>
 </body>
 </html>

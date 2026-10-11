@@ -84,7 +84,7 @@ aosora-trip/
   - Load `*-ring-route.js` via `<script>` before main logic; JSON as fetch fallback
   - Simplify dense OSRM output (RDP ~40 m)
 - **UX**: progressive enhancement; try/catch around Leaflet; never leave `.reveal` stuck at `opacity: 0`
-- **Hub**: brand-first; trip titles one line (`white-space: nowrap` where needed); list trips in chronological order (earliest first)
+- **Hub**: brand-first; trip cards use `data-start` / `data-end` (YYYY-MM-DD); JS buckets into **ongoing → future → past** (hide empty sections). Ongoing/future: earliest start first; past: most recent end first
 - **Trip pages**: sticky `.topbar` (back + expand/collapse/print/links) at top; `.day-nav` stays under hero like before. On scroll, when day-nav sticks, topbar slides away (`.is-swapped`) so D1–Dn replace the action bar
 - If renaming a trip slug, leave a tiny redirect folder at the old path (meta refresh + `location.replace`)
 
