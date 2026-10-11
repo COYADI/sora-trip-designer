@@ -678,7 +678,7 @@ footer {
       <span><i style="background:#5ec8c7"></i>住宿 overnight</span>
       <span><i style="background:#e0a35b"></i>重點景點</span>
       <span><i style="background:#e07a5f"></i>冰川 / 冰洞日</span>
-      <span>底圖：CARTO Dark Matter · 路線預先以 OSRM 計算（Ring Road＋西半島 Snæfellsnes 支線）</span>
+      <span>底圖：CARTO Voyager · 路線預先以 OSRM 計算（Ring Road＋西半島 Snæfellsnes 支線）</span>
     </div>
   </div>
 </section>
@@ -790,7 +790,7 @@ footer {
 </main>
 
 <footer>
-  <div class="wrap">行程草案 · 地圖為 Leaflet + CARTO Dark Matter；總覽含 Borgarnes／西半島支線。點標記看名稱與座標，下方可開 Google 導航。車程為估計值，現場以 road.is 為準。</div>
+  <div class="wrap">行程草案 · 地圖為 Leaflet + CARTO Voyager（淺色、含路網）；總覽含 Borgarnes／西半島支線。點標記看名稱與座標，下方可開 Google 導航。車程為估計值，現場以 road.is 為準。</div>
 </footer>
 
 <script>
@@ -1065,8 +1065,8 @@ const days = [
 
 /* ===== Leaflet helpers ===== */
 const darkTiles = (map) => {
-  // CARTO Dark Matter (OSM data). Raster basemaps require ?key= since Sep 2025.
-  const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=cb1_4hbr_1_36eb6f469b628a5a8d5c116b", {
+  // CARTO Voyager: light basemap with clear roads (OSM). Raster needs ?key= since Sep 2025.
+  const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_4hbr_1_36eb6f469b628a5a8d5c116b", {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CARTO</a>',
     subdomains: "abcd",
     maxZoom: 20
