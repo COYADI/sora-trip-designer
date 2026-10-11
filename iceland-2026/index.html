@@ -100,7 +100,7 @@ html.motion-on .reveal.in {
   line-height: 1.12;
   letter-spacing: 0.04em;
   margin: 0 0 .9rem;
-  max-width: 12ch;
+  max-width: none; white-space: nowrap;
   opacity: 0;
   animation: fadeUp .85s var(--ease-out) .12s forwards;
 }
@@ -450,6 +450,7 @@ table.route td:first-child { color: var(--text); font-weight: 600; }
   margin-top: 1rem;
 }
 @media (max-width: 640px) {
+  .hero h1 { white-space: normal; }
   .stat-row { grid-template-columns: 1fr; }
   .day-summary { grid-template-columns: auto 1fr; }
   .day-tags { grid-column: 1 / -1; justify-content: flex-start; }

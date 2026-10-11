@@ -4,14 +4,158 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AoSora Trips</title>
-<meta http-equiv="refresh" content="0; url=/iceland-2026/" />
-<link rel="canonical" href="https://trip.aosora.photography/iceland-2026/" />
+<link rel="canonical" href="https://trip.aosora.photography/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
-  body { margin:0; min-height:100vh; display:grid; place-items:center; background:#0b0f14; color:#e8eef2; font-family:"Noto Sans TC",sans-serif; }
-  a { color:#5ec8c7; }
+:root {
+  --bg: #0b0f14;
+  --text: #e8eef2;
+  --text-dim: #9aa8b5;
+  --muted: #6d7b88;
+  --ice: #5ec8c7;
+  --amber: #e0a35b;
+  --line: rgba(232, 238, 242, 0.10);
+  --line-strong: rgba(232, 238, 242, 0.18);
+  --card: #161d27;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--text);
+  background:
+    radial-gradient(900px 520px at 12% -8%, rgba(94,200,199,.14), transparent 55%),
+    radial-gradient(700px 420px at 92% 8%, rgba(224,163,91,.08), transparent 48%),
+    linear-gradient(180deg, #0d1218 0%, var(--bg) 45%, #0a0e13 100%);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { width: min(920px, calc(100% - 2.5rem)); margin: 0 auto; }
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 3.5rem 0 3rem;
+}
+.kicker {
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ice);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  line-height: 1.15;
+  letter-spacing: 0.06em;
+  margin: 0 0 .85rem;
+  white-space: nowrap;
+}
+h1 span { color: var(--ice); }
+.lead {
+  max-width: 32rem;
+  color: var(--text-dim);
+  margin: 0 0 2.5rem;
+  font-size: 1.02rem;
+}
+.trips { display: grid; gap: 1rem; }
+.trip {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.35rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(94,200,199,.06), var(--card) 40%);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .25s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.trip:hover {
+  border-color: rgba(94,200,199,.4);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  color: inherit;
+}
+.trip h2 {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 .35rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.trip p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .92rem;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .7rem;
+}
+.chip {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: .28rem .65rem;
+}
+.arrow {
+  font-size: 1.4rem;
+  color: var(--ice);
+  transition: transform .25s var(--ease);
+}
+.trip:hover .arrow { transform: translateX(4px); }
+footer {
+  margin-top: auto;
+  padding-top: 3rem;
+  color: var(--muted);
+  font-size: .8rem;
+}
+@media (max-width: 640px) {
+  h1 { white-space: normal; letter-spacing: 0.04em; }
+  .trip { grid-template-columns: 1fr; }
+  .trip h2 { white-space: normal; }
+  .arrow { display: none; }
+}
 </style>
 </head>
 <body>
-  <p><a href="/iceland-2026/">冰島環島 2026 →</a></p>
+  <div class="page">
+    <div class="wrap">
+      <div class="kicker">AoSora · Photography trips</div>
+      <h1>行程<span>筆記</span></h1>
+      <p class="lead">自駕路線、住宿節點與地圖備忘。先從這一趟開始。</p>
+      <div class="trips">
+        <a class="trip" href="/iceland-2026/">
+          <div>
+            <h2>冰島環島 · 2026</h2>
+            <p>10/17–10/31 · 台北出發 · 15 日含飛 · 順時針</p>
+            <div class="meta">
+              <span class="chip">南岸連住</span>
+              <span class="chip">冰川／冰洞</span>
+              <span class="chip">西半島</span>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">→</div>
+        </a>
+      </div>
+      <footer>trip.aosora.photography</footer>
+    </div>
+  </div>
 </body>
 </html>
