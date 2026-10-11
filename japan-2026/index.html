@@ -80,13 +80,15 @@ html.motion-on .reveal.in {
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 60;
-  background: rgba(11,15,20,.92);
+  z-index: 2000; /* above Leaflet panes/controls (~200–1000) */
+  isolation: isolate;
+  background: rgba(11,15,20,.96);
   backdrop-filter: blur(18px) saturate(1.2);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 8px 28px rgba(0,0,0,.22);
 }
+.leaflet-container { z-index: 1; }
 .topbar-actions {
   display: flex;
   flex-wrap: wrap;
