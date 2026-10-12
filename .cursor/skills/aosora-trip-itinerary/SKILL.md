@@ -60,7 +60,7 @@ aosora-trip/
   .nojekyll
   index.html            # hub: brand + trip links (single-line titles)
   DEPLOY.md
-  <trip-slug>/          # e.g. iceland-2027/ , japan-2026/
+  <trip-slug>/          # e.g. iceland-2027/ , japan-tokyo-2026/
     index.html
     <slug>-ring-route.js    # window.PRECOMPUTED_RING_ROUTE = [...]
     <slug>-ring-route.json  # same array (fetch fallback)
