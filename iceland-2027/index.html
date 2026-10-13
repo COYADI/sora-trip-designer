@@ -681,6 +681,13 @@ footer {
   .tl-item { opacity: 1 !important; transform: none !important; }
 }
 
+
+.day-tip-table { margin-top: 1rem; overflow-x: auto; }
+.day-tip-table table.route th {
+  width: 7.2rem; white-space: nowrap; color: var(--ice); vertical-align: top;
+}
+.day-tip-table table.route td { color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+
 @media print {
   .topbar, .day-nav { display: none !important; }
   body { background: #fff; color: #111; }
@@ -700,6 +707,11 @@ footer {
       <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
       <a class="btn" href="https://www.road.is" target="_blank" rel="noopener">road.is</a>
       <a class="btn" href="https://www.vedur.is" target="_blank" rel="noopener">vedur.is</a>
+      <a class="btn" href="#reminders">提醒</a>
+      <a class="btn" href="#photo-meals-gear">拍照／餐／設備</a>
+      <a class="btn" href="#money">現金／刷卡</a>
+      <a class="btn" href="#budget">省錢攻略</a>
+      <a class="btn" href="#luggage">行李</a>
     </div>
   </div>
 </div>
@@ -807,13 +819,182 @@ footer {
   </div>
 </section>
 
-<section class="reveal">
+
+<section class="reveal" id="reminders">
+  <div class="wrap">
+    <h2 class="section-title">還有哪些「要提醒的小事」</h2>
+    <p class="section-sub">每日表格已有<strong>八欄</strong>（省錢、行李、預約、付款、拍照、三餐、設備、當日提醒）；以下是整趟共用、出發前可一次打勾的項目。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>已進每日表</h3>
+        <ul>
+          <li><strong>省錢</strong> — 套票、取捨、加油時機</li>
+          <li><strong>行李／寄放</strong> — 拖箱或日包、飯店暫存</li>
+          <li><strong>預約／票務</strong> — 冰川團、溫泉、景點門票</li>
+          <li><strong>當日提醒</strong> — road.is、風力、黑冰、潮汐</li>
+          <li><strong>付款／拍照／三餐／設備</strong> — 見每日八欄</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出發前總檢（整趟一次）</h3>
+        <ul>
+          <li><strong>證件</strong>：護照效期、國際駕照 IDL、信用卡雙卡</li>
+          <li><strong>插頭</strong>：歐洲 Type C（冰島通用）</li>
+          <li><strong>App</strong>：road.is、vedur.is、Google Maps 離線、租車商 App、銀行開旅遊通知</li>
+          <li><strong>保險</strong>：旅遊險含取消／延誤；租車全險條款</li>
+          <li><strong>通訊</strong>：eSIM／漫遊；備用離線地圖</li>
+          <li><strong>健康</strong>：常用藥、OK繩、防曬、防風殼</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>冰島自駕專屬</h3>
+        <ul>
+          <li>每天查 <a href="https://www.road.is" target="_blank" rel="noopener">road.is</a> 與 <a href="https://www.vedur.is" target="_blank" rel="noopener">vedur.is</a>（風力常比雨更危險）</li>
+          <li>10 月底 F 路多半關閉；不賭未開路</li>
+          <li>黑沙灘大浪：勿靠水邊；潮汐請查潮汐表</li>
+          <li>冰川團：選可改期；14 歲+常見</li>
+          <li>極光：雲圖 + KP；不強求，有海岸暗空就值得出門</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>加油與安全</h3>
+        <ul>
+          <li>東岿、北島長途前加滿油；不要走到紅燈</li>
+          <li>車內勿留護照筆電；景點停車場優其</li>
+          <li>緊急電話 112</li>
+          <li>夜驟：10 月日照短，北島更短；盡量在日落前到宿</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="days-wrap">
   <div class="wrap">
     <h2 class="section-title">逐日行程</h2>
-      <p class="section-sub">展開後載入該日地圖與標記；可開 Google 導航。</p>
+    <p class="section-sub">每日表格：省錢、行李、預約、付款、拍照、三餐、設備、當日提醒。</p>
     <div id="days"></div>
   </div>
 </section>
+
+<section class="reveal" id="photo-meals-gear">
+  <div class="wrap">
+    <h2 class="section-title">拍照・三餐・設備</h2>
+    <p class="section-sub">每日表格已有「拍照／三餐／設備」；這裡是整趟共用原則。10 月底日出約 08:30、日落約 17:30（北島更早），出發前用 App 再對。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>拍照原則</h3>
+        <ul>
+          <li><strong>南岸／黑沙灘</strong>：偏光與雲層更有戲；浪大時以安全為先。</li>
+          <li><strong>冰河湖</uff1a早晨風小、人少；鑽石沙灘留低角度。</li>
+          <li><strong>Vestrahorn</strong>：清晨低角度；黑沙反光容易過曝。</li>
+          <li><strong>西半島教會山</strong>：經典角度；風大改車上下拍。</li>
+          <li>移動日不強排黃金時；無人機遇強風立即收（Elliðaey 遠景可改長焦）。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>建議器材</h3>
+        <ul>
+          <li><strong>機身</strong>：一台主力＋手機備援（防水袋）。</li>
+          <li><strong>鏡頭</strong>：超廣角（瀕布／海岸）＋標準變焦；可選 70–200。</li>
+          <li><strong>濾鏡</strong>：CPL（湖面／海面）；可選 ND。</li>
+          <li><strong>腳架</strong>：輕量；極光／冰湖有用，風大勿強撞。</li>
+          <li><strong>其他</strong>：備用電池×2–3、行動電源、擤鏡布、相機雨罩。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>三餐節奏</h3>
+        <ul>
+          <li><strong>早</strong>：飯店或超市面包／優格；長途日帶車上吃的。</li>
+          <li><strong>午</strong>：景點附近簡餐或自備；景區餐廳偏貴。</li>
+          <li><strong>晚</strong>：小鎮餐廳多早關；進城先補給。</li>
+          <li><strong>超市</strong>：Bónus／Krónan（零食、水、簡餐）。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>App／小工具</h3>
+        <ul>
+          <li>路況：road.is；天氣：vedur.is</li>
+          <li>極光：My Aurora Forecast 等＋雲圖</li>
+          <li>日出日落：PhotoPills／Sun Surveyor</li>
+          <li>離線地圖＋軌跡備份</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="money">
+  <div class="wrap">
+    <h2 class="section-title">現金與信用卡</h2>
+    <p class="section-sub">結論：<strong>大半用信用卡就夠</strong>（Visa／Mastercard／感應支付）。現金只當口袋零用＋備援。刷卡選當地幣（ISK），不要選折算成 TWD（DCC）。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>能不能刷卡？</h3>
+        <ul>
+          <li>飯店、租車、大部分餐廳、超市、加油站：刷卡 OK</li>
+          <li>溫泉、冰川團、景點門票：多數刷卡 OK</li>
+          <li>小購、一些停車：可能要現金</li>
+          <li>租車押金：<strong>要信用卡</strong>（簽帳金融卡常被拒）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>口袋現金</h3>
+        <ul>
+          <li>一人粗估：ISK 等值約 TWD 3,000–6,000 級距（小額）</li>
+          <li>以當地 ATM 提款為主（選以 ISK 計價）</li>
+          <li>避開機場大額兌幣櫃臺</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="budget">
+  <div class="wrap">
+    <h2 class="section-title">省錢攻略</h2>
+    <p class="section-sub">冰島物價偏高；把錢留在租車、加油、必去團體與住宿。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>優先順序</h3>
+        <ul>
+          <li><strong>1. 租車／保險</strong>：4WD +冬胎；比價全險與自動除尖石</li>
+          <li><strong>2. 加油</strong>：長途前加滿；不走到空</li>
+          <li><strong>3. 冰川團</strong>：選可改期；不要同日另拢貴價活動</li>
+          <li><strong>4. 住宿</strong>：連住減少換宿；維克、赫本、阿克雷里、Borgarnes 各兩晚</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>實用招</h3>
+        <ul>
+          <li>超市早餐／簡餐；景區餐廳當獎勵</li>
+          <li>溫泉：Sky 與 Blue 二選一，不必都去</li>
+          <li>開放景點（瀕布、黑沙灘外觀）先排滿</li>
+          <li>F 路與西峽灣：10 月不強加，省時間也省風險</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="luggage">
+  <div class="wrap">
+    <h2 class="section-title">行李策略</h2>
+    <p class="section-sub">中型拖箱 + 日包。自駕主，大件多半留在車廂；景點只帶日包。</p>
+    <div class="card">
+      <table class="route">
+        <thead><tr><th>區段</th><th>拖箱</th><th>日包</th></tr></thead>
+        <tbody>
+          <tr><td>飛機日／KEF→雷市</td><td>搶運李行李</td><td>證件、充電、外套</td></tr>
+          <tr><td>環島自駕各段</td><td>留車廂（勿留貼身物）</td><td>相機、水、雨衣、零食</td></tr>
+          <tr><td>冰川團日</td><td>留宿</td><td>輕裝、手套；靴可租</td></tr>
+          <tr><td>雷市緩衝日</td><td>飯店暫存或車廂</td><td>輕裝衝街</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 
 <section class="reveal">
   <div class="wrap">
@@ -1147,6 +1328,26 @@ function labelIcon(text, color) {
   });
 }
 
+
+const dayTips = {
+  "day-1": { save: "選含行李＋可改期機票；經濟艙帶頸枕省精神", bag: "托運主行李；隨身證件／藥／一組換洗衣物", book: "再確認班機與歐洲轉機時間", pay: "機場刷卡；少量現金備援", photo: "—", meals: "機上餐；轉機點自備零食", gear: "相機進艙；行動電源符合航規", watch: "冬令銜接；延誤備援 11/1" },
+  "day-2": { save: "Sky 與 Blue 二選一；市區超市補給", bag: "取車後行李進後車廂；勿留護照在車", book: "取車確認冬胎／全險", pay: "租車押金要信用卡", photo: "市區夜景／大教堂外觀即可", meals: "超市簡餐；早睡", gear: "離線地圖下載；車充就位", watch: "落地偏晚不硬排；road.is 註冊習慣" },
+  "day-3": { save: "金圈不另僱導遊；自駕最划算", bag: "日包即可；拖箱留住宿", book: "凱里德門票現場付", pay: "景點多數刷卡", photo: "間歇泉蒸氣＋古佛斯；藍秘境陰天也美", meals: "自備午餐；間歇泉區餐貴", gear: "廣角＋CPL；防濺水", watch: "橋面黑冰；08:30 前上路" },
+  "day-4": { save: "開放景點為主；黑沙灘免門票", bag: "退房行李上車；日包輕裝", book: "—", pay: "維克超市／加油刷卡", photo: "雙瀑布＋黑沙灘側光；無人機風大改長焦", meals: "瀑布區簡餐或自備", gear: "防水鞋＋雨罩；廣角", watch: "大浪離水邊；Gljúfrabúi 留 20–30 分" },
+  "day-5": { save: "緩衝日少花錢；卡特拉團可選可改期", bag: "留宿維克；日包出遊", book: "若參加卡特拉提前確認集合", pay: "團費多線上刷卡", photo: "迪爾霍勞伊拱門補拍", meals: "晚起＋市區餐", gear: "依方案帶相機或休息", watch: "這天是體力／天氣緩衝" },
+  "day-6": { save: "羽毛峽谷併東行，不另開一天", bag: "行李上車；峽谷日包", book: "確認隔天 Hali 團", pay: "沿路加油勿空", photo: "菲亞德拉人少；杰古沙龍下午光", meals: "自備或景點簡餐", gear: "廣角＋長焦壓冰山", watch: "road.is；傍晚前到赫本" },
+  "day-7": { save: "冰川團是核心帳單；勿同日塞太多付費活動", bag: "輕裝；貴重物品勿留車", book: "08:40 前到 Hali；可改期方案優先", pay: "團費已付則帶卡備現場加購", photo: "洞內藍光；湖邊補拍", meals: "早起簡餐；團後補熱食", gear: "手套；相機防水；靴可租", watch: "14歲+；洞況依當日" },
+  "day-8": { save: "東峽以路過風景為主，少買額外票", bag: "退房東行；日包", book: "Stokksnes 可能入場費", pay: "刷卡為主", photo: "清晨西角山低角度", meals: "車上簡餐", gear: "廣角＋ND 可選", watch: "勿賭 Öxi 939；塞濟斯可選" },
+  "day-9": { save: "米湖細逛留明天，避免一天爆行程", bag: "日包；加油", book: "查黛提東岸是否開放", pay: "刷卡", photo: "黛提水氣；納馬地熱色彩", meals: "自備；傍晚入阿克雷里補給", gear: "防風；防滑鞋", watch: "北島黑冰；早出發" },
+  "day-10": { save: "米湖自然溫泉可當充電；天候差改市區零花費", bag: "來回日包", book: "溫泉現場或線上", pay: "溫泉刷卡", photo: "迪姆堡紋理；湖岸偽火山口", meals: "湖區簡餐或回城", gear: "廣角；備用電池（冷）", watch: "風雪改阿克雷里備援" },
+  "day-11": { save: "長途日少付費景點；科魯峽谷超值短停", bag: "行李上車", book: "—", pay: "沿路加油", photo: "峽谷瀑布；白盔岩潮汐適合才去", meals: "車上簡餐", gear: "輕裝", watch: "純開 4–4.5h；早出發" },
+  "day-12": { save: "半島開放點為主；黑教堂免費外觀", bag: "日包；拖箱留宿", book: "查風級", pay: "刷卡", photo: "教會山經典角；深潟湖黑沙；黑教堂熔岩", meals: "半島簡餐或自備", gear: "防風；廣角", watch: "半島曝風；浪大離水邊" },
+  "day-13": { save: "緩衝日；藍湖／Sky 擇一即可", bag: "回雷市；可暫存", book: "溫泉若去再約", pay: "刷卡", photo: "市區／溫泉輕鬆拍", meals: "市區餐", gear: "輕裝", watch: "消化前面延誤" },
+  "day-14": { save: "準時還車免逾時費；機場餐少買", bag: "還車前清車；托運", book: "國際線提早 2.5–3h", pay: "還車／加油刷卡", photo: "—", meals: "機場簡餐", gear: "相機進艙", watch: "加油＋檢查還車時段" },
+  "day-15": { save: "—", bag: "抵達提領", book: "—", pay: "—", photo: "—", meals: "—", gear: "—", watch: "11/1 仍可當延誤備援" }
+};
+days.forEach(d => Object.assign(d, dayTips[d.id] || {}));
+
 const stayKeys = ["rvk","vik","hofn","egils","aku","borg"];
 const highlightKeys = ["hali","jokul","stokk","kirk","budir","selja","skoga","reyni","detti","myvatn","goda","thing","gullfoss","arnar","djupa","dimmu","fjad"];
 /* Overview path includes Snæfellsnes day loop (why we stay in Borgarnes) */
@@ -1310,6 +1511,16 @@ days.forEach((d, i) => {
   const dirBtn = dirHref
     ? `<a class="btn primary" target="_blank" rel="noopener" href="${dirHref}">Google 導航</a>`
     : "";
+  const tipTable = `<div class="day-tip-table card" style="padding:.35rem .6rem;margin-top:1rem"><table class="route"><tbody>
+      <tr><th>省錢</th><td>${d.save || "—"}</td></tr>
+      <tr><th>行李／寄放</th><td>${d.bag || "—"}</td></tr>
+      <tr><th>預約／票務</th><td>${d.book || "—"}</td></tr>
+      <tr><th>付款</th><td>${d.pay || "—"}</td></tr>
+      <tr><th>拍照</th><td>${d.photo || "—"}</td></tr>
+      <tr><th>三餐</th><td>${d.meals || "—"}</td></tr>
+      <tr><th>設備</th><td>${d.gear || "—"}</td></tr>
+      <tr><th>當日提醒</th><td>${d.watch || "—"}</td></tr>
+    </tbody></table></div>`;
   const gmapsList = d.places.filter(k => P[k]).map(k => {
     const p = P[k];
     return `<a class="btn" target="_blank" rel="noopener" href="${mapsPlaceUrl(p)}">${placeShort(p)}</a>`;
@@ -1338,6 +1549,7 @@ days.forEach((d, i) => {
         ${dirBtn}
         ${gmapsList}
       </div>
+      ${tipTable}
     </div>`;
   daysRoot.appendChild(el);
 
