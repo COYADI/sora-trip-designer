@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>阿爾卑斯秋色 · 2027/9/5–9/24</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="alps-ring-route.js"></script>
+
+<style>
+:root {
+  --bg: #0b0f14;
+  --bg-elev: #121820;
+  --bg-card: #161d27;
+  --bg-soft: #1c2530;
+  --line: rgba(232, 238, 242, 0.10);
+  --line-strong: rgba(232, 238, 242, 0.18);
+  --text: #e8eef2;
+  --text-dim: #9aa8b5;
+  --muted: #6d7b88;
+  --ice: #5ec8c7;
+  --ice-dim: #2f7f82;
+  --amber: #e0a35b;
+  --danger: #e07a5f;
+  --shadow: 0 18px 50px rgba(0,0,0,.38);
+  --shadow-soft: 0 8px 28px rgba(0,0,0,.28);
+  --radius: 18px;
+  --max: 1100px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: .42s;
+  --dur-fast: .22s;
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+}
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  interpolate-size: allow-keywords;
+}
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(94,200,199,.12), transparent 50%),
+    radial-gradient(700px 400px at 90% 5%, rgba(224,163,91,.08), transparent 45%),
+    var(--bg);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ice);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+a:hover { color: #8fe0df; }
+.wrap { width: min(var(--max), calc(100% - 2rem)); margin: 0 auto; }
+
+/* Reveal — default visible; hide only after JS enables motion */
+.reveal { opacity: 1; transform: none; }
+html.motion-on .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+}
+html.motion-on .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sticky action bar (swaps out when day-nav sticks) */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2001;
+  isolation: isolate;
+  background: rgba(11,15,20,.96);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 8px 28px rgba(0,0,0,.22);
+  transition: transform .28s var(--ease), opacity .2s var(--ease);
+}
+.topbar.is-swapped {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.leaflet-container { z-index: 1; }
+.topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 0;
+}
+.topbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .45rem .85rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #061112;
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  margin-right: .15rem;
+}
+.topbar-back:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+}
+.topbar .btn { padding: .45rem .85rem; font-size: .8rem; }
+
+/* Hero */
+.hero {
+  padding: 3.75rem 0 2.5rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(22,29,39,.92), transparent 70%),
+    repeating-linear-gradient(-12deg, transparent, transparent 22px, rgba(255,255,255,.012) 22px, rgba(255,255,255,.012) 23px);
+}
+.kicker {
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ice);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeUp .8s var(--ease-out) .05s forwards;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 6.2vw, 3.9rem);
+  line-height: 1.12;
+  letter-spacing: 0.04em;
+  margin: 0 0 .9rem;
+  max-width: none; white-space: nowrap;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .12s forwards;
+}
+.hero h1 span { color: var(--ice); }
+.lead {
+  max-width: 38rem;
+  color: var(--text-dim);
+  margin: 0 0 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .22s forwards;
+}
+.chips, .toolbar {
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .32s forwards;
+}
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+.chip {
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .42rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255,255,255,.03);
+  color: var(--text-dim);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.chip:hover {
+  border-color: rgba(94,200,199,.35);
+  color: var(--text);
+  background: rgba(94,200,199,.06);
+  transform: translateY(-1px);
+}
+.toolbar { display: flex; flex-wrap: wrap; gap: .5rem; }
+.btn {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .58rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.btn:hover {
+  border-color: var(--ice-dim);
+  color: var(--ice);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+.btn:active { transform: translateY(0); }
+.btn.primary {
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  border-color: transparent;
+  color: #061112;
+}
+.btn.primary:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+  border-color: transparent;
+}
+
+/* Nav — original place under hero; sticks and replaces topbar when scrolled */
+.day-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  isolation: isolate;
+  background: rgba(11,15,20,.78);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.day-nav.scrolled {
+  background: rgba(11,15,20,.96);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.day-nav-inner {
+  display: flex;
+  gap: .35rem;
+  overflow-x: auto;
+  padding: .75rem 0;
+  scrollbar-width: thin;
+}
+.day-nav a {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .42rem .7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition:
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.day-nav a:hover {
+  color: var(--ice);
+  background: rgba(94,200,199,.08);
+  border-color: rgba(94,200,199,.18);
+}
+.day-nav a.active {
+  color: #061112;
+  background: var(--ice);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+section { padding: 2.6rem 0; }
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  letter-spacing: 0.03em;
+  margin: 0 0 .45rem;
+  font-weight: 600;
+}
+.section-sub { color: var(--muted); margin: 0 0 1.4rem; max-width: 42rem; line-height: 1.7; }
+
+.grid-2 { display: grid; gap: 1rem; grid-template-columns: 1.1fr .9fr; }
+.grid-3 { display: grid; gap: .8rem; grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.25rem;
+  box-shadow: var(--shadow);
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.card:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 55px rgba(0,0,0,.42);
+}
+.card h3 {
+  margin: 0 0 .55rem;
+  font-size: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.card p, .card li { color: var(--text-dim); font-size: .92rem; }
+.card ul { margin: 0; padding-left: 1.1rem; }
+
+#overviewMap {
+  height: 420px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+#overviewMap:hover {
+  border-color: rgba(94,200,199,.28);
+  box-shadow: var(--shadow-soft);
+}
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem 1rem;
+  margin-top: .85rem;
+  color: var(--muted);
+  font-size: .8rem;
+}
+.map-legend i {
+  display: inline-block;
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  margin-right: .35rem;
+  vertical-align: middle;
+}
+
+.stay-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .55rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 900px) { .stay-track { grid-template-columns: repeat(2, 1fr); } }
+.stay-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: .9rem;
+  color: inherit;
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.stay-pill:hover {
+  border-color: rgba(94,200,199,.4);
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, rgba(94,200,199,.06), var(--bg-card));
+  box-shadow: var(--shadow-soft);
+}
+.stay-pill .nights {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ice);
+}
+.stay-pill strong { display: block; margin: .25rem 0; font-size: .95rem; font-weight: 600; }
+.stay-pill span { font-size: .78rem; color: var(--muted); }
+
+table.route { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.route th, table.route td {
+  text-align: left;
+  padding: .75rem .5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  transition: background var(--dur-fast) var(--ease);
+}
+table.route tbody tr:hover td { background: rgba(255,255,255,.02); }
+table.route th {
+  color: var(--muted);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+table.route td { color: var(--text-dim); }
+table.route td:first-child { color: var(--text); font-weight: 600; }
+
+/* Day cards + animated details */
+.day {
+  scroll-margin-top: 4.2rem;
+  margin-bottom: 1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  overflow: clip;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.day:hover {
+  border-color: rgba(232,238,242,.16);
+  box-shadow: var(--shadow-soft);
+}
+.day[open] {
+  border-color: rgba(94,200,199,.38);
+  box-shadow: 0 16px 40px rgba(0,0,0,.32);
+}
+.day::details-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    height var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    content-visibility var(--dur) allow-discrete;
+}
+.day[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+.day-summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.05rem 1.2rem;
+  transition: background var(--dur) var(--ease);
+}
+.day-summary:hover { background: rgba(255,255,255,.015); }
+.day-summary::-webkit-details-marker { display: none; }
+.day-num {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--ice);
+  transition:
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.day:hover .day-num { transform: scale(1.04); }
+.day[open] .day-num {
+  box-shadow: 0 0 0 4px rgba(94,200,199,.12);
+}
+.day.highlight .day-num {
+  background: linear-gradient(145deg, #1f5c62, #2a8a88);
+  color: #e9fffe;
+  border-color: transparent;
+}
+.day-summary h2 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 600;
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}
+.day-summary p { margin: .25rem 0 0; color: var(--muted); font-size: .85rem; }
+.day-tags { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: flex-end; }
+.tag {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .28rem .55rem;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tag.stay { color: var(--ice); border-color: rgba(94,200,199,.25); }
+.tag.drive { color: var(--amber); border-color: rgba(224,163,91,.25); }
+.tag.flight { color: #b7c4d0; }
+
+.day-body { padding: 0 1.2rem 1.3rem; border-top: 1px solid var(--line); }
+.day-tip-table { margin-top: 1rem; overflow-x: auto; }
+.day-tip-table table.route th { width: 7.2rem; white-space: nowrap; color: var(--ice); vertical-align: top; }
+.day-tip-table table.route td { color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .55rem;
+  margin-top: 1rem;
+}
+@media (max-width: 640px) {
+  .hero h1 { white-space: normal; }
+  .stat-row { grid-template-columns: 1fr; }
+  .day-summary { grid-template-columns: auto 1fr; }
+  .day-tags { grid-column: 1 / -1; justify-content: flex-start; }
+}
+.stat {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .75rem .85rem;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.stat:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-1px);
+}
+.stat b {
+  display: block;
+  font-size: .66rem;
+  color: var(--muted);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: .2rem;
+}
+.stat span { font-weight: 600; font-size: .88rem; color: var(--text); }
+
+.timeline { position: relative; margin: 1.2rem 0 0; padding-left: 1.15rem; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: .32rem;
+  top: .25rem;
+  bottom: .25rem;
+  width: 2px;
+  background: linear-gradient(var(--ice-dim), transparent);
+}
+.tl-item {
+  position: relative;
+  padding: 0 0 1rem .95rem;
+}
+.day[open] .tl-item {
+  animation: fadeSlide .55s var(--ease-out) both;
+}
+.day[open] .tl-item:nth-child(1) { animation-delay: .05s; }
+.day[open] .tl-item:nth-child(2) { animation-delay: .12s; }
+.day[open] .tl-item:nth-child(3) { animation-delay: .19s; }
+.day[open] .tl-item:nth-child(4) { animation-delay: .26s; }
+.day[open] .tl-item:nth-child(5) { animation-delay: .33s; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: -.92rem;
+  top: .42rem;
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--ice);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.tl-item:hover::before {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(94,200,199,.15);
+}
+.tl-item .time { font-size: .72rem; font-weight: 700; color: var(--ice); letter-spacing: .04em; }
+.tl-item strong { display: block; margin: .12rem 0; font-size: .95rem; font-weight: 600; }
+.tl-item p { margin: 0; color: var(--text-dim); font-size: .9rem; }
+
+.day-map {
+  height: 280px;
+  margin-top: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease);
+}
+.map-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .8rem; }
+
+.note {
+  margin-top: .9rem;
+  padding: .8rem .95rem;
+  border-radius: 12px;
+  background: rgba(94,200,199,.08);
+  border-left: 3px solid var(--ice);
+  font-size: .88rem;
+  color: var(--text-dim);
+  transition: background var(--dur-fast) var(--ease);
+}
+.note.warn {
+  background: rgba(224,122,95,.08);
+  border-left-color: var(--danger);
+}
+
+.poi-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .85rem;
+}
+.poi {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .3rem .65rem;
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.poi:hover {
+  color: var(--ice);
+  border-color: rgba(94,200,199,.35);
+  background: rgba(94,200,199,.08);
+  transform: translateY(-1px);
+}
+
+footer {
+  padding: 2.6rem 0 3.6rem;
+  color: var(--muted);
+  font-size: .82rem;
+  border-top: 1px solid var(--line);
+}
+
+.leaflet-container { background: #0a0e13; font: 12px/1.5 var(--font-sans); }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-soft) !important;
+  color: var(--ice) !important;
+}
+.leaflet-bar { border: 1px solid var(--line) !important; box-shadow: none !important; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow);
+}
+.leaflet-popup-content { margin: .7rem .85rem; font-size: .85rem; }
+.leaflet-popup-content strong { color: var(--ice); font-family: var(--font-serif); }
+.pin-label {
+  background: rgba(22,29,39,.92);
+  border: 1px solid rgba(94,200,199,.45);
+  color: var(--text);
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .kicker, .hero h1, .lead, .chips, .toolbar { opacity: 1; animation: none; }
+  .day::details-content { transition: none; }
+  .tl-item { opacity: 1 !important; transform: none !important; }
+}
+
+@media print {
+  .topbar, .day-nav { display: none !important; }
+  body { background: #fff; color: #111; }
+  .card, .day { box-shadow: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+
+</head>
+
+<body>
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar-actions">
+      <a class="topbar-back" href="/">← 行程總覽</a>
+      <button class="btn primary" type="button" id="expandAll">全部展開</button>
+      <button class="btn" type="button" id="collapseAll">全部收合</button>
+      <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
+      <a class="btn" href="https://www.sbb.ch/en" target="_blank" rel="noopener">SBB / 瑞士鐵路</a>
+      <a class="btn" href="https://www.oebb.at/en/" target="_blank" rel="noopener">ÖBB / 火車</a>
+      <a class="btn" href="#reminders">提醒</a>
+      <a class="btn" href="#photo-meals-gear">拍照／餐／設備</a>
+      <a class="btn" href="#money">現金／刷卡</a>
+      <a class="btn" href="#budget">省錢攻略</a>
+      <a class="btn" href="#luggage">行李</a>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">AoSora · Alps · Sep 2027</div>
+    <h1>阿爾卑斯<span>秋色</span>二十日</h1>
+    <p class="lead">2027/9/5–9/24 · ZRH 入 → VIE 出 · 西向東：策馬特 → 多洛米蒂 → 哈修塔特 → 維也納 · 火車＋租車。</p>
+    <div class="chips">
+      <span class="chip">20 天</span>
+      <span class="chip">ZRH → VIE</span>
+      <span class="chip">策馬特 4 晚</span>
+      <span class="chip">多洛米蒂 6 晚</span>
+      <span class="chip">哈修塔特 3 晚</span>
+      <span class="chip">維也納 5 晚</span>
+      <span class="chip">秋色山岳</span>
+    </div>
+  </div>
+</header>
+
+<nav class="day-nav"><div class="wrap day-nav-inner" id="dayNav"></div></nav>
+
+<main>
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">行程總覽地圖</h2>
+    <p class="section-sub">青＝住宿據點、琥珀＝重點、珊瑚＝馬特洪峰／三峰山／哈修塔特。路線含策馬特日歸、多洛米蒂環線、哈修塔特→維也納駕車與維也納支線。</p>
+    <div id="overviewMap"></div>
+    <div class="map-legend">
+      <span><i style="background:#5ec8c7"></i>住宿 overnight</span>
+      <span><i style="background:#e0a35b"></i>重點景點</span>
+      <span><i style="background:#e07a5f"></i>馬特洪峰／三峰山／哈修塔特</span>
+      <span>底圖：CARTO Voyager · OSRM 預先計算</span>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">住宿據點</h2>
+    <p class="section-sub">ZRH 入、VIE 出；四個住宿節點與晚數。</p>
+    <div class="stay-track">
+      <a class="stay-pill" href="#day-1"><div class="nights">4 晚</div><strong>策馬特</strong><span>9/5–8</span></a>
+      <a class="stay-pill" href="#day-5"><div class="nights">6 晚</div><strong>多洛米蒂</strong><span>9/9–14</span></a>
+      <a class="stay-pill" href="#day-11"><div class="nights">3 晚</div><strong>哈修塔特</strong><span>9/15–17</span></a>
+      <a class="stay-pill" href="#day-14"><div class="nights">5 晚</div><strong>維也納</strong><span>9/18–23</span></a>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>核心體驗</h3>
+        <ul>
+          <li>Gornergrat＋馬特洪冰川天堂＋Stellisee／Rothorn</li>
+          <li>Seceda、Alpe di Siusi、Funes、Tre Cime、Braies＋Passo Giau</li>
+          <li>哈修塔特 Skywalk＋鹽礦；Gosausee 或 Salzburg 半日</li>
+          <li>美泉宮、美景宮、霍夫堡＋KHM＋MQ</li>
+          <li>波爾查諾租車 ↔ 維也納還車；策馬特無車區</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>移動對照</h3>
+        <ul>
+          <li>9/5 ZRH 抵達 → 經由路線 → 策馬特（火車）</li>
+          <li>9/9 策馬特 → 波爾查諾租車 → Ortisei（長距日）</li>
+          <li>9/15 Ortisei → Hallstatt（自駕）</li>
+          <li>9/18 Hallstatt → 維也納還車</li>
+          <li>9/24 VIE 出發（預留緩衝）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">據點移動</h2>
+    <p class="section-sub">火車（瑞士）＋南蒂羅爾租車；時間僅供參考。</p>
+    <div class="card" style="overflow-x:auto">
+      <table class="route">
+        <thead><tr><th>路段</th><th>方式</th><th>約時</th><th>當天</th></tr></thead>
+        <tbody>
+          <tr><td>ZRH → 策馬特</td><td>火車</td><td>約 3.5–4h</td><td>9/5</td></tr>
+          <tr><td>策馬特 → Ortisei</td><td>火車＋租車</td><td>全天</td><td>9/9</td></tr>
+          <tr><td>Ortisei → Hallstatt</td><td>自駕</td><td>約 4–5h</td><td>9/15</td></tr>
+          <tr><td>Hallstatt → 維也納</td><td>自駕（還車）</td><td>約 3–4h</td><td>9/18</td></tr>
+          <tr><td>維也納 → VIE</td><td>機場快線／計程車</td><td>約 30–50 分</td><td>9/24</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="stay">
+  <div class="wrap">
+    <h2 class="section-title">住宿 overnight</h2>
+    <p class="section-sub">住宿為城市／區域級；無訂房編號與個資。</p>
+    <div class="grid-3" id="stayCards"></div>
+  </div>
+</section>
+
+
+<section class="reveal" id="reminders">
+  <div class="wrap">
+    <h2 class="section-title">還有哪些「要提醒的小事」</h2>
+    <p class="section-sub">已寫進每日表格的八欄之外，整趟共用、出發前可一次打勾的類型如下。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>已進每日表</h3>
+        <ul>
+          <li><strong>省錢</strong> — 套票、取捨、異地還車</li>
+          <li><strong>行李／寄放</strong> — 拖箱或日包、飯店暫存</li>
+          <li><strong>預約／票務</strong> — 當天要先買或確認的票</li>
+          <li><strong>當日提醒</strong> — 天氣、最後一班纜、法規、安全</li>
+          <li><strong>付款</strong> — 當日刷卡或要現金</li>
+          <li><strong>拍照／三餐／設備</strong> — 黃金時、吃什麼、帶什麼鏡頭</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出發前總檢（整趟一次）</h3>
+        <ul>
+          <li><strong>證件</strong>：護照效期、國際駕照 IDL、信用卡雙卡</li>
+          <li><strong>插頭</strong>：瑞士 Type J；義／奧 Type C／F（轉接頭備一顆）</li>
+          <li><strong>App</strong>：SBB、ÖBB、Google Maps 離線、租車商 App、銀行通知開旅遊</li>
+          <li><strong>公路票</strong>：義大利／奧地利 vignette 取車前買</li>
+          <li><strong>保險</strong>：旅遊險含高山／取消；租車全險條款</li>
+          <li><strong>通訊</strong>：eSIM／漫遊；備用離線地圖</li>
+          <li><strong>健康</strong>：常用藥、OK繩、防曬、個人用品</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>山區專屬</h3>
+        <ul>
+          <li>最後一班纜車／齒軌下山時間（每天查）</li>
+          <li>層狀穿衣＋防風殼；山頂比村子冷 10°C 很常見</li>
+          <li>防曬＋墨鏡（雪／冰面反光）</li>
+          <li>天氣預報：MeteoSwiss／南蒂羅爾；雲多就改備案</li>
+          <li>步道濕滑、牧牛關柵門；勿踩牧草拍照</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>開車／城市</h3>
+        <ul>
+          <li>停車勿留護照筆電；登山口尤其</li>
+          <li>奧地利／瑞士測速嚴；市區 30／50</li>
+          <li>週日超市可能休或短縮（六晚補貨）</li>
+          <li>緊急電話全歐 112</li>
+          <li>小費多已含服務費，尾數取整即可</li>
+          <li>退稅留單據；出境機場辦理</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">逐日行程</h2>
+    <p class="section-sub">每日表格：省錢、行李、預約、付款、拍照、三餐、設備、當日提醒。</p>
+    <div id="days"></div>
+  </div>
+</section>
+
+
+
+
+<section class="reveal" id="photo-meals-gear">
+  <div class="wrap">
+    <h2 class="section-title">拍照・三餐・設備</h2>
+    <p class="section-sub">每日表格已有「拍照／三餐／設備」三欄；這裡是整趟共用原則。黃金時段以當地日出日落為準（9 月阿爾卑斯大約 06:30–07:30 日出、19:00–20:00 日落，請出發前用 App 再對）。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>拍照原則</h3>
+        <ul>
+          <li><strong>山景優先清晨</strong>：Seceda、Braies、Funes、Hallstatt 湖倒影都是愈早愈穩。</li>
+          <li><strong>高原午後側光</strong>：Alpe di Siusi、Passo Giau 適合下半場。</li>
+          <li><strong>維也納</strong>：建築細節與咖啡館窗光；館內多半禁閃光／腳架。</li>
+          <li>移動日不硬排黃金時；人到了再補街景。</li>
+          <li>無人機：多數國家公園／熱門點禁止，預設不帶飛。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>建議器材清單</h3>
+        <ul>
+          <li><strong>機身</strong>：一台主力＋手機備援（防水袋）。</li>
+          <li><strong>鏡頭</strong>：超廣角或 14–24／16–35；標準變焦 24–70；長焦 70–200（壓峰線）。兩鏡也能跑完全程。</li>
+          <li><strong>濾鏡</strong>：CPL（湖面／草地）；可選 ND／漸層。</li>
+          <li><strong>腳架</strong>：輕量碳腳，日出湖景用；城市博物館多半用不到。</li>
+          <li><strong>其他</strong>：備用電池×2–3、快速記憶卡、擦鏡布、雨衣／相機雨罩、遮光罩、偏光墨鏡。</li>
+          <li><strong>登山</strong>：好底鞋；可選登山杖。不建議為拍照硬穿皮鞋上岩屑路。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>三餐節奏</h3>
+        <ul>
+          <li><strong>早</strong>：飯店或超市麵包／優格；上山日一定帶走路吃的。</li>
+          <li><strong>午</strong>：山屋簡餐或自備；瑞士／纜車站餐貴，便當最省。</li>
+          <li><strong>晚</strong>：山區廚房多早關（常 21:00 前）；熱門村（哈修塔特）建議早到或預約。</li>
+          <li><strong>超市</strong>：Coop／Migros（瑞士）、Eurospin／Lidl（義）、Billa（奧）。週日可能休—六晚補貨。</li>
+          <li>水量：山上補水點有限，出發前灌滿。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>App／小工具</h3>
+        <ul>
+          <li>日出日落：PhotoPills／Sun Surveyor／天氣 App</li>
+          <li>天氣預報：MeteoSwiss；南蒂羅爾／ZAMG</li>
+          <li>離線地圖＋軌跡備份</li>
+          <li>行動電源 10000mAh+（冷天電量衰減快）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="money">
+  <div class="wrap">
+    <h2 class="section-title">現金與信用卡</h2>
+    <p class="section-sub">結論：<strong>大半用信用卡就夠</strong>（Visa／Mastercard／感應支付）。現金只當「口袋零用＋備援」，不必帶大量現鈔上路。刷卡一律選當地幣（CHF 或 EUR），不要選折算成 TWD（DCC）。</p>
+
+    <div class="card" style="margin-bottom:1rem">
+      <h3>能不能刷卡？</h3>
+      <table class="route">
+        <thead><tr><th>項目</th><th>瑞士（策馬特）</th><th>義／奧（多洛米蒂→維也納）</th></tr></thead>
+        <tbody>
+          <tr><td>飯店、租車、火車站、大部分餐廳</td><td>刷卡 OK</td><td>刷卡 OK</td></tr>
+          <tr><td>高山纜車／齒軌（現場或官網）</td><td>刷卡 OK</td><td>刷卡 OK</td></tr>
+          <tr><td>超市（Coop／Migros／Billa／Lidl）</td><td>刷卡 OK</td><td>刷卡 OK</td></tr>
+          <tr><td>博物館、維也納地鐵</td><td>—</td><td>刷卡 OK</td></tr>
+          <tr><td>山屋、路邊小攤、公廁、部分停車咪錶</td><td>可能要現金</td><td>可能要現金／硬幣</td></tr>
+          <tr><td>租車押金／預授權</td><td>—</td><td><strong>要信用卡</strong>（簽帳金融卡常被拒）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>建議帶多少現金（口袋用）</h3>
+        <ul>
+          <li><strong>一人粗估</strong>：CHF <strong>100–150</strong>（瑞士 4 日）＋ EUR <strong>150–250</strong>（其餘約 16 日）＝整趟口袋現鈔大約 <strong>等值 TWD 9,000–15,000</strong> 級距（匯率會變）。</li>
+          <li><strong>兩人同行</strong>：可共享，整趟口袋現鈔約 CHF 150–200 ＋ EUR 250–350 通常夠（不含大額住宿／租車）。</li>
+          <li><strong>不必</strong>：把飯店、纜車、租車、博物館預算都換成現金——那些刷卡更安全。</li>
+          <li><strong>面額</strong>：CHF／EUR 以 10、20、50 為主；備一點硬幣給停車咪錶。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>怎麼換／怎麼提最划算</h3>
+        <ul>
+          <li>台灣先換<strong>少量</strong> CHF（約 100）應急即可；其餘到當地 ATM 提（選「以 CHF／EUR 計價、不轉成 TWD」）。</li>
+          <li>歐元在義大利或奧地利 ATM 提；別在瑞士提太多 EUR。</li>
+          <li>避開機場大額兌幣櫃檯匯率。</li>
+          <li>出發前向銀行開<strong>海外交易</strong>；備兩張不同銀行卡。</li>
+          <li>查卡片是否收海外手續費；旅行卡／雙幣卡較省。</li>
+          <li>瑞士行動支付 TWINT 遊客多半用不了，不依賴它。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>刷卡注意</h3>
+        <ul>
+          <li>終端機問「用 TWD 還是 CHF／EUR」→ <strong>一定選 CHF／EUR</strong>。</li>
+          <li>美國運通（Amex）在小店接受度較低，主力用 Visa／Master。</li>
+          <li>感應支付（Apple／Google Pay）在三國都常見。</li>
+          <li>帳單預留租車押金凍結額度（常數百至上千歐）。</li>
+          <li>瑞士用法郎 <strong>CHF</strong>，不是歐元；有人收 EUR 但匯率差、找零常給 CHF。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>什麼情況才需要多帶現金</h3>
+        <ul>
+          <li>計畫跑很多偏遠山屋、只收現金的小酒館</li>
+          <li>卡片額度緊、或不想依賴 ATM</li>
+          <li>帶小孩／長輩、希望小費與小額支付更順</li>
+          <li>反之：全程連鎖飯店＋線上購票＋大城市 → 現金可再少一截</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="budget">
+  <div class="wrap">
+    <h2 class="section-title">省錢攻略（套票／交通／景點／住宿）</h2>
+    <p class="section-sub">依本行程「瑞士短住＋義奧自駕＋維也納」量身；價格會變，出發前用官網再對一次帳。原則：少買用不到的大套票，把錢留在必去的高山與租車還車費。</p>
+
+    <div class="card" style="margin-bottom:1rem">
+      <h3>先抓最大帳單（優先順序）</h3>
+      <ul>
+        <li><strong>1. 租車異地還車</strong>：波爾查諾（義）→ 維也納（奧）單程費常比想像貴。先比價「同國還車」：例如奧地利取車（Innsbruck）→ 維也納還；或哈修塔特／薩爾斯堡還車後改火車進維也納。</li>
+        <li><strong>2. 瑞士高山纜／齒軌</strong>：Gornergrat、冰川天堂單程往返都不便宜。Half Fare（半價卡）通常比整段 Swiss Travel Pass 划算（本行程瑞士只待約 4 晚）。</li>
+        <li><strong>3. 住宿區位</strong>：哈修塔特村內、Ortisei 正中、維也納一區溢價高。往鄰村／次級街區可省一截，用交通換房費。</li>
+        <li><strong>4. 景點套票別衝動</strong>：維也納 Pass、Dolomiti SuperSummer、Zermatt Peak Pass 都要「算會不會用滿」再買。</li>
+      </ul>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>瑞士・交通與套票</h3>
+        <ul>
+          <li><strong>Swiss Half Fare Card（半價卡）</strong>：本行程首選。ZRH→Visp→策馬特、Gornergrat、冰川天堂多半可半價；比買多日 Swiss Travel Pass 更貼這趟「只泡策馬特」。</li>
+          <li><strong>Swiss Travel Pass</strong>：除非你還要在瑞士多城連跑，否則這趟多半不划算。</li>
+          <li><strong>Zermatt Peak Pass</strong>：適合狂搭多條纜車的人。若 Gornergrat＋冰川天堂各去一次，先算「半價卡＋單點票」或官方 Peak2Peak／聯票，常比買全日 Peak Pass 便宜。</li>
+          <li><strong>更省版</strong>：兩座山二選一（優先 Gornergrat＋Riffelsee）；五湖改走 Sunnegga 線，花費明顯較低。</li>
+          <li><strong>火車票</strong>：SBB App 提早買 Saver Fare；機場當天現買最貴。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>多洛米蒂・纜車與自駕</h3>
+        <ul>
+          <li><strong>Seceda 纜車不吃 Dolomiti SuperSummer</strong>：要另買。SuperSummer 日票／3 選 4 只有在「很多天都狂搭纜」才值得；本行程很多是自駕觀景，先列會搭的纜車再決定。</li>
+          <li><strong>飯店 Guest Card</strong>：南蒂羅爾常見住房送區域巴士／小折扣，入住先問櫃台。</li>
+          <li><strong>Alpe di Siusi</strong>：優先纜車／接駁上高原，少開車上高原繳停車（且常要預約車位）。</li>
+          <li><strong>Tre Cime</strong>：開車上停車場不便宜（約數十歐／車）。可評估 Misurina 接駁／早鳥時段；一人分攤停車比每人買團遊通常仍省。</li>
+          <li><strong>Braies</strong>：尖峰常要接駁或管制。愈早到愈省時間＝少花錢在繞路與臨停。</li>
+          <li><strong>油＋高速</strong>：義大利／奧地利 vignette（電子高速公路票）先買年／十日期，別在收費站現學。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>哈修塔特・奧地利湖區</h3>
+        <ul>
+          <li><strong>住鄰近村</strong>：Obertraun、Bad Goisern、Hallstatt 對岸／稍外圍，房價通常低於湖邊老街，再走路或短程船／公車進村。</li>
+          <li><strong>景點取捨</strong>：Skywalk／湖岸散步成本低；鹽礦、Dachstein 纜車是「加購項」。預算緊就二選一，或改免費感較高的 Gosausee 湖岸。</li>
+          <li><strong>停車</strong>：村內車位貴又少。住有停車的飯店／P1–P3 外圍再接駁，比在村裡打轉省錢省怒氣。</li>
+          <li><strong>9/17 三選一</strong>：Gosausee（低花費）＞ Dachstein（纜車貴）＞ 薩爾斯堡半日（油＋停車＋時間）。想省就選湖。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>維也納・票券</h3>
+        <ul>
+          <li><strong>交通</strong>：Wiener Linien 24／48／72h 票通常夠用。Vienna City Card＝交通＋折扣，不是免費入場；博物館不多就買純交通票。</li>
+          <li><strong>Vienna PASS</strong>：適合「一天塞 3+ 付費景點」。本行程節奏偏鬆，多半不如單買。</li>
+          <li><strong>較聰明組合</strong>：美泉＋霍夫堡可看 Sisi Ticket；美景宮《吻》單買上宮；藝術史視興趣再加。或 Vienna Flexi（選 2–3 館）若剛好對上你的清單。</li>
+          <li><strong>免費／低價</strong>：史蒂芬大教堂外觀與巷弄、環城大道散步、公園、多數教堂；咖啡選一間久坐就好，不必每間經典店打卡。</li>
+          <li><strong>Wachau 日歸</strong>：用 ÖBB 早鳥／標準票；別為一天再買維也納大 Pass。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>住宿怎麼省</h3>
+        <ul>
+          <li><strong>連住折扣</strong>：策馬特 4 晚、Ortisei 6 晚、維也納 5 晚都夠談週租／長住價；Booking／官網比價，有時官網含半餐更值。</li>
+          <li><strong>有廚房的公寓</strong>：山區餐廳貴，早餐＋一兩餐自理很能打。</li>
+          <li><strong>避開「湖景房／峰景房」溢價</strong>：步行 5–10 分鐘、無景的房型常常同品質便宜一截；拍照走路去觀景點即可。</li>
+          <li><strong>9 月肩季</strong>：比 7–8 月好談價；愈早訂愈有機會鎖非暑假價。</li>
+          <li><strong>哈修塔特</strong>：寧可住近一點的鄰鎮舒服房，也不要硬扛村內高價小房。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>餐飲與雜支</h3>
+        <ul>
+          <li>超市（Coop／Migros、Eurospin／Lidl、Billa）解決早餐與登山便當。</li>
+          <li>山屋午餐點一套餐分享或只喝湯＋麵包，比每人主餐便宜。</li>
+          <li>瑞士盡量用卡；備一點現金即可。歐元區同樣。</li>
+          <li>城市博物館多可線上早鳥；現場買熱門時段常更貴或售完。</li>
+          <li>旅遊保險含高山救援／取消，比臨時改票可能更省。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <h3>建議採買清單（依序）</h3>
+      <table class="route">
+        <thead><tr><th>項目</th><th>建議</th><th>何時買</th></tr></thead>
+        <tbody>
+          <tr><td>瑞士 Half Fare</td><td>優先於 Swiss Travel Pass</td><td>出發前官網</td></tr>
+          <tr><td>ZRH→策馬特火車</td><td>SBB Saver＋半價卡</td><td>愈早愈好</td></tr>
+          <tr><td>Gornergrat／冰川天堂</td><td>半價＋單點或官方聯票；慎買 Peak Pass</td><td>出發前 1–2 週看天氣</td></tr>
+          <tr><td>租車</td><td>比「異地還車費」；考慮奧境取還或湖區還車＋火車</td><td>愈早愈好</td></tr>
+          <tr><td>義／奧高速公路票</td><td>電子 vignette 預購</td><td>取車前</td></tr>
+          <tr><td>Seceda／Siusi 纜車</td><td>單買；確認 SuperSummer 不含 Seceda</td><td>前一晚或當日早</td></tr>
+          <tr><td>Tre Cime 停車／接駁</td><td>預約車位或改接駁</td><td>依官網時程</td></tr>
+          <tr><td>維也納交通</td><td>72h 票為主</td><td>抵達日</td></tr>
+          <tr><td>美泉／美景／霍夫堡</td><td>單票或 Sisi／Flexi；慎買 Vienna PASS</td><td>出發前一週</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <h3>若預算還要再砍：行程瘦身（仍保留精華）</h3>
+      <ul>
+        <li>策馬特：冰川天堂與 Gornergrat <strong>二擇一</strong>；保留 Riffelsee／五湖其一。</li>
+        <li>多洛米蒂：Tre Cime 與 Braies <strong>二擇一</strong>全日；Seceda 保留（辨識度最高）。</li>
+        <li>哈修塔特：取消鹽礦與 Dachstein，改湖岸＋Gosausee。</li>
+        <li>維也納：付費館縮成「美泉花園（可只逛園區票）＋美景上宮」；霍夫堡改外觀。</li>
+        <li>總天數：可砍到 16–17 日（維也納改 3 晚、多洛米蒂改 5 晚），住宿與餐費同步下降。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">備註與彈性</h2>
+    <p class="section-sub">天氣、封路與少量行李可在 9/23 緩衝日調整。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>策馬特</h3>
+        <ul>
+          <li>無車區徒步；齒軌列車／纜車視天氣改方案</li>
+          <li>9/9 長途前早睡</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>多洛米</h3>
+        <ul>
+          <li>Tre Cime 停車與徒步時間預留充裕</li>
+          <li>Braies 早到避開大陣團</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>哈修塔特</h3>
+        <ul>
+          <li>老鎮停車場有限；住房區接送視預約</li>
+          <li>9/17 三選一：Gosausee／Dachstein／Salzburg</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>維也納</h3>
+        <ul>
+          <li>9/18 還車點預留時間</li>
+          <li>9/22 Prater 或 Wachau 二選一</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="reveal" id="luggage">
+  <div class="wrap">
+    <h2 class="section-title">行李怎麼帶</h2>
+    <p class="section-sub">結論先講：<strong>整趟可以帶行李箱</strong>，但不適合拖著箱子爬雪山或擠熱門湖岸。標準配備是「1 個中型行李箱（或旅行袋）＋ 1 個登山日用背包」；大硬殼超大箱在策馬特石板路與哈修塔特坡道會很痛苦。</p>
+
+    <div class="card" style="margin-bottom:1rem">
+      <h3>一段話版</h3>
+      <ul>
+        <li><strong>移動日／住飯店</strong>：拖行李箱 OK（火車、租車後備箱、飯店接駁）。</li>
+        <li><strong>高山／健行日</strong>：行李箱留在飯店，只背日用背包（水、外套、零食、證件小額現金）。</li>
+        <li><strong>不用先寄整個歐洲</strong>：本行程西進東出（ZRH→VIE），行李跟著人走即可；真要寄放，優先用「當日退房飯店暫存」與「車站／機場置物櫃」。</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem; overflow-x:auto">
+      <h3>逐段能不能拖箱子</h3>
+      <table class="route">
+        <thead><tr><th>路段</th><th>大行李箱</th><th>怎麼做</th></tr></thead>
+        <tbody>
+          <tr><td>ZRH → 策馬特火車</td><td>可以</td><td>月台有行李區；轉 Visp 預留時間，別趕末班。</td></tr>
+          <tr><td>策馬特村內</td><td>可以，但別自己拖太遠</td><td>無汽車。多數飯店可派<strong>電動車</strong>到車站接人＋行李（請先告知抵達車次）。也可叫電瓶計程車。</td></tr>
+          <tr><td>Gornergrat／冰川天堂／五湖日</td><td>不行（別帶）</td><td>箱子鎖飯店；只背日用背包上山。</td></tr>
+          <tr><td>9/9 策馬特 → 波爾查諾 → Ortisei</td><td>可以</td><td>火車扛箱 → 租車行後備箱。這天行李量決定你會不會累垮，行李箱勿超大。</td></tr>
+          <tr><td>多洛米蒂自駕日（Seceda、Siusi、Funes、Tre Cime、Braies）</td><td>車子可放；人不要拖</td><td>主行李留<strong>Ortisei 飯店</strong>最省事。後備箱只放當天備援外套即可，貴重品勿留車內。</td></tr>
+          <tr><td>Ortisei → 哈修塔特</td><td>可以</td><td>後備箱直達。進村常停外圍停車場，再走路／接駁；選「含停車或有接送」的住宿最省力。</td></tr>
+          <tr><td>哈修塔特老街坡道</td><td>勉強可以、不建議硬拖</td><td>石板＋坡。請飯店協助、或住湖外／對岸再船／公車進村。</td></tr>
+          <tr><td>哈修塔特 → 維也納（還車後）</td><td>可以</td><td>還車後改地鐵／電車；選靠近地鐵站的飯店。</td></tr>
+          <tr><td>維也納市區日</td><td>留飯店</td><td>博物館日背小包即可。</td></tr>
+          <tr><td>VIE 離境</td><td>可以</td><td>CAT／ÖBB／計程車皆可；預留報到時間。</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>建議帶什麼尺寸</h3>
+        <ul>
+          <li><strong>一人</strong>：24–26 吋軟殼行李箱（或 40–50L 旅行袋）＋ 20–30L 登山日用背包。</li>
+          <li><strong>兩人</strong>：共 1–2 個中型箱，比一人一個超大箱好搬、也好塞後備箱。</li>
+          <li>優先<strong>雙輪／四輪都能走石板</strong>；硬殼超大箱在策馬特巷弄最痛苦。</li>
+          <li>日用背包要有胸／腰扣，裝得下羽絨、雨衣、1L 水、零食。</li>
+          <li>打包：層狀衣物＋洗衣一次，比帶兩週全套乾淨衣更省空間。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>寄放／暫存點（需要時）</h3>
+        <ul>
+          <li><strong>第一優先：住的飯店</strong> — 提早到、晚退房幾乎都能免費暫存；9/9、9/15、9/18、9/24 移動日都靠這個。</li>
+          <li><strong>策馬特</strong> — 一般不必另租置物櫃；退房當天若下午才下山，請飯店暫存後再赴出勤。</li>
+          <li><strong>蘇黎世機場 ZRH</strong> — 有行李寄存服務（提早到或半夜班機才需要）。</li>
+          <li><strong>維也納中央車站／機場</strong> — 置物櫃或寄存；適合「還車後先玩市區、晚上才入住」或「退房後深夜機」。</li>
+          <li><strong>SBB 行李運送</strong>（車站到飯店）— 有，但常要提前預約、不是當日達；這趟非必要，除非行李極多或行動不便。</li>
+          <li><strong>租車後備箱 ≠ 寄物櫃</strong> — 健行停車時勿放護照、筆電、相機主力；小偷會看登山口停車場。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>關鍵日動線（行李視角）</h3>
+        <ul>
+          <li><strong>9/5 抵達</strong>：火車扛箱上山 → 飯店電動車／電瓶計程車 → 丟房或先寄櫃台再散步。</li>
+          <li><strong>9/6–8 登山日</strong>：箱在飯店；只背日包。護照可飯店保險櫃。</li>
+          <li><strong>9/9 長移動</strong>：早退房（行李跟著走）→ 火車 → 波爾查諾取車塞後備箱 → Ortisei 入住。這天不要再塞景點。</li>
+          <li><strong>9/10–14</strong>：主行李釘在 Ortisei；車子只帶當天小包。</li>
+          <li><strong>9/15</strong>：退房裝箱開車 → 哈修塔特外圍停妥 → 行李進房再進村拍照。</li>
+          <li><strong>9/18</strong>：退房開車去維也納還車 → 行李箱轉大眾運輸 → 飯店；若還車點離住很遠，可先問飯店能否晚 check-in 暫存。</li>
+          <li><strong>9/24</strong>：退房可先寄飯店 → 市區補買 → 再取行李赴機場（若班機晚）。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>想再輕一點的方案</h3>
+        <ul>
+          <li><strong>方案 A（推薦）</strong>：全程帶箱，但箱型中等；山日零拖拉。</li>
+          <li><strong>方案 B</strong>：主行李用旅行袋／背包（osprey 等級），完全不帶硬殼，石板路最友善。</li>
+          <li><strong>方案 C（少見）</strong>：瑞士段用 SBB 行李預送到策馬特飯店，人只背日包上山——成本高、要預約，僅適合行李很多或帶小孩推車族。</li>
+          <li>不建議：把大箱寄在蘇黎世、人空身上山再折返取件（這趟東出維也納，折返會浪費一天）。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">裝備與每日檢查</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>必裝</h3>
+        <ul>
+          <li>防滑登山鞋；薄防雨＋防曬</li>
+          <li>高山：多層衣與墨鏡（Gornergrat／Seceda）</li>
+          <li>瑞士通行證；南蒂羅爾高速公路票</li>
+          <li>租車：國際許可、全險、高山道緩行</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出發前</h3>
+        <ul>
+          <li>ZRH→策馬特火車票（座位）</li>
+          <li>波爾查諾租車預約；維也納還車點</li>
+          <li>Tre Cime／哈修塔特鹽礦場次</li>
+          <li>維也納博物館聯票或時段票</li>
+          <li>9/24 機場預留緩衝</li>
+          <li>策馬特飯店：告知站到達時段以便電動車接行李</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">阿爾卑斯秋色 20 日 · Leaflet + CARTO Voyager · 隱私：不含訂房編號與個資。</div>
+</footer>
+
+
+<script>
+const P = {
+  zrh: { zh: "蘇黎世機場", orig: "ZRH", lat: 47.4647, lng: 8.5492, gmaps: "Zurich Airport" },
+  zermattStay: { zh: "策馬特（住宿）", orig: "Zermatt", lat: 46.0207, lng: 7.7491, gmaps: "Zermatt" },
+  gornergrat: { zh: "Gornergrat 觀景台", orig: "Gornergrat", lat: 45.9834, lng: 7.7843, gmaps: "Gornergrat" },
+  riffelsee: { zh: "Riffelsee 鏡面湖", orig: "Riffelsee", lat: 46.0039, lng: 7.7236, gmaps: "Riffelsee" },
+  glacierParadise: { zh: "馬特洪峰冰川天堂", orig: "Glacier Paradise", lat: 45.9375, lng: 7.7278, gmaps: "Matterhorn Glacier Paradise" },
+  stellisee: { zh: "Stellisee", orig: "Stellisee", lat: 46.0078, lng: 7.7122, gmaps: "Stellisee" },
+  sunnegga: { zh: "Sunnegga（五湖起點）", orig: "Sunnegga", lat: 46.0139, lng: 7.7861, gmaps: "Sunnegga" },
+  rothorn: { zh: "Rothorn 觀景", orig: "Rothorn", lat: 46.0322, lng: 7.8144, gmaps: "Rothorn Zermatt" },
+  bolzano: { zh: "波爾查諾（租車）", orig: "Bolzano", lat: 46.4983, lng: 11.3548, gmaps: "Bolzano" },
+  ortiseiStay: { zh: "Ortisei（多洛米蒂住宿）", orig: "Ortisei", lat: 46.5761, lng: 11.6717, gmaps: "Ortisei" },
+  seceda: { zh: "Seceda 刃脊", orig: "Seceda", lat: 46.6197, lng: 11.7322, gmaps: "Seceda" },
+  compatsch: { zh: "Alpe di Siusi", orig: "Compatsch", lat: 46.5394, lng: 11.6094, gmaps: "Compatsch Alpe di Siusi" },
+  santaMaddalena: { zh: "Val di Funes 聖瑪達萊娜", orig: "Santa Maddalena", lat: 46.6369, lng: 11.7294, gmaps: "Chiesa di Santa Maddalena" },
+  treCime: { zh: "Tre Cime 三峰山", orig: "Tre Cime", lat: 46.6186, lng: 12.3028, gmaps: "Tre Cime di Lavaredo" },
+  braies: { zh: "Braies 湖", orig: "Lago di Braies", lat: 46.6944, lng: 12.0853, gmaps: "Lago di Braies" },
+  passoGiau: { zh: "Passo di Giau", orig: "Passo Giau", lat: 46.4847, lng: 12.0519, gmaps: "Passo di Giau" },
+  hallstattStay: { zh: "哈修塔特（住宿）", orig: "Hallstatt", lat: 47.5622, lng: 13.6493, gmaps: "Hallstatt" },
+  skywalk: { zh: "哈修塔特 Skywalk", orig: "Skywalk", lat: 47.5647, lng: 13.6586, gmaps: "Hallstatt Skywalk" },
+  saltMine: { zh: "哈修塔特鹽礦", orig: "Salt Mine", lat: 47.5628, lng: 13.6486, gmaps: "Hallstatt Salt Mine" },
+  gosausee: { zh: "Gosausee", orig: "Gosausee", lat: 47.5333, lng: 13.5208, gmaps: "Gosausee" },
+  dachstein: { zh: "Dachstein 冰河", orig: "Dachstein", lat: 47.5089, lng: 13.6894, gmaps: "Dachstein Krippenstein" },
+  salzburg: { zh: "薩爾斯堡", orig: "Salzburg", lat: 47.8008, lng: 13.0436, gmaps: "Salzburg" },
+  viennaStay: { zh: "維也納（住宿）", orig: "Vienna", lat: 48.2085, lng: 16.3731, gmaps: "Stephansplatz Vienna" },
+  schoenbrunn: { zh: "美泉宮", orig: "Schonbrunn", lat: 48.1845, lng: 16.3119, gmaps: "Schonbrunn Palace" },
+  belvedere: { zh: "美景宮", orig: "Belvedere", lat: 48.1915, lng: 16.3808, gmaps: "Belvedere Palace Vienna" },
+  hofburg: { zh: "霍夫堡", orig: "Hofburg", lat: 48.2056, lng: 16.3658, gmaps: "Hofburg Palace Vienna" },
+  khM: { zh: "藝術史博物館", orig: "KHM", lat: 48.2038, lng: 16.3614, gmaps: "Kunsthistorisches Museum Vienna" },
+  mq: { zh: "博物館區 MQ", orig: "MQ", lat: 48.2035, lng: 16.3589, gmaps: "MuseumsQuartier Vienna" },
+  naschmarkt: { zh: "納許市場", orig: "Naschmarkt", lat: 48.1986, lng: 16.3635, gmaps: "Naschmarkt Vienna" },
+  stephans: { zh: "史蒂芬大教堂", orig: "Stephansdom", lat: 48.2085, lng: 16.3731, gmaps: "St. Stephens Cathedral Vienna" },
+  prater: { zh: "普拉特摩天輪", orig: "Prater", lat: 48.2166, lng: 16.3956, gmaps: "Wiener Riesenrad" },
+  melk: { zh: "Melk（Wachau）", orig: "Melk", lat: 48.3778, lng: 15.4411, gmaps: "Melk Abbey" },
+  vie: { zh: "維也納機場", orig: "VIE", lat: 48.1103, lng: 16.5697, gmaps: "Vienna International Airport" },
+};
+
+const stays = [
+  {
+    key: "zermattStay",
+    nights: "4 晚",
+    tip: "9/5–9/8 · 策馬特",
+  },
+  {
+    key: "ortiseiStay",
+    nights: "6 晚",
+    tip: "9/9–9/14 · Ortisei",
+  },
+  {
+    key: "hallstattStay",
+    nights: "3 晚",
+    tip: "9/15–9/17 · 哈修塔特",
+  },
+  {
+    key: "viennaStay",
+    nights: "5 晚",
+    tip: "9/18–9/23 · 維也納",
+  }
+];
+const days = [
+  {
+    id: "day-1",
+    date: "9/5（日）",
+    title: "抵達蘇黎世→策馬特",
+    summary: "ZRH 抵機→火車經Visp→策馬特無車區入住",
+    tags: [["stay", "策馬特"], ["flight", "ZRH"]],
+    stay: "策馬特（住宿）",
+    drive: "機場→Visp→策馬特（火車）約半日",
+    daylight: "約 12.5h",
+    highlight: true,
+    places: ["zrh", "zermattStay"],
+    route: ["zrh", "zermattStay"],
+    center: "zermattStay",
+    zoom: 13,
+    timeline: [
+      {
+        time: "上午",
+        title: "ZRH 抵達",
+        desc: "入境後搭火車經Visp押策馬特；行李可先寄站再上山。",
+      },
+      {
+        time: "下午",
+        title: "策馬特散步",
+        desc: "無車區熟悉動線；早睡儲力。",
+      }
+    ],
+    save: "SBB 早鳥 Saver＋Half Fare；避免機場現買全票。",
+    bag: "火車可拖箱。策馬特車站請飯店電動車接行李；房未好可先寄櫃臺。",
+    book: "SBB App 車票（Saver＋Half Fare）；策馬特飯店告知到站時段以便電動車接送。",
+    watch: "瑞士插座 Type J（歐洲圖腳不一定能直插）。手機下載離線地圖＋SBB。入境後換小額現金備用。",
+    pay: "主力信用卡（Visa／MC）。ZRH／車站 ATM 提 CHF 100–150／人做零用；避免機場兌換大額。刷卡選 CHF 不選 TWD。",
+    photo: "傍晚若天晴：村內對馬特洪峰餘暉（Bahnhofstrasse 尾端／河邊）。到達日以輕裝為主。",
+    meals: "早：機上／機場。午：火車站或村內簡餐。晚：村內早用餐（山區廚房多早關）。",
+    gear: "手機即可。相機放旅行包；今日不必架腳架。行動電源、轉接頭（Type J）放隨身包。",
+    notes: ["火車班表以當日為準"],
+  },
+  {
+    id: "day-2",
+    date: "9/6（一）",
+    title: "Gornergrat＋Riffelsee",
+    summary: "Gornergrat 齒軌列車（山區小火車）→觀景台→Riffelsee 鏡面湖",
+    tags: [["stay", "策馬特"], ["drive", "齒軌列車"]],
+    stay: "策馬特",
+    drive: "往返齒軌列車＋徒步",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["zermattStay", "gornergrat", "riffelsee"],
+    route: ["zermattStay", "gornergrat", "riffelsee"],
+    center: "gornergrat",
+    zoom: 13,
+    timeline: [
+      {
+        time: "清晨",
+        title: "Gornergrat 齒軌列車",
+        desc: "早班光線較佳；馬特謝全景。",
+      },
+      {
+        time: "上午",
+        title: "Riffelsee 散步",
+        desc: "鏡面湖拍照點。",
+      }
+    ],
+    save: "Half Fare 讓 Gornergrat 約半價；早班較不損失時間成本。慎買整日 Peak Pass（只一座山多半不划算）。",
+    bag: "大行李箱留飯店；只背日用背包上山（水、外套、零食）。",
+    book: "Gornergrat 往返票（半價卡）；看天氣視窗再買。",
+    watch: "高山很亮：防曬、墨鏡、薄羽絩。碰上天氣急變可改村內。最後一班齒軌下山時間要記。",
+    pay: "Gornergrat 票可刷卡／線上買。山屋餐飲多可刷；備 CHF 20–40 零用（廁所、小飲）。",
+    photo: "黃金時段：清晨第一班 Gornergrat；Riffelsee 風小時倒影最佳（多在上午）。避免正午強光直射雙峰。",
+    meals: "早：飯店／超市麵包帶上山。午：山屋簡餐或自備便當。晚：回村用餐。",
+    gear: "廣角（14–24mm）拍全景；中長焦（70–200mm）壓縮峰線。CPL 減反光。輕量腳架可選（倒影）。墨鏡必備。",
+    notes: [],
+  },
+  {
+    id: "day-3",
+    date: "9/7（二）",
+    title: "馬特洪峰冰川天堂",
+    summary: "Matterhorn Glacier Paradise（纜車上馬特洪峰觀景台）",
+    tags: [["stay", "策馬特"], ["drive", "纜車"]],
+    stay: "策馬特",
+    drive: "纜車往返",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["zermattStay", "glacierParadise"],
+    route: ["zermattStay", "glacierParadise"],
+    center: "glacierParadise",
+    zoom: 13,
+    timeline: [
+      {
+        time: "上午",
+        title: "冰川天堂",
+        desc: "高海拉景觀；注意防曬與冷暖。",
+      }
+    ],
+    save: "若昨日已上 Gornergrat，今日可評估省掉冰川天堂；兩座都要去則比價半價單點 vs Peak2Peak／聯票。",
+    bag: "箱子留飯店；護照可存保險櫃。纜車只帶小包。",
+    book: "冰川天堂纜車票；風大／雲多時可延後或改期。",
+    watch: "海拔高：慢走、多喝水。山上餐飲貴，可帶零食。防曬 SPF 要高。",
+    pay: "纜車票刷卡 OK。高山電動販賣機有時只收現金—口袋留幾張 CHF。",
+    photo: "山頂以「晴天視窗」為先，不強求黃金時。回村藍調／夜景可補拍街景。",
+    meals: "早：飯店。午：山上餐廳貴—自備零食＋溫飲即可。晚：村內。",
+    gear: "超廣＋長焦都有用。防寒電池；高山電量走得快。手機廣角／全景模式備用。",
+    notes: [],
+  },
+  {
+    id: "day-4",
+    date: "9/8（三）",
+    title: "五湖／Stellisee 或 Rothorn",
+    summary: "五湖徒步或 Stellisee；天氣不佳改 Rothorn 觀景台",
+    tags: [["stay", "策馬特"], ["drive", "纜車"]],
+    stay: "策馬特",
+    drive: "徒步或纜車",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["zermattStay", "sunnegga", "stellisee", "rothorn"],
+    route: ["zermattStay", "sunnegga", "stellisee"],
+    center: "stellisee",
+    zoom: 13,
+    timeline: [
+      {
+        time: "上午",
+        title: "Sunnegga → 五湖",
+        desc: "彈性路線長度。",
+      },
+      {
+        time: "備案",
+        title: "Rothorn",
+        desc: "霧大改乘纜車上山。",
+      }
+    ],
+    save: "省錢版：Sunnegga／五湖（較便宜）；Rothorn 當備案。今晚整理行李準備明日長移動。",
+    bag: "箱子仍在飯店；晚間打包，別把用不到的東西全塞進箱。",
+    book: "Sunnegga／Rothorn 視天氣選一；今晚確認明日火車班次。",
+    watch: "洗一次衣服減量。充電全部設備。打包：護照、駕照、租車碼放隨身包。",
+    pay: "纜車／餐飲刷卡為主。今晚若 CHF 少於 50，可在策馬特 ATM 補一點。",
+    photo: "Stellisee 清晨倒影；五湖線以柔光側逆光為佳。傍晚回村整理行李。",
+    meals: "早：超市。午：山上便當。晚：早用餐，準備明日早出發。",
+    gear: "同 D2；加小毛巾擦鏡頭（湖面水汽）。今晚充電全部電池與行動電源。",
+    notes: [],
+  },
+  {
+    id: "day-5",
+    date: "9/9（四）",
+    title: "策馬特→ Ortisei（長距移動）",
+    summary: "火車下山→波爾查諾租車→ Ortisei（多洛米）",
+    tags: [["stay", "Ortisei"], ["drive", "長距"]],
+    stay: "Ortisei（住宿）",
+    drive: "全天移動（火車＋自駕）",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["zermattStay", "bolzano", "ortiseiStay"],
+    route: ["zermattStay", "bolzano", "ortiseiStay"],
+    center: "ortiseiStay",
+    zoom: 11,
+    timeline: [
+      {
+        time: "早",
+        title: "離開策馬特",
+        desc: "預留轉車緩衝。",
+      },
+      {
+        time: "下午",
+        title: "波爾查諾取租車",
+        desc: "租車往 Ortisei 入住。",
+      }
+    ],
+    save: "長距日不塞景點。取車前務必比「異地還車單程費」；若太貴，改比 Innsbruck 取車或後續湖區還車＋火車。",
+    bag: "行李跟人走：退房拖箱→火車→租車後備箱→ Ortisei。不用另外寄物；箱型勿超大。",
+    book: "租車預約（自動檔、跨境奧地利、全險）；義／奧高速公路電子票（vignette）取車前買好。",
+    watch: "國際駕照 IDL 搶車常要求。充電續航儀。長距日每 2h 休息一次。別忘加油站位置。",
+    pay: "租車押金必需信用卡（倒是不要用傳統債記卡提現）。入義後改用歐元；波爾查諾 ATM 提 EUR 150–200／人零用開始。",
+    photo: "移動日：窗景隨手拍即可，不排專業黃金時。",
+    meals: "早：飯店或車站。午：火車簡餐／站內。晚： Ortisei 就近用餐，別趕路。",
+    gear: "相機放手提／背包可隨手取用；大腳架不用拿出來。充電線放隨身包。",
+    notes: ["當天行李重，晚餐就近休息"],
+  },
+  {
+    id: "day-6",
+    date: "9/10（五）",
+    title: "Seceda 刃脊",
+    summary: "Seceda 刃脊日出",
+    tags: [["stay", "Ortisei"], ["drive", "纜車"]],
+    stay: "Ortisei",
+    drive: "纜車＋徒步",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["ortiseiStay", "seceda"],
+    route: ["ortiseiStay", "seceda"],
+    center: "seceda",
+    zoom: 12,
+    timeline: [
+      {
+        time: "清晨",
+        title: "Seceda",
+        desc: "繩車或徒步登山脊。",
+      }
+    ],
+    save: "Seceda 纜車不含在 Dolomiti SuperSummer；單買。飯店 Guest Card 問清有無已付區域巴士。",
+    bag: "大行李釘在 Ortisei 飯店；只背日包。車內勿放護照／筆電。",
+    book: "Seceda 纜車票（確認是否需時段）；問飯店要 Guest Card。",
+    watch: "早班避遊覽車。山脊風大：防風殼。最後一班纜車下山勿誤。",
+    pay: "Seceda 票刷卡。山上小店偶為現金；口袋 EUR 30–50。",
+    photo: "黃金時段：Seceda 日出（第一班纜車）。山脊側逆光；霧日改拍雲海層次。",
+    meals: "早：超市帶上山。午：山屋。晚：谷底餐廳（南蒂羅爾料理）。",
+    gear: "廣角拍山脊線；中長焦壓縮 Odle。ND/漸層濾鏡可選（雲動）。腳架：日出很有用。無人機請先查當地禁令。",
+    notes: [],
+  },
+  {
+    id: "day-7",
+    date: "9/11（六）",
+    title: "Alpe di Siusi",
+    summary: "最大高原牧場慢遊",
+    tags: [["stay", "Ortisei"], ["drive", "纜車"]],
+    stay: "Ortisei",
+    drive: "自駕",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["ortiseiStay", "compatsch"],
+    route: ["ortiseiStay", "compatsch"],
+    center: "compatsch",
+    zoom: 12,
+    timeline: [
+      {
+        time: "全天",
+        title: "Alpe di Siusi",
+        desc: "Compatsch 周邊散步與拍照。",
+      }
+    ],
+    save: "優先纜車／接駁上高原，少開車上山繳停車（常需預約）。超市買午餐山行。",
+    bag: "箱子留 Ortisei；車裡只放當天外套備用。",
+    book: "Alpe di Siusi：纜車或停車預約（若開車上高原）。",
+    watch: "高原陽光強：防曬。跑身狗與牧地：關好閘門、勿踏草。",
+    pay: "纜車／停車多可刷卡或 App。停車費有時要硬幣—備零錢。",
+    photo: "黃金時段：下午偏晚草田側光（Sassolungo 背景）。清晨霧氣也很美。",
+    meals: "早：飯店。午：高原小屋（木盤餐）。晚：回 Ortisei。",
+    gear: "廣角＋中焦。遮陽帽／墨鏡。若走遠可帶輕量腳架；不必全套鏡頭都背。",
+    notes: [],
+  },
+  {
+    id: "day-8",
+    date: "9/12（日）",
+    title: "Val di Funes",
+    summary: "Santa Maddalena 教堂與谷地晨景",
+    tags: [["stay", "Ortisei"], ["drive", "自駕"]],
+    stay: "Ortisei",
+    drive: "日往返",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["ortiseiStay", "santaMaddalena"],
+    route: ["ortiseiStay", "santaMaddalena"],
+    center: "santaMaddalena",
+    zoom: 12,
+    timeline: [
+      {
+        time: "清晨",
+        title: "Funes 谷",
+        desc: "早景光線優先。",
+      }
+    ],
+    save: "自駕短程、景點免費感高；只付油費。早到少人＝少耗費時間。",
+    bag: "行李仍在飯店；小包日歸即可。",
+    book: "無須預購票；只準備自駕導航與停車零用錢。",
+    watch: "教堂私人草地勿踏。早霧時道路潮濕：開車慢。",
+    pay: "日歸主要花油錢（卡）。教堂旁投幣／小費用現金零錢。",
+    photo: "黃金時段：清晨 Santa Maddalena／ Ranui 教堂（霧、側光）。午後光線硬可早撥回。",
+    meals: "早：超市咖啡帶走。午：谷地小館。晚： Ortisei。",
+    gear: "廣角為主（教堂＋山脈）。腳架有助清晨長曝光。勿踏牧草地取景。",
+    notes: [],
+  },
+  {
+    id: "day-9",
+    date: "9/13（一）",
+    title: "Tre Cime",
+    summary: "三峰山山環線徒步",
+    tags: [["stay", "Ortisei"], ["drive", "自駕"]],
+    stay: "Ortisei",
+    drive: "日往返",
+    daylight: "約 11.5h",
+    highlight: true,
+    places: ["ortiseiStay", "treCime"],
+    route: ["ortiseiStay", "treCime"],
+    center: "treCime",
+    zoom: 11,
+    timeline: [
+      {
+        time: "全天",
+        title: "Tre Cime di Lavaredo",
+        desc: "停車費與徒步時間預留充裕。",
+      }
+    ],
+    save: "停車／通行費不便宜：提早預約或改 Misurina 接駁分擔。一車分攤仍多半比跟團省。",
+    bag: "箱子留飯店；登山口停車勿留貴重物品在車內。",
+    book: "Tre Cime 停車／通行預約（很重要）；查當日管制規則。",
+    watch: "天氣突變帶雨衣。足望好的鞋。起踐前告訴同伴預計回程時間。",
+    pay: "Tre Cime 停車／通行多為線上刷卡。山屋餐飲帶 EUR 40–60 現金備用（網路不穩時）。",
+    photo: "黃金時段：清晨出發趕第一波光；三峰前空側逆光。下午雲影快時改拍細節。",
+    meals: "早：帶走。午： Rifugio 山屋。晚：回谷早用餐。",
+    gear: "廣角＋中長焦。輕量腳架（風大時加重）。備用電池、雨衣蒙相機。登山材：良好鞋底。",
+    notes: [],
+  },
+  {
+    id: "day-10",
+    date: "9/14（二）",
+    title: "Braies＋Passo Giau",
+    summary: "湖光與高山崗口穿越",
+    tags: [["stay", "Ortisei"], ["drive", "自駕"]],
+    stay: "Ortisei",
+    drive: "自駕環線",
+    daylight: "約 11.5h",
+    highlight: true,
+    places: ["ortiseiStay", "braies", "passoGiau"],
+    route: ["ortiseiStay", "braies", "passoGiau", "ortiseiStay"],
+    center: "braies",
+    zoom: 11,
+    timeline: [
+      {
+        time: "上午",
+        title: "Lago di Braies",
+        desc: "湖邊散步或租船。",
+      },
+      {
+        time: "下午",
+        title: "Passo Giau",
+        desc: "全景公路拍攝。",
+      }
+    ],
+    save: "Braies 越早越省接駁／繳費麻煩；Passo Giau 以風景開車為主、不必再購纜車。",
+    bag: "同上：行李在 Ortisei；晚間打包準備明日換房。",
+    book: "Braies 尖峰時段常要接駁／管制；提早查當日規則。",
+    watch: "湖邊滑：防滑鞋。山口公路彎多：不要趕。晚間確認油量準備換房。",
+    pay: "Braies 接駁／停車以卡為主。湖邊零食備小額現金。",
+    photo: "黃金時段：Braies 黎明前到（倒影）；下午 Passo Giau 側光山道。",
+    meals: "早：帶走咖啡。午：湖邊或山口餐廳。晚： Ortisei最後一晚。",
+    gear: "廣角拍湖；中焦拍山道彎道。CPL 對湖面有用。腳架可留車上若不拍長曝。",
+    notes: [],
+  },
+  {
+    id: "day-11",
+    date: "9/15（三）",
+    title: "駕車至哈修塔特",
+    summary: "Ortisei → Hallstatt 移動日",
+    tags: [["stay", "哈修塔特"], ["drive", "自駕"]],
+    stay: "哈修塔特",
+    drive: "全天駕車",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["ortiseiStay", "hallstattStay"],
+    route: ["ortiseiStay", "hallstattStay"],
+    center: "hallstattStay",
+    zoom: 13,
+    timeline: [
+      {
+        time: "全天",
+        title: "南北阿爾卑斯移動",
+        desc: "湖區停車場與住房預約確認。",
+      }
+    ],
+    save: "油＋高速票先算進預算。住哈修塔特鄰村（Obertraun 等）常比村內湖景房省。",
+    bag: "退房裝箱開車；到達先停外圍／飯店停車再搬行李進房，別在老街硬拖箱。",
+    book: "奧地利 vignette 若尚未買要在進入高速前完成；確認哈修塔特住宿停車／接送。",
+    watch: "跨境可能抽查證件。湖區週末車多。到達先加油再進村。",
+    pay: "油站、高速票刷卡。哈修塔特停車機有時假幣或 App—備 EUR 零錢。",
+    photo: "黃金時段：到達後傍晚湖岸（遊覽車散後）教堂倒影視角。",
+    meals: "早：谷底。午：路上服務區。晚：住宿附近（村內餐廳早約或早到）。",
+    gear: "主機＋廣角即可。腳架晚間可用。車程中相機勿放後備箱明顯位置。",
+    notes: [],
+  },
+  {
+    id: "day-12",
+    date: "9/16（四）",
+    title: "哈修塔特深度",
+    summary: "老鎮、Skywalk、鹽礦導覽",
+    tags: [["stay", "哈修塔特"], ["drive", "徒步"]],
+    stay: "哈修塔特",
+    drive: "徒步",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["hallstattStay", "skywalk", "saltMine"],
+    route: ["hallstattStay", "skywalk", "saltMine"],
+    center: "hallstattStay",
+    zoom: 14,
+    timeline: [
+      {
+        time: "上午",
+        title: "Skywalk",
+        desc: "高處全景。",
+      },
+      {
+        time: "下午",
+        title: "鹽礦",
+        desc: "預約場次。",
+      }
+    ],
+    save: "Skywalk／湖岸成本低；鹽礦當加購項—預算緊可省。超市解決早餐。",
+    bag: "箱子留住宿；村內只背小包走石板路。",
+    book: "鹽礦若要去：線上預約場次；Skywalk／纜車視熱門程度。",
+    watch: "老街人多：清晨／傍晚最舒服。搶照勿擋道。雨天石板路滑。",
+    pay: "鹽礦／Skywalk 刷卡 OK。老街小店、湖船偶為現金；口袋 EUR 40 左右。",
+    photo: "黃金時段：清晨湖岸（人少）；藍調再拍一輪倒影。Skywalk 以晴天中天為主。",
+    meals: "早：飯店或超市。午：村內輕食。晚：預約或早到熱門店。",
+    gear: "廣角拍湖景；中焦壓縮村屋。腳架清晨很有用。小帽遮帽避對比強光。",
+    notes: [],
+  },
+  {
+    id: "day-13",
+    date: "9/17（五）",
+    title: "Gosausee／Dachstein／薩爾斯堡半日",
+    summary: "三選一；天氣與封路決定",
+    tags: [["stay", "哈修塔特"], ["drive", "自駕"]],
+    stay: "哈修塔特",
+    drive: "日往返",
+    daylight: "約 12h",
+    highlight: false,
+    places: ["hallstattStay", "gosausee", "dachstein", "salzburg"],
+    route: ["hallstattStay", "gosausee", "hallstattStay"],
+    center: "gosausee",
+    zoom: 11,
+    timeline: [
+      {
+        time: "方案 A",
+        title: "Gosausee",
+        desc: "湖光與 Dachstein 山峰。",
+      },
+      {
+        time: "方案 B",
+        title: "Salzburg 半日",
+        desc: "與哈修塔特往返。",
+      }
+    ],
+    save: "省錢優先 Gosausee；Dachstein 纜車與薩爾斯堡半日較費油＋時間。三選一即可。",
+    bag: "日歸；行李不用動。晚間整理準備明日還車。",
+    book: "三選一就好；Dachstein 纜車視天氣再買票。",
+    watch: "週日超市可能休或縮短熱門—六晚先補貨。開車注意腳踏車道。",
+    pay: "Gosausee 停車可能要現金／硬幣。薩爾斯堡半日以卡為主。",
+    photo: "Gosausee：清晨倒影最佳。Dachstein：視天氣窗口。薩爾斯堡：傍晚舊城街燈。",
+    meals: "早：帶走。午：湖邊／城裡。晚：回哈修塔特區。",
+    gear: "廣角＋CPL（湖面）。若只跑湖可減載長焦。",
+    notes: [],
+  },
+  {
+    id: "day-14",
+    date: "9/18（六）",
+    title: "哈修塔特→維也納（還車）",
+    summary: "Hallstatt 駕車到維也納還車入住",
+    tags: [["stay", "維也納"], ["drive", "自駕"]],
+    stay: "維也納",
+    drive: "全天駕車",
+    daylight: "約 11.5h",
+    highlight: true,
+    places: ["hallstattStay", "viennaStay"],
+    route: ["hallstattStay", "viennaStay"],
+    center: "viennaStay",
+    zoom: 12,
+    timeline: [
+      {
+        time: "上午",
+        title: "離開哈修塔特",
+        desc: "還車點預留時間。",
+      },
+      {
+        time: "下午",
+        title: "維也納入住",
+        desc: "市區散步適應。",
+      }
+    ],
+    save: "還車前加滿油、拍照記錄車況。若異地還車單程費太貴，改薩爾斯堡／湖區還車再搬火車進維也納。",
+    bag: "行李跟車到還車點→改大眾運輸拖箱入住。房未好可先寄飯店櫃臺。",
+    book: "還車點熱門時間；維也納飯店告知預計到達時段。",
+    watch: "還車：油量、車損照、取出車內物。改坐地鐵後注意拖箱間隙。",
+    pay: "還車用信用卡結清（同取車卡）。維也納市區刷卡非常普遍；現金只留零用。",
+    photo: "移動日；維也納入夜可拍 Ring 街景街燈。",
+    meals: "早：飯店。午：高速服務區。晚：維也納軸線咖啡館／輕食。",
+    gear: "相機隨身小包；還車前清點後備箱。",
+    notes: [],
+  },
+  {
+    id: "day-15",
+    date: "9/19（日）",
+    title: "美泉宮＋美景宮",
+    summary: "Schonbrunn＋Belvedere（克林姆）",
+    tags: [["stay", "維也納"], ["drive", "地鐵"]],
+    stay: "維也納",
+    drive: "公共運輸",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["viennaStay", "schoenbrunn", "belvedere"],
+    route: ["viennaStay", "schoenbrunn", "belvedere"],
+    center: "schoenbrunn",
+    zoom: 12,
+    timeline: [
+      {
+        time: "上午",
+        title: "美泉宮",
+        desc: "花園與宮殿選擇性參觀。",
+      },
+      {
+        time: "下午",
+        title: "美景宮",
+        desc: "上宮藝術館。",
+      }
+    ],
+    save: "單買美泉（或只走花園票）＋美景上宮；慎買 Vienna PASS。交通用 48／72h 票。",
+    bag: "箱子留飯店；市區小包＋水即可。",
+    book: "美泉／美景時段票；Wiener Linien 48／72h 交通票。",
+    watch: "週日博物館時段可能不同。水壺可喝（標示飲用）。小費多包在服務費。",
+    pay: "博物館、地鐵全刷卡。Vienna 基本可無現日常生活；仍建議口袋 EUR 30–50。",
+    photo: "美泉花園：上午側光；美景宮外觀下午柔光。館內依規則（多禁開閃）。",
+    meals: "早：飯店／咖啡館。午：美泉園區附近。晚：內城餐廳。",
+    gear: "廣角／標變 24–70mm 最實用。館內高 ISO／大光圈。腳架多數場館不允許。",
+    notes: [],
+  },
+  {
+    id: "day-16",
+    date: "9/20（一）",
+    title: "霍夫堡＋KHM＋MQ＋納許",
+    summary: "Hofburg；藝術史；博物館區；Naschmarkt",
+    tags: [["stay", "維也納"], ["drive", "徒步"]],
+    stay: "維也納",
+    drive: "徒步",
+    daylight: "約 12h",
+    highlight: true,
+    places: ["hofburg", "khM", "mq", "naschmarkt", "viennaStay"],
+    route: ["hofburg", "khM", "mq", "naschmarkt"],
+    center: "hofburg",
+    zoom: 14,
+    timeline: [
+      {
+        time: "全天",
+        title: "內城博物館線",
+        desc: "聯票或單館。",
+      }
+    ],
+    save: "Hofburg 可與美泉看 Sisi Ticket；KHM 視興趣加購。MQ 外圍免費散步。",
+    bag: "同上；貴重物品勿全日背著跑。",
+    book: "KHM／Hofburg 視興趣購票；若買 Sisi 要對一下涵蓋館。",
+    watch: "博物館多禁大包／自拍開閃光—看告示。MQ 房外可休息。",
+    pay: "館票刷卡。納許市場小吃偶為現金—備零錢。",
+    photo: "建築細節與 MQ 陣列：防晴樂天下午。納許市場生活感。",
+    meals: "早：咖啡館。午： Naschmarkt 小吃。晚：內城。",
+    gear: "輕量一鏡走全天。手機補拍菜單／市集。",
+    notes: [],
+  },
+  {
+    id: "day-17",
+    date: "9/21（二）",
+    title: "內城咖啡日",
+    summary: "Stephansplatz 周邊咖啡與逛街",
+    tags: [["stay", "維也納"], ["drive", "徒步"]],
+    stay: "維也納",
+    drive: "徒步",
+    daylight: "約 12h",
+    highlight: false,
+    places: ["viennaStay", "stephans"],
+    route: ["viennaStay", "stephans"],
+    center: "stephans",
+    zoom: 14,
+    timeline: [
+      {
+        time: "全天",
+        title: "咖啡日",
+        desc: "不掛行程，隨意探店。",
+      }
+    ],
+    save: "今日最省：免費街景＋一間咖啡。不必每間經典店都進。",
+    bag: "無行李壓力；小包逛街。",
+    book: "無必須票；熱門餐廳可預約晚餐。",
+    watch: "購物退稅留單據。有些店週日休。腳疹護理日。",
+    pay: "咖啡、購物刷卡。退稅用信用卡消費單據較方便。",
+    photo: "室內窗光咖啡、橙皮小巷。不強求黃金時。",
+    meals: "今日以咖啡／甜點為主；晚餐選一間坐定。",
+    gear: "手機或小離心鏡頭即可；讓肩膀休息。",
+    notes: [],
+  },
+  {
+    id: "day-18",
+    date: "9/22（三）",
+    title: "Prater 或 Wachau",
+    summary: "Prater 摩天輪或 Melk 半日遊",
+    tags: [["stay", "維也納"], ["drive", "彈性"]],
+    stay: "維也納",
+    drive: "市區或火車日往返",
+    daylight: "約 12h",
+    highlight: false,
+    places: ["prater", "melk", "viennaStay"],
+    route: ["viennaStay", "prater"],
+    center: "prater",
+    zoom: 12,
+    timeline: [
+      {
+        time: "方案 A",
+        title: "Prater",
+        desc: "摩天輪與公園。",
+      },
+      {
+        time: "方案 B",
+        title: "Wachau / Melk",
+        desc: "Wachau 半日遊。",
+      }
+    ],
+    save: "Prater 公園本體便宜（摩天輪另計）；Wachau 用 ÖBB 早鳥，別為一天再買維也納大 Pass。",
+    bag: "日歸；行李不動。",
+    book: "Wachau：ÖBB 車票；Prater 摩天輪現買即可。",
+    watch: "日歸預留回程緩衝。雨天改市區博物館備案。",
+    pay: "火車／摩天輪刷卡。谷地小販可能要現金。",
+    photo: "Prater：傍晚摩天輪燈光。Wachau：下午河谷側光。",
+    meals: "早：市區。午：日歸地點。晚：回維也納。",
+    gear: "廣角＋中焦。摩天輪夜景可帶小腳架或靠欄杆。",
+    notes: [],
+  },
+  {
+    id: "day-19",
+    date: "9/23（四）",
+    title: "緩衝日",
+    summary: "購物、補點或重訪喜歡館宅",
+    tags: [["stay", "維也納"], ["drive", "彈性"]],
+    stay: "維也納",
+    drive: "彈性",
+    daylight: "約 12h",
+    highlight: false,
+    places: ["viennaStay"],
+    route: ["viennaStay"],
+    center: "viennaStay",
+    zoom: 13,
+    timeline: [
+      {
+        time: "全天",
+        title: "Buffer",
+        desc: "為隔日離境留衛。",
+      }
+    ],
+    save: "補點用單票；避免為一個館再買短期大套票。超市補貨。",
+    bag: "晚間打包；若明日班機晚，可問飯店明日退房後暫存行李。",
+    book: "確認明日班機時刻與機場交通；補購景點單票。",
+    watch: "清點行李：液體、電池、刀片在打包袋。充電。告知飯店明日出發時間。",
+    pay: "超市補貨刷卡。清點口袋現金：不用的歐元可留機場花。",
+    photo: "補拍前幾天沒拍到的角落；不強排新黃金時。",
+    meals: "超市補貨；晚餐吃喜歡的那間。",
+    gear: "清點記憶卡／電池；充電。打包時鏡頭分裝防壞。",
+    notes: [],
+  },
+  {
+    id: "day-20",
+    date: "9/24（五）",
+    title: "VIE 離境",
+    summary: "退房→維也納機場出發",
+    tags: [["flight", "VIE"], ["stay", "離境"]],
+    stay: "—",
+    drive: "機場交通",
+    daylight: "—",
+    highlight: false,
+    places: ["viennaStay", "vie"],
+    route: ["viennaStay", "vie"],
+    center: "vie",
+    zoom: 11,
+    timeline: [
+      {
+        time: "上午",
+        title: "前往 VIE",
+        desc: "預留緩衝；班表以當日為準。",
+      }
+    ],
+    save: "機場交通比價 CAT／ÖBB／計程車；留足報到緩衝即可。",
+    bag: "退房後若還有時間：行李先寄飯店或車站／機場置物櫃再走；否則直接拖箱出發。",
+    book: "線上通關（若航空可用）；機場交通票。",
+    watch: "液體、電池進打包袋。預留安檢緩衝。歐元零錢可在機場花完。",
+    pay: "機場全刷卡。剩 CHF／EUR 零錢可在機場咖啡／稅店花完；不必兌回 TWD。",
+    photo: "離境日：隨意。",
+    meals: "早：飯店或機場。",
+    gear: "相機進手提行李；電池離機前可拆下依規安檢規則。",
+    notes: [],
+  }
+];
+const stayKeys = ["zermattStay", "ortiseiStay", "hallstattStay", "viennaStay"];
+const highlightKeys = ["gornergrat", "glacierParadise", "stellisee", "seceda", "santaMaddalena", "treCime", "braies", "passoGiau", "skywalk", "gosausee", "schoenbrunn", "belvedere", "hofburg"];
+const specialKeys = ["glacierParadise", "treCime", "braies", "skywalk", "schoenbrunn"];
+const routeOrder = ["zrh", "zermattStay", "gornergrat", "riffelsee", "zermattStay", "glacierParadise", "zermattStay", "stellisee", "rothorn", "zermattStay", "bolzano", "ortiseiStay", "seceda", "ortiseiStay", "compatsch", "ortiseiStay", "santaMaddalena", "ortiseiStay", "treCime", "ortiseiStay", "braies", "passoGiau", "ortiseiStay", "hallstattStay", "skywalk", "saltMine", "hallstattStay", "gosausee", "dachstein", "hallstattStay", "viennaStay", "schoenbrunn", "belvedere", "viennaStay", "hofburg", "khM", "mq", "naschmarkt", "viennaStay", "prater", "melk", "viennaStay", "vie"];
+const latlngs = routeOrder.map(k => [P[k].lat, P[k].lng]);
+let overviewMap = null;
+const stayInfo = {"zermattStay": "9/5–9/8 · 策馬特", "ortiseiStay": "9/9–9/14 · Ortisei", "hallstattStay": "9/15–9/17 · 哈修塔特", "viennaStay": "9/18–9/23 · 維也納"};
+function placeLabel(p) { return `${p.zh} · ${p.orig}`; }
+function placeShort(p) { return p.zh; }
+function mapsName(p) { return p.gmaps || p.orig || p.zh; }
+function mapsPlaceUrl(p) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsName(p))}`;
+}
+function mapsDirUrl(keys) {
+  const pts = (keys || []).map(k => P[k]).filter(Boolean);
+  if (pts.length < 2) return null;
+  const origin = encodeURIComponent(mapsName(pts[0]));
+  const destination = encodeURIComponent(mapsName(pts[pts.length - 1]));
+  const via = pts.slice(1, -1).slice(0, 9).map(p => encodeURIComponent(mapsName(p)));
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  if (via.length) url += `&waypoints=${via.join("%7C")}`;
+  return url;
+}
+
+const darkTiles = (map) => {
+  const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_4hbr_1_36eb6f469b628a5a8d5c116b", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 20
+  });
+  base.addTo(map);
+  return base;
+};
+function circleIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #e8eef2;box-shadow:0 0 0 4px rgba(0,0,0,.35)"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -8]
+  });
+}
+function labelIcon(text, color) {
+  return L.divIcon({
+    className: "",
+    html: `<div class="pin-label" style="border-color:${color}">${text}</div>`,
+    iconSize: [0, 0], iconAnchor: [-8, 10]
+  });
+}
+
+function initOverviewMap() {
+  if (typeof L === "undefined") {
+    const el = document.getElementById("overviewMap");
+    if (el) el.innerHTML = '<div style="display:grid;place-items:center;height:100%;color:var(--muted);padding:1rem;text-align:center">地圖載入失敗</div>';
+    return null;
+  }
+  const map = L.map("overviewMap", { scrollWheelZoom: true, zoomControl: true });
+  darkTiles(map);
+  stayKeys.forEach(k => {
+    const p = P[k];
+    L.marker([p.lat, p.lng], { icon: circleIcon("#5ec8c7") })
+      .addTo(map)
+      .bindPopup(`<strong>${placeLabel(p)}</strong><br>${stayInfo[k] || "住宿"}`);
+    L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), "#5ec8c7"), interactive: false }).addTo(map);
+  });
+  highlightKeys.forEach(k => {
+    const p = P[k];
+    if (!p) return;
+    const color = specialKeys.includes(k) ? "#e07a5f" : "#e0a35b";
+    L.marker([p.lat, p.lng], { icon: circleIcon(color) })
+      .addTo(map)
+      .bindPopup(`<strong>${placeLabel(p)}</strong>`);
+  });
+  map.fitBounds(L.latLngBounds(latlngs).pad(0.18));
+  return map;
+}
+try { overviewMap = initOverviewMap(); } catch (e) { overviewMap = null; }
+
+async function loadPrecomputedRingRoute() {
+  if (Array.isArray(window.PRECOMPUTED_RING_ROUTE) && window.PRECOMPUTED_RING_ROUTE.length > 2) return window.PRECOMPUTED_RING_ROUTE;
+  try {
+    const res = await fetch("alps-ring-route.json");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) { return null; }
+}
+async function fetchOsrmRoute(points) {
+  if (points.length < 2) return null;
+  const coords = points.map(([lat, lng]) => `${lng},${lat}`).join(";");
+  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=false`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("osrm");
+  const data = await res.json();
+  return data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+}
+async function drawOverviewRoute() {
+  if (!overviewMap || typeof L === "undefined") return;
+  try {
+    let all = await loadPrecomputedRingRoute();
+    if (!all || all.length < 2) {
+      all = [];
+      for (let i = 0; i < routeOrder.length - 1; i++) {
+        const a = routeOrder[i], b = routeOrder[i + 1];
+        const seg = await fetchOsrmRoute([[P[a].lat, P[a].lng], [P[b].lat, P[b].lng]]);
+        if (seg && seg.length) { if (all.length) seg.shift(); all.push(...seg); }
+      }
+    }
+    if (!all || all.length < 2) throw new Error("empty");
+    L.polyline(all, { color: "#5ec8c7", weight: 8, opacity: 0.16, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    L.polyline(all, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    const fit = L.latLngBounds(all);
+    [...stayKeys, ...highlightKeys].forEach(k => { const p = P[k]; if (p) fit.extend([p.lat, p.lng]); });
+    overviewMap.fitBounds(fit.pad(0.1));
+  } catch (e) {
+    L.polyline(latlngs, { color: "#5ec8c7", weight: 3, opacity: 0.45, dashArray: "6 10" }).addTo(overviewMap);
+    overviewMap.fitBounds(L.latLngBounds(latlngs).pad(0.12));
+  }
+}
+drawOverviewRoute();
+
+const stayCards = document.getElementById("stayCards");
+stays.forEach(s => {
+  const p = P[s.key];
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = `<h3>${placeLabel(p)}</h3><p><strong style="color:var(--ice)">${s.nights}</strong> · ${s.tip}<br><a class="btn" style="margin-top:.6rem" target="_blank" rel="noopener" href="${mapsPlaceUrl(p)}">Google 地圖</a></p>`;
+  stayCards.appendChild(el);
+});
+
+const daysRoot = document.getElementById("days");
+const nav = document.getElementById("dayNav");
+const dayMaps = new Map();
+days.forEach((d, i) => {
+  const a = document.createElement("a");
+  a.href = `#${d.id}`; a.textContent = `D${i + 1}`; a.title = `${d.date} ${d.title}`;
+  nav.appendChild(a);
+  const el = document.createElement("details");
+  el.className = "day" + (d.highlight ? " highlight" : "");
+  el.id = d.id;
+  if (d.highlight || i < 2) el.open = true;
+  const tags = d.tags.map(([k, t]) => `<span class="tag ${k}">${t}</span>`).join("");
+  const timeline = d.timeline.map(t => `<div class="tl-item"><div class="time">${t.time}</div><strong>${t.title}</strong><p>${t.desc || ""}</p></div>`).join("");
+  const notes = (d.notes || []).map(n => `<div class="note">${n}</div>`).join("");
+  const tipTable = `<div class="day-tip-table card" style="padding:.35rem .6rem;margin-top:1rem"><table class="route"><tbody>
+      <tr><th>省錢</th><td>${d.save || "—"}</td></tr>
+      <tr><th>行李／寄放</th><td>${d.bag || "—"}</td></tr>
+      <tr><th>預約／票務</th><td>${d.book || "—"}</td></tr>
+      <tr><th>付款</th><td>${d.pay || "—"}</td></tr>
+      <tr><th>拍照</th><td>${d.photo || "—"}</td></tr>
+      <tr><th>三餐</th><td>${d.meals || "—"}</td></tr>
+      <tr><th>設備</th><td>${d.gear || "—"}</td></tr>
+      <tr><th>當日提醒</th><td>${d.watch || "—"}</td></tr>
+    </tbody></table></div>`;
+  const pois = d.places.filter(k => P[k]).map(k => `<span class="poi">${placeLabel(P[k])}</span>`).join("");
+  const dirHref = mapsDirUrl(d.route || null);
+  const dirBtn = dirHref ? `<a class="btn primary" target="_blank" rel="noopener" href="${dirHref}">Google 導航</a>` : "";
+  const gmapsList = d.places.filter(k => P[k]).map(k => `<a class="btn" target="_blank" rel="noopener" href="${mapsPlaceUrl(P[k])}">${placeShort(P[k])}</a>`).join("");
+  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>移動</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div>${tipTable}</div>`;
+  daysRoot.appendChild(el);
+  const initMap = () => {
+    if (typeof L === "undefined") return;
+    if (dayMaps.has(d.id)) { dayMaps.get(d.id).invalidateSize(); return; }
+    const mapEl = document.getElementById(`map-${d.id}`);
+    if (!mapEl || mapEl.clientHeight < 40) return;
+    const map = L.map(mapEl, { scrollWheelZoom: false });
+    darkTiles(map);
+    const bounds = [];
+    d.places.forEach((k, idx) => {
+      const p = P[k];
+      const color = specialKeys.includes(k) ? "#e07a5f" : (stayKeys.includes(k) ? "#5ec8c7" : "#e0a35b");
+      L.marker([p.lat, p.lng], { icon: circleIcon(color) }).addTo(map).bindPopup(`<strong>${p.zh}</strong><br>${p.orig}`);
+      if (idx === 0 || stayKeys.includes(k) || specialKeys.includes(k)) {
+        L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), color), interactive: false }).addTo(map);
+      }
+      bounds.push([p.lat, p.lng]);
+    });
+    if (bounds.length > 1) {
+      map.fitBounds(bounds, { padding: [28, 28] });
+      fetchOsrmRoute(bounds).then(seg => {
+        if (seg && seg.length > 1) {
+          L.polyline(seg, { color: "#5ec8c7", weight: 8, opacity: 0.14, smoothFactor: 0 }).addTo(map);
+          L.polyline(seg, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, smoothFactor: 0 }).addTo(map);
+          map.fitBounds(seg, { padding: [28, 28] });
+        } else L.polyline(bounds, { color: "#5ec8c7", weight: 2.5, opacity: 0.45, dashArray: "6 8" }).addTo(map);
+      }).catch(() => L.polyline(bounds, { color: "#5ec8c7", weight: 2.5, opacity: 0.45, dashArray: "6 8" }).addTo(map));
+    } else map.setView(bounds[0], d.zoom || 10);
+    dayMaps.set(d.id, map);
+    setTimeout(() => map.invalidateSize(), 80);
+  };
+  el.addEventListener("toggle", () => { if (el.open) setTimeout(initMap, 60); });
+  if (el.open) setTimeout(initMap, 120);
+});
+
+document.getElementById("expandAll").onclick = () => document.querySelectorAll("details.day").forEach(d => { d.open = true; setTimeout(() => { const m = dayMaps.get(d.id); if (m) m.invalidateSize(); }, 100); });
+document.getElementById("collapseAll").onclick = () => document.querySelectorAll("details.day").forEach(d => d.open = false);
+const navLinks = [...nav.querySelectorAll("a")];
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === `#${en.target.id}`));
+  });
+}, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+document.querySelectorAll("details.day").forEach(d => io.observe(d));
+window.addEventListener("load", () => { if (overviewMap) overviewMap.invalidateSize(); });
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!reduceMotion) {
+  document.documentElement.classList.add("motion-on");
+  document.querySelectorAll("section.reveal").forEach((el, i) => { el.style.transitionDelay = Math.min(i * 0.05, 0.25) + "s"; });
+  const revealIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); revealIO.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll(".reveal").forEach(el => revealIO.observe(el));
+  setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(el => el.classList.add("in")), 1200);
+}
+const actionBar = document.querySelector(".topbar");
+const navEl = document.querySelector(".day-nav");
+if (actionBar && navEl) {
+  const syncChrome = () => {
+    const stuck = navEl.getBoundingClientRect().top <= 0.5;
+    actionBar.classList.toggle("is-swapped", stuck);
+    navEl.classList.toggle("scrolled", stuck);
+  };
+  syncChrome();
+  window.addEventListener("scroll", syncChrome, { passive: true });
+  window.addEventListener("resize", syncChrome);
+} else if (navEl) {
+  const onScroll = () => navEl.classList.toggle("scrolled", window.scrollY > 24);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+</script>
+</body>
+</html>
