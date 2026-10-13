@@ -682,6 +682,11 @@ footer {
 }
 
 @media print {
+
+.day-tip-table { margin-top: 1rem; overflow-x: auto; }
+.day-tip-table table.route th { width: 7.2rem; white-space: nowrap; color: var(--ice); vertical-align: top; }
+.day-tip-table table.route td { color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+
   .topbar, .day-nav { display: none !important; }
   body { background: #fff; color: #111; }
   .card, .day { box-shadow: none; }
@@ -698,8 +703,12 @@ footer {
 <button class="btn primary" type="button" id="expandAll">全部展開</button>
       <button class="btn" type="button" id="collapseAll">全部收合</button>
       <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
-      <a class="btn" href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉巡拜指南</a>
-      <a class="btn" href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">神玉地圖</a>
+      <a class="btn" href="#reminders">提醒</a>
+      <a class="btn" href="#photo-meals-gear">拍照／餐／設備</a>
+      <a class="btn" href="#money">現金／刷卡</a>
+      <a class="btn" href="#budget">省錢攻略</a>
+      <a class="btn" href="#luggage">行李</a>
+      <a class="btn" href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉巡拜</a>
     </div>
   </div>
 </div>
@@ -833,39 +842,215 @@ footer {
   </div>
 </section>
 
-<section class="reveal">
-  <div class="wrap">
-    <h2 class="section-title">逐日行程</h2>
-    <p class="section-sub">住宿已對訂單；景點為推薦填充。</p>
-    <div id="days"></div>
-  </div>
-</section>
 
-<section class="reveal">
+<section class="reveal" id="reminders">
   <div class="wrap">
-    <h2 class="section-title">裝備與每日檢查</h2>
+    <h2 class="section-title">還有哪些「要提醒的小事」</h2>
+    <p class="section-sub">已寫進每日表格的八欄之外，整趟共用、出發前可一次打勾的類型如下。</p>
     <div class="grid-2">
       <div class="card">
-        <h3>必裝</h3>
+        <h3>已進每日表</h3>
         <ul>
-          <li>溫泉旅館／飯店備品外的輕便外出鞋</li>
-          <li>神玉現金（500／300 円級距）</li>
-          <li>租車：國際駕照、ETC、離線地圖</li>
-          <li>橫濱起迄：Suica／PASMO</li>
+          <li><strong>省錢</strong> — Suica、祭拜費、當日取捨</li>
+          <li><strong>行李／寄放</strong> — 拖箱或日包、飯店暫存</li>
+          <li><strong>預約／票務</strong> — 取還車、花火場次、入館</li>
+          <li><strong>當日提醒</strong> — 天氣、還車截止、紅葉車潮</li>
+          <li><strong>付款</strong> — 刷卡、現金、Suica</li>
+          <li><strong>拍照／三餐／設備</strong> — 黃金時、吃什麼、帶什麼鏡頭</li>
         </ul>
       </div>
       <div class="card">
-        <h3>出發前</h3>
+        <h3>出發前總檢（整趟一次）</h3>
         <ul>
-          <li>熱海花火場次</li>
-          <li>スバルライン（五合目）路況</li>
-          <li>鬼怒川→日光紅葉壅塞</li>
-          <li>去程 CI222（TSA→HND）、回程 CI221（HND→TSA）</li>
+          <li><strong>證件</strong>：護照效期、國際駕照 IDL、信用卡雙卡</li>
+          <li><strong>插頭</strong>：日本 Type A（台灣多數可直插）</li>
+          <li><strong>App</strong>：Google Maps 離線、Suica／PASMO、租車商 App、銀行旅遊通知</li>
+          <li><strong>保險</strong>：旅遊險；租車套餐條款</li>
+          <li><strong>通訊</strong>：eSIM／漫遊；備用離線地圖</li>
+          <li><strong>健康</strong>：常用藥、OK繩、防曬</li>
+          <li><strong>班機</strong>：CI222 TSA→HND、CI221 HND→TSA（出發前再對）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>自駕／溫泉</h3>
+        <ul>
+          <li>10/26 10:00 熱海取車 → 10/30 20:00 橫濱還；預留 buffer</li>
+          <li>ETC、離線地圖、油箱規則；車內勿留護照筆電</li>
+          <li>神玉參拜備 300／500 円現金；スバルライン路況當日查</li>
+          <li>溫泉館：洗浴用品多已備；外出輕便鞋</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>都市／鐵道</h3>
+        <ul>
+          <li>Suica／PASMO 覆蓋橫濱・東京・鎌倉</li>
+          <li>週日超市可能休或縮短（六晚補貨）</li>
+          <li>紅葉季日光車位難找，盡量早到</li>
+          <li>緊急電話 110／119；旅遊諮詢可用多語導覽</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
+
+<section class="reveal" id="days-root">
+  <div class="wrap">
+    <h2 class="section-title">逐日行程</h2>
+    <p class="section-sub">每日表格：省錢、行李、預約、付款、拍照、三餐、設備、當日提醒。</p>
+    <div id="days"></div>
+  </div>
+</section>
+
+
+<section class="reveal" id="photo-meals-gear">
+  <div class="wrap">
+    <h2 class="section-title">拍照・三餐・設備</h2>
+    <p class="section-sub">每日表格已有「拍照／三餐／設備」三欄；這裡是整趟共用原則。黃金時段以當地日出日落為準（10 月末關東大約 05:50–06:20 日出、17:00–17:30 日落，請用 App 再對）。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>拍照原則</h3>
+        <ul>
+          <li><strong>富士景</strong>：清晨能見度最穩（忠靈塔、北口金鳥居、湖面）。</li>
+          <li><strong>海岸／神社</strong>：午後側光（城ヶ崎、長谷大佛）。</li>
+          <li><strong>花火</strong>：高 ISO／輕腳架；人潮中不要塗拖。</li>
+          <li>移動日（取還車、鬼怒川→橫濱）不硬排黃金時。</li>
+          <li>無人機：神社／溫泉區多禁，預設不帶飛。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>建議器材</h3>
+        <ul>
+          <li><strong>機身</strong>：一台主力＋手機備援。</li>
+          <li><strong>鏡頭</strong>：廣角／16–35；標準變焦 24–70。兩鏡可跑全程。</li>
+          <li><strong>濾鏡</strong>：CPL（湖面／葉）；可選 ND。</li>
+          <li><strong>腳架</strong>：輕量（花火／清晨湖景）；社建內多半用不到。</li>
+          <li><strong>其他</strong>：備用電池、行動電源、擦鏡布、盧衣。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>三餐節奏</h3>
+        <ul>
+          <li><strong>早</strong>：飯店或便利店；出遊日帶水與零食。</li>
+          <li><strong>午</strong>：站前／小町／服務區；神玉日可自備簡餐。</li>
+          <li><strong>晚</strong>：溫泉館餐優先；橫濱站前／中華街選擇多。</li>
+          <li>週日超市可休；六晚補水與零食。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>App</h3>
+        <ul>
+          <li>PhotoPills／Sun Surveyor（日出日落）</li>
+          <li>Yahoo!天氣／気象庁（能見度、降雨）</li>
+          <li>Google Maps 離線；租車導航離線備份</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="money">
+  <div class="wrap">
+    <h2 class="section-title">現金與信用卡</h2>
+    <p class="section-sub">結論：<strong>大半用信用卡＋Suica 就夠</strong>（Visa／Mastercard／感應）。現金當「口袋零用＋神社祭拜」，不必帶大量現鈔。刷卡一律選<strong>日圓 JPY</strong>，不要選折算成 TWD（DCC）。</p>
+    <div class="card" style="margin-bottom:1rem">
+      <h3>能不能刷卡？</h3>
+      <table class="route">
+        <thead><tr><th>項目</th><th>建議</th></tr></thead>
+        <tbody>
+          <tr><td>飯店、租車、百貨、大部分餐廳</td><td>刷卡 OK</td></tr>
+          <tr><td>電車／地鐵／巴士</td><td>Suica／PASMO（或手機版）</td></tr>
+          <tr><td>美術館、大型景點</td><td>多可刷卡；小窗口備現金</td></tr>
+          <tr><td>神社祭拜、小支店、有些溫泉小費</td><td>現金較順</td></tr>
+          <tr><td>租車押金／預授權</td><td><strong>要信用卡</strong>（簽帳金融卡常被拒）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>口袋現金（粗估）</h3>
+        <ul>
+          <li>一人約 <strong>JPY 15,000–25,000</strong>（神玉祭拜、小支、備援）。</li>
+          <li>面額以 1,000／5,000 為主；備一點零錢給小铺。</li>
+          <li>住宿、租車、百貨不用換成現金。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>換／提款</h3>
+        <ul>
+          <li>台灣先換<strong>少量</strong>日圓應急；其餘 7-Eleven／日本郵局 ATM提（選 JPY、不轉 TWD）。</li>
+          <li>避開機場大額兌幣櫃檯匯率。</li>
+          <li>出發前開海外交易；備兩張不同銀行卡。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="budget">
+  <div class="wrap">
+    <h2 class="section-title">省錢攻略</h2>
+    <p class="section-sub">依本行程「橫濱起迄＋熱海／富士自駕＋鬼怒川・日光＋鎌倉日歸」量身。原則：少買用不到的大通票，把錢留在必去景點與租車。</p>
+    <div class="card" style="margin-bottom:1rem">
+      <h3>先抓最大帳單</h3>
+      <ul>
+        <li><strong>1. 租車（熱海→橫濱異店還）</strong>：已訂套餐；避免迴程誤點加購。</li>
+        <li><strong>2. 高速＋油</strong>：ETC；還車前依套餐燒油。</li>
+        <li><strong>3. 景點取捨</strong>：東照宮、MOA、大谷—用得到再買；神玉以祭拜為主。</li>
+        <li><strong>4. JR Pass</strong>：本趟以租車＋關東都會為主，<strong>全日通票多半不划算</strong>；Suica 足夠。</li>
+      </ul>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>交通</h3>
+        <ul>
+          <li>橫濱・東京・鎌倉：Suica／PASMO。</li>
+          <li>羽田↔橫濱：京急／巴士多半比計程車省。</li>
+          <li>鎌倉：JR 來回；江ノ電一段即可，慎買大套票。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>景點／餐飲</h3>
+        <ul>
+          <li>超市／便利店解決早餐與路上午餐。</li>
+          <li>藥妝比價；免稅門檻先算清。</li>
+          <li>溫泉館餐已含則少外食。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="luggage">
+  <div class="wrap">
+    <h2 class="section-title">行李怎麼帶</h2>
+    <p class="section-sub">結論：<strong>1 中型行李箱＋1 日用背包</strong>。租車段大件進後備箱；神社／海岸／日光日只背日包。</p>
+    <div class="card" style="margin-bottom:1rem; overflow-x:auto">
+      <h3>逐段能不能拖箱子</h3>
+      <table class="route">
+        <thead><tr><th>路段</th><th>大行李箱</th><th>怎麼做</th></tr></thead>
+        <tbody>
+          <tr><td>羽田 → Mets 橫濱</td><td>可以</td><td>京急／巴士直道飯店。</td></tr>
+          <tr><td>10/23 上班／京橋</td><td>留飯店</td><td>只帶小包。</td></tr>
+          <tr><td>橫濱 → 熱海</td><td>可以</td><td>退房後直送東橫 INN；可寄放再出遊。</td></tr>
+          <tr><td>取車 → うぶや → 鬼怒川</td><td>後備箱</td><td>人不拖箱爬神社；日包巡拜。</td></tr>
+          <tr><td>日光／奧日光</td><td>留鬼怒川</td><td>日包；車位難找時別拖箱。</td></tr>
+          <tr><td>還車 → Richmond</td><td>可以</td><td>還車後步行／短距拖到站前飯店。</td></tr>
+          <tr><td>鎌倉日歸</td><td>留 Richmond</td><td>日包；Suica 即可。</td></tr>
+          <tr><td>離境羽田</td><td>可以</td><td>11:00 退房後直送機場。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>原則</h3>
+      <ul>
+        <li>多晚據點（橫濱、熱海、鬼怒川）先寄大件再出門。</li>
+        <li>後備箱 ≠ 保險櫃；貴重勿留車內。</li>
+        <li>飯店暫存 &gt; 車站置物櫃 &gt; 寄送行李（本趟多半不需）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
@@ -930,13 +1115,14 @@ function mapsName(p) { return p.gmaps || p.orig || p.zh; }
 function mapsPlaceUrl(p) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsName(p))}`;
 }
-function mapsDirUrl(keys) {
+function mapsDirUrl(keys, mode) {
   const pts = (keys || []).map(k => P[k]).filter(Boolean);
   if (pts.length < 2) return null;
   const origin = encodeURIComponent(mapsName(pts[0]));
   const destination = encodeURIComponent(mapsName(pts[pts.length - 1]));
   const via = pts.slice(1, -1).slice(0, 9).map(p => encodeURIComponent(mapsName(p)));
-  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  const travel = mode === "transit" ? "transit" : "driving";
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=${travel}`;
   if (via.length) url += `&waypoints=${via.join("%7C")}`;
   return url;
 }
@@ -962,6 +1148,14 @@ const days = [
       { time: "23:00+", title: "入住 Mets 橫濱", desc: "已確認（官網 check-in 15:00 起，晚到通常可；建議先電話告知前台）。" }
     ],
     notes: ["班機：CI222 TSA→HND（10/22 18:05–22:15，時刻以當日為準）","住宿：JR-EAST HOTEL METS YOKOHAMA"]
+    save: "京急／巴士比計程車省；晚到直接入住不塞景點。",
+    bag: "拖箱直道 Mets；機場→橫濱可扛。",
+    book: "再對 CI222 時刻；晚到可先告知 Mets 前台。",
+    pay: "機場交通可刷卡／Suica；備少量日圓現金。",
+    photo: "抵達日不硬拍；羽田夜景可手機。",
+    meals: "機上或落地後便利店；飯店附近宵夜即可。",
+    gear: "手機＋行動電源；相機可收在隨身／託運。",
+    watch: "入境排隊與京急末班；時刻以當日為準。",
   },
   {
     id: "day-2", date: "10/23（五）", title: "Appier 上班・京橋晚餐", summary: "白天 Appier Japan；19:30 おみ乃 椿（京橋）",
@@ -979,6 +1173,14 @@ const days = [
       "晚餐：おみ乃 椿 · 7人 · カウンター",
       "住宿：Mets 橫濱續住"
     ]
+    save: "電車通勤；晚餐已訂不必另找高價。",
+    bag: "日用小包；大件留 Mets。",
+    book: "確認おみ乃時間；Appier 路線。",
+    pay: "Suica；晚餐依店家規則。",
+    photo: "愛宇／京橋建築軟光；館內勿閃光。",
+    meals: "早飯店／便利店；午公司附近；晚おまかせ。",
+    gear: "上班輕裝；相機可留飯店。",
+    watch: "預留下班到京橋時間；晚電車回橫濱。",
   },
   {
     id: "day-3", date: "10/24（六）", title: "橫濱 → 熱海", summary: "東橫 INN 熱海站前；伊豆海岸",
@@ -991,6 +1193,14 @@ const days = [
       { time: "晚", title: "來宮大楠／熱海街", desc: "站前散步；入住 Toyoko Inn Atami Ekimae（已確認至 10/26）。" }
     ],
     notes: ["住宿已確認：Toyoko Inn Atami Ekimae（10/24 15:00–10/26 10:00）"]
+    save: "租車前不用先買 JR 特急；普通車／巴士可省。",
+    bag: "Mets 退房後行李直送熱海東橫；可寄放再玩大室。",
+    book: "東橫 check-in 15:00；大室山索道時間。",
+    pay: "現金備神社／小支；多數刷卡 OK。",
+    photo: "城ヶ崎午後側光；大室頂展望。",
+    meals: "熱海站前午餐；晚站前街。",
+    gear: "日包＋鞋；海邊風大加外套。",
+    watch: "11:00 退房；行李先到位再出遊。",
   },
   {
     id: "day-4", date: "10/25（日）", title: "熱海文化・花火", summary: "MOA → 伊豆山／熱海城 → 花火",
@@ -1004,6 +1214,14 @@ const days = [
       { time: "晚", title: "熱海花火", desc: "查當日場次；觀煙火優先 Sun Beach／港周邊。" }
     ],
     notes: ["住宿：東橫 INN 續住"]
+    save: "MOA 查官網票；巴士比計程車省。",
+    bag: "大件留東橫；日包即可。",
+    book: "查熱海花火場次；MOA 休館日。",
+    pay: "美術館刷卡；花火周邊現金小額。",
+    photo: "花火需腳架／高 ISO；白天海灣。",
+    meals: "早飯店；午熱海；晚花火前先吃。",
+    gear: "廣角／標準；花火腳架＋備用電池。",
+    watch: "花火人潮與回程交通。",
   },
   {
     id: "day-5", date: "10/26（一）", title: "取車・熱海 → うぶや", summary: "10:00 熱海站前取車，開往河口湖 UBUYA",
@@ -1011,12 +1229,20 @@ const days = [
     drive: "熱海→河口湖約 2–2.5h", daylight: "約 11h", highlight: true,
     places: ["atamiHotel","rentAtami","ubuya","oishi","chureito"], route: ["rentAtami","ubuya","oishi","chureito"], center: "ubuya", zoom: 11,
     timeline: [
-      { time: "10:00", title: "熱海站前取車", desc: "東橫 INN 10:00 退房後取車；C3/AT、完整套餐。店電話見地圖。" },
+      { time: "10:00", title: "熱海站前取車", desc: "東橫 INN 10:00 退房後取車；C3/AT、完整套餐。" },
       { time: "午前–午", title: "開往河口湖", desc: "確認保險／ETC／油箱規則後出發。" },
       { time: "15:00", title: "入住 UBUYA", desc: "已確認入住。" },
       { time: "傍晚", title: "大石公園／忠靈塔", desc: "視天色；旅館晚餐優先。" }
     ],
     notes: ["租車：10/26 10:00 熱海站前取 → 10/30 20:00 橫濱站中央西口還","住宿：UBUYA 10/26–10/27"]
+    save: "異店還已訂；勿再加購不必要保險。",
+    bag: "熱海退房後進後備箱直道うぶや。",
+    book: "10:00 取車準時；確認 ETC／油箱。",
+    pay: "租車押金要信用卡；油／高速另計。",
+    photo: "忠靈塔／大石傍晚；移動日不硬排日出。",
+    meals: "取車前熱海早；午路上；晚旅館餐優先。",
+    gear: "行車架穩妤；相機防震。",
+    watch: "國際駕照；離線地圖；勿趕夜路。",
   },
   {
     id: "day-6", date: "10/27（二）", title: "神玉巡拜・換宿トリイゲート", summary: "富士北麓神玉當日完成；晚住富士山站前",
@@ -1036,6 +1262,14 @@ const days = [
       "住宿已確認：HOTEL FUJiTORiiGATE（10/27–10/28）",
       '<a href="https://fujiyoshida.net/course/index.php?p=course-530" target="_blank" rel="noopener">神玉指南</a> · <a href="https://kamitamajunpai.com/kamitamamap-cat/fujisan/" target="_blank" rel="noopener">七社地圖</a>'
     ]
+    save: "神社參拜費 300–500 円級；スバル開才上五合。",
+    bag: "うぶや退→可寄トリイゲート再巡社。",
+    book: "查スバルライン；神玉地圖備一份。",
+    pay: "參拜現金；高速 ETC。",
+    photo: "北口金鳥居／忠靈塔富士；清晨能見度佳。",
+    meals: "早退房前；午湖區簡餐；晚トリイゲート附近。",
+    gear: "廣角壓富士；CPL 湖面；備用電池。",
+    watch: "神玉只在富士當日完成；紅葉車潮。",
   },
   {
     id: "day-7", date: "10/28（三）", title: "河口湖 → 鬼怒川", summary: "開往鬼怒川溫泉飯店",
@@ -1047,6 +1281,14 @@ const days = [
       { time: "15:00+", title: "入住鬼怒川溫泉飯店", desc: "已確認至 10/30 10:00；今晚泡湯養明天體力。" }
     ],
     notes: ["住宿已確認：Kinugawa Onsen Hotel（10/28–10/30）"]
+    save: "移動日不塞付費景點；油＋高速先算。",
+    bag: "後備箱直道；飯店可拖箱。",
+    book: "—",
+    pay: "高速 ETC；加油站刷卡。",
+    photo: "移動日街景即可。",
+    meals: "早退房前；午服務區；晚溫泉旅館。",
+    gear: "相機收妤防震。",
+    watch: "預留紅葉車潮；15:00+ 入住泡湯。",
   },
   {
     id: "day-8", date: "10/29（四）", title: "日光・奧日光（鬼怒川基地）", summary: "東照宮＋華嚴／中禪寺",
@@ -1061,6 +1303,14 @@ const days = [
       { time: "晚", title: "回鬼怒川溫泉", desc: "飯店泡湯收工。" }
     ],
     notes: ["紅葉季車位難找，東照宮盡量早到。"]
+    save: "東照宮套票看需求；奧日光停車費先查。",
+    bag: "大件留鬼怒川；日包。",
+    book: "東照宮開園；紅葉車位難找早到。",
+    pay: "門票現金／刷卡視窗口；停車現金備。",
+    photo: "東照宮細節；華嚴／中禪寺午後側光。",
+    meals: "早飯店；午日光；晚鬼怒川。",
+    gear: "標準變焦＋廣角；鞋底好走石階。",
+    watch: "早出發；車位與塞車。",
   },
   {
     id: "day-9", date: "10/30（五）", title: "遺珠・還車橫濱", summary: "鬼怒川→橫濱沿路；20:00 前還車後入住 Richmond",
@@ -1074,6 +1324,14 @@ const days = [
       { time: "還車後", title: "入住 Richmond 橫濱站前", desc: "已確認至 11/2 11:00；站前步行圈。" }
     ],
     notes: ["還車：10/30 20:00 橫濱站中央西口店","遺珠只限鬼怒川→橫濱路程"]
+    save: "大谷／餃子當遺珠；勿為景點誤 20:00 還車。",
+    bag: "退房後進車；還車後拖到 Richmond。",
+    book: "大谷入館時間；還車前加油規則。",
+    pay: "還車前燒油依套餐；刷卡押金解凍。",
+    photo: "大谷洞窟光；移動優先準時。",
+    meals: "午宇都宮餃子；晚橫濱站前。",
+    gear: "輕裝；貴重勿留車。",
+    watch: "20:00 前還橫濱中央西口；預留 buffer。",
   },
   {
     id: "day-10", date: "10/31（六）", title: "鎌倉一日", summary: "橫濱出發電車日歸；若改 11/1 也可",
@@ -1093,6 +1351,15 @@ const days = [
       "推薦排 10/31；若想改 11/1，兩天互換即可。",
       "不開車；Suica／PASMO 即可。"
     ]
+    save: "JR 來回；慎買通票只為一日；江ノ電一段即可。",
+    bag: "大件留 Richmond；日包。",
+    book: "—",
+    pay: "Suica；寺社現金小額。",
+    photo: "大佛／長谷；午後側光；週末人潮早拍。",
+    meals: "小町午餐；晚鎌倉或橫濱。",
+    gear: "標準變焦；腳架可省。",
+    watch: "週末早到；可與 11/1 對調。",
+    mode: "transit",
   },
   {
     id: "day-11", date: "11/1（日）", title: "橫濱／東京補買", summary: "自由日；若鎌倉改這天就把 10/31 當街日",
@@ -1105,6 +1372,15 @@ const days = [
       { time: "備援", title: "鎌倉改排", desc: "若 10/31 天氣差或想週日去鎌倉，將 day-10 與這天互換。" }
     ],
     notes: ["隔天 11:00 退房；大件行李可先寄飯店。"]
+    save: "藥妝比價；免稅門檻；不必每間百貨。",
+    bag: "可寄 Richmond；逛街小包。",
+    book: "—",
+    pay: "刷卡＋Suica；現金找零。",
+    photo: "港未來／澀谷夜景軟光。",
+    meals: "橫濱中華街或東京站一番街。",
+    gear: "手機即可。",
+    watch: "隔天 11:00 退；大件先寄。",
+    mode: "transit",
   },
   {
     id: "day-12", date: "11/2（一）", title: "CI221 離境", summary: "Richmond 11:00 退房 → 羽田 CI221 回松山",
@@ -1117,6 +1393,15 @@ const days = [
       { time: "17:15", title: "松山落地", desc: "時刻以當日班表為準（冬季表常為 14:15–17:15）。" }
     ],
     notes: ["班機：CI221 HND→TSA（11/2）","羽田離橫濱較近，不用跑成田"]
+    save: "京急／巴士比計程車；預留報到即可。",
+    bag: "退房直送羽田。",
+    book: "再對 CI221；11:00 退房。",
+    pay: "機場交通刷卡／Suica。",
+    photo: "—",
+    meals: "早退房前或機場。",
+    gear: "託運／隨身依規定。",
+    watch: "建議 11:30 前到羽田；時刻以當日為準。",
+    mode: "transit",
   }
 ];
 
@@ -1253,11 +1538,21 @@ days.forEach((d, i) => {
   const tags = d.tags.map(([k, t]) => `<span class="tag ${k}">${t}</span>`).join("");
   const timeline = d.timeline.map(t => `<div class="tl-item"><div class="time">${t.time}</div><strong>${t.title}</strong><p>${t.desc || ""}</p></div>`).join("");
   const notes = (d.notes || []).map(n => `<div class="note">${n}</div>`).join("");
+  const tipTable = `<div class="day-tip-table card" style="padding:.35rem .6rem;margin-top:1rem"><table class="route"><tbody>
+      <tr><th>省錢</th><td>${d.save || "—"}</td></tr>
+      <tr><th>行李／寄放</th><td>${d.bag || "—"}</td></tr>
+      <tr><th>預約／票務</th><td>${d.book || "—"}</td></tr>
+      <tr><th>付款</th><td>${d.pay || "—"}</td></tr>
+      <tr><th>拍照</th><td>${d.photo || "—"}</td></tr>
+      <tr><th>三餐</th><td>${d.meals || "—"}</td></tr>
+      <tr><th>設備</th><td>${d.gear || "—"}</td></tr>
+      <tr><th>當日提醒</th><td>${d.watch || "—"}</td></tr>
+    </tbody></table></div>`;
   const pois = d.places.filter(k => P[k]).map(k => `<span class="poi">${placeLabel(P[k])}</span>`).join("");
-  const dirHref = mapsDirUrl(d.route || null);
+  const dirHref = mapsDirUrl(d.route || null, d.mode);
   const dirBtn = dirHref ? `<a class="btn primary" target="_blank" rel="noopener" href="${dirHref}">Google 導航</a>` : "";
   const gmapsList = d.places.filter(k => P[k]).map(k => `<a class="btn" target="_blank" rel="noopener" href="${mapsPlaceUrl(P[k])}">${placeShort(P[k])}</a>`).join("");
-  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>車程</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div></div>`;
+  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>移動</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div>${tipTable}</div>`;
   daysRoot.appendChild(el);
   const initMap = () => {
     if (typeof L === "undefined") return;
