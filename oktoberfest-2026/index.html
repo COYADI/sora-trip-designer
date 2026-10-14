@@ -1236,7 +1236,6 @@ days.forEach((d, i) => {
   const el = document.createElement("details");
   el.className = "day" + (d.highlight ? " highlight" : "");
   el.id = d.id;
-  if (d.highlight || i < 2) el.open = true;
   const tags = d.tags.map(([k, t]) => `<span class="tag ${k}">${t}</span>`).join("");
   const timeline = d.timeline.map(t => `<div class="tl-item"><div class="time">${t.time}</div><strong>${t.title}</strong><p>${t.desc || ""}</p></div>`).join("");
   const notes = (d.notes || []).map(n => `<div class="note">${n}</div>`).join("");

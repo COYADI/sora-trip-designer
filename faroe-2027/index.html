@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>法羅群島 · 2027/7/10–7/21</title>
+<link rel="canonical" href="https://trip.aosora.photography/faroe-2027/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="faroe-ring-route.js"></script>
+<style>
+
+:root {
+  --bg: #0b0f14;
+  --bg-elev: #121820;
+  --bg-card: #161d27;
+  --bg-soft: #1c2530;
+  --line: rgba(232, 238, 242, 0.10);
+  --line-strong: rgba(232, 238, 242, 0.18);
+  --text: #e8eef2;
+  --text-dim: #9aa8b5;
+  --muted: #6d7b88;
+  --ice: #5ec8c7;
+  --ice-dim: #2f7f82;
+  --amber: #e0a35b;
+  --danger: #e07a5f;
+  --shadow: 0 18px 50px rgba(0,0,0,.38);
+  --shadow-soft: 0 8px 28px rgba(0,0,0,.28);
+  --radius: 18px;
+  --max: 1100px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: .42s;
+  --dur-fast: .22s;
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+}
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  interpolate-size: allow-keywords;
+}
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(94,200,199,.12), transparent 50%),
+    radial-gradient(700px 400px at 90% 5%, rgba(224,163,91,.08), transparent 45%),
+    var(--bg);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--ice);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+a:hover { color: #8fe0df; }
+.wrap { width: min(var(--max), calc(100% - 2rem)); margin: 0 auto; }
+
+/* Reveal — default visible; hide only after JS enables motion */
+.reveal { opacity: 1; transform: none; }
+html.motion-on .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+}
+html.motion-on .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sticky action bar (swaps out when day-nav sticks) */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2001;
+  isolation: isolate;
+  background: rgba(11,15,20,.96);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 8px 28px rgba(0,0,0,.22);
+  transition: transform .28s var(--ease), opacity .2s var(--ease);
+}
+.topbar.is-swapped {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.leaflet-container { z-index: 1; }
+.topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 0;
+}
+.topbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .45rem .85rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #061112;
+  text-decoration: none;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  margin-right: .15rem;
+}
+.topbar-back:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+}
+.topbar .btn { padding: .45rem .85rem; font-size: .8rem; }
+
+/* Hero */
+.hero {
+  padding: 3.75rem 0 2.5rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(22,29,39,.92), transparent 70%),
+    repeating-linear-gradient(-12deg, transparent, transparent 22px, rgba(255,255,255,.012) 22px, rgba(255,255,255,.012) 23px);
+}
+.kicker {
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ice);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeUp .8s var(--ease-out) .05s forwards;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 6.2vw, 3.9rem);
+  line-height: 1.12;
+  letter-spacing: 0.04em;
+  margin: 0 0 .9rem;
+  max-width: none; white-space: nowrap;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .12s forwards;
+}
+.hero h1 span { color: var(--ice); }
+.lead {
+  max-width: 38rem;
+  color: var(--text-dim);
+  margin: 0 0 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .22s forwards;
+}
+.chips, .toolbar {
+  opacity: 0;
+  animation: fadeUp .85s var(--ease-out) .32s forwards;
+}
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+.chip {
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .42rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255,255,255,.03);
+  color: var(--text-dim);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.chip:hover {
+  border-color: rgba(94,200,199,.35);
+  color: var(--text);
+  background: rgba(94,200,199,.06);
+  transform: translateY(-1px);
+}
+.toolbar { display: flex; flex-wrap: wrap; gap: .5rem; }
+.btn {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .58rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.btn:hover {
+  border-color: var(--ice-dim);
+  color: var(--ice);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+.btn:active { transform: translateY(0); }
+.btn.primary {
+  background: linear-gradient(160deg, #3a9a98, var(--ice-dim));
+  border-color: transparent;
+  color: #061112;
+}
+.btn.primary:hover {
+  background: linear-gradient(160deg, var(--ice), #3a9a98);
+  color: #061112;
+  border-color: transparent;
+}
+
+/* Nav — original place under hero; sticks and replaces topbar when scrolled */
+.day-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  isolation: isolate;
+  background: rgba(11,15,20,.78);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.day-nav.scrolled {
+  background: rgba(11,15,20,.96);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.day-nav-inner {
+  display: flex;
+  gap: .35rem;
+  overflow-x: auto;
+  padding: .75rem 0;
+  scrollbar-width: thin;
+}
+.day-nav a {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .42rem .7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition:
+    color var(--dur-fast) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.day-nav a:hover {
+  color: var(--ice);
+  background: rgba(94,200,199,.08);
+  border-color: rgba(94,200,199,.18);
+}
+.day-nav a.active {
+  color: #061112;
+  background: var(--ice);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+section { padding: 2.6rem 0; }
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  letter-spacing: 0.03em;
+  margin: 0 0 .45rem;
+  font-weight: 600;
+}
+.section-sub { color: var(--muted); margin: 0 0 1.4rem; max-width: 42rem; line-height: 1.7; }
+
+.grid-2 { display: grid; gap: 1rem; grid-template-columns: 1.1fr .9fr; }
+.grid-3 { display: grid; gap: .8rem; grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.25rem;
+  box-shadow: var(--shadow);
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.card:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 55px rgba(0,0,0,.42);
+}
+.card h3 {
+  margin: 0 0 .55rem;
+  font-size: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.card p, .card li { color: var(--text-dim); font-size: .92rem; }
+.card ul { margin: 0; padding-left: 1.1rem; }
+
+#overviewMap {
+  height: 420px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+#overviewMap:hover {
+  border-color: rgba(94,200,199,.28);
+  box-shadow: var(--shadow-soft);
+}
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem 1rem;
+  margin-top: .85rem;
+  color: var(--muted);
+  font-size: .8rem;
+}
+.map-legend i {
+  display: inline-block;
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  margin-right: .35rem;
+  vertical-align: middle;
+}
+
+.stay-track {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .55rem;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 900px) { .stay-track { grid-template-columns: repeat(2, 1fr); } }
+.stay-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: .9rem;
+  color: inherit;
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.stay-pill:hover {
+  border-color: rgba(94,200,199,.4);
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, rgba(94,200,199,.06), var(--bg-card));
+  box-shadow: var(--shadow-soft);
+}
+.stay-pill .nights {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ice);
+}
+.stay-pill strong { display: block; margin: .25rem 0; font-size: .95rem; font-weight: 600; }
+.stay-pill span { font-size: .78rem; color: var(--muted); }
+
+table.route { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.route th, table.route td {
+  text-align: left;
+  padding: .75rem .5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  transition: background var(--dur-fast) var(--ease);
+}
+table.route tbody tr:hover td { background: rgba(255,255,255,.02); }
+table.route th {
+  color: var(--muted);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+table.route td { color: var(--text-dim); }
+table.route td:first-child { color: var(--text); font-weight: 600; }
+
+/* Day cards + animated details */
+.day {
+  scroll-margin-top: 4.2rem;
+  margin-bottom: 1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  overflow: clip;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.day:hover {
+  border-color: rgba(232,238,242,.16);
+  box-shadow: var(--shadow-soft);
+}
+.day[open] {
+  border-color: rgba(94,200,199,.38);
+  box-shadow: 0 16px 40px rgba(0,0,0,.32);
+}
+.day::details-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    height var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    content-visibility var(--dur) allow-discrete;
+}
+.day[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+.day-summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.05rem 1.2rem;
+  transition: background var(--dur) var(--ease);
+}
+.day-summary:hover { background: rgba(255,255,255,.015); }
+.day-summary::-webkit-details-marker { display: none; }
+.day-num {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--ice);
+  transition:
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.day:hover .day-num { transform: scale(1.04); }
+.day[open] .day-num {
+  box-shadow: 0 0 0 4px rgba(94,200,199,.12);
+}
+.day.highlight .day-num {
+  background: linear-gradient(145deg, #1f5c62, #2a8a88);
+  color: #e9fffe;
+  border-color: transparent;
+}
+.day-summary h2 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 600;
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}
+.day-summary p { margin: .25rem 0 0; color: var(--muted); font-size: .85rem; }
+.day-tags { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: flex-end; }
+.tag {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .28rem .55rem;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tag.stay { color: var(--ice); border-color: rgba(94,200,199,.25); }
+.tag.drive { color: var(--amber); border-color: rgba(224,163,91,.25); }
+.tag.flight { color: #b7c4d0; }
+
+.day-body { padding: 0 1.2rem 1.3rem; border-top: 1px solid var(--line); }
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .55rem;
+  margin-top: 1rem;
+}
+@media (max-width: 640px) {
+  .hero h1 { white-space: normal; }
+  .stat-row { grid-template-columns: 1fr; }
+  .day-summary { grid-template-columns: auto 1fr; }
+  .day-tags { grid-column: 1 / -1; justify-content: flex-start; }
+}
+.stat {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .75rem .85rem;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.stat:hover {
+  border-color: rgba(94,200,199,.22);
+  transform: translateY(-1px);
+}
+.stat b {
+  display: block;
+  font-size: .66rem;
+  color: var(--muted);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: .2rem;
+}
+.stat span { font-weight: 600; font-size: .88rem; color: var(--text); }
+
+.timeline { position: relative; margin: 1.2rem 0 0; padding-left: 1.15rem; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: .32rem;
+  top: .25rem;
+  bottom: .25rem;
+  width: 2px;
+  background: linear-gradient(var(--ice-dim), transparent);
+}
+.tl-item {
+  position: relative;
+  padding: 0 0 1rem .95rem;
+}
+.day[open] .tl-item {
+  animation: fadeSlide .55s var(--ease-out) both;
+}
+.day[open] .tl-item:nth-child(1) { animation-delay: .05s; }
+.day[open] .tl-item:nth-child(2) { animation-delay: .12s; }
+.day[open] .tl-item:nth-child(3) { animation-delay: .19s; }
+.day[open] .tl-item:nth-child(4) { animation-delay: .26s; }
+.day[open] .tl-item:nth-child(5) { animation-delay: .33s; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: -.92rem;
+  top: .42rem;
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--ice);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.tl-item:hover::before {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(94,200,199,.15);
+}
+.tl-item .time { font-size: .72rem; font-weight: 700; color: var(--ice); letter-spacing: .04em; }
+.tl-item strong { display: block; margin: .12rem 0; font-size: .95rem; font-weight: 600; }
+.tl-item p { margin: 0; color: var(--text-dim); font-size: .9rem; }
+
+.day-map {
+  height: 280px;
+  margin-top: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #0e141b;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease);
+}
+.map-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .8rem; }
+
+.note {
+  margin-top: .9rem;
+  padding: .8rem .95rem;
+  border-radius: 12px;
+  background: rgba(94,200,199,.08);
+  border-left: 3px solid var(--ice);
+  font-size: .88rem;
+  color: var(--text-dim);
+  transition: background var(--dur-fast) var(--ease);
+}
+.note.warn {
+  background: rgba(224,122,95,.08);
+  border-left-color: var(--danger);
+}
+
+.poi-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .85rem;
+}
+.poi {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .3rem .65rem;
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.poi:hover {
+  color: var(--ice);
+  border-color: rgba(94,200,199,.35);
+  background: rgba(94,200,199,.08);
+  transform: translateY(-1px);
+}
+
+footer {
+  padding: 2.6rem 0 3.6rem;
+  color: var(--muted);
+  font-size: .82rem;
+  border-top: 1px solid var(--line);
+}
+
+.leaflet-container { background: #0a0e13; font: 12px/1.5 var(--font-sans); }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-soft) !important;
+  color: var(--ice) !important;
+}
+.leaflet-bar { border: 1px solid var(--line) !important; box-shadow: none !important; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow);
+}
+.leaflet-popup-content { margin: .7rem .85rem; font-size: .85rem; }
+.leaflet-popup-content strong { color: var(--ice); font-family: var(--font-serif); }
+.pin-label {
+  background: rgba(22,29,39,.92);
+  border: 1px solid rgba(94,200,199,.45);
+  color: var(--text);
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .kicker, .hero h1, .lead, .chips, .toolbar { opacity: 1; animation: none; }
+  .day::details-content { transition: none; }
+  .tl-item { opacity: 1 !important; transform: none !important; }
+}
+
+
+.day-tip-table { margin-top: 1rem; overflow-x: auto; }
+.day-tip-table table.route th {
+  width: 7.2rem; white-space: nowrap; color: var(--ice); vertical-align: top;
+}
+.day-tip-table table.route td { color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+
+@media print {
+  .topbar, .day-nav { display: none !important; }
+  body { background: #fff; color: #111; }
+  .card, .day { box-shadow: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+.day-tip-table { margin-top: 1rem; overflow-x: auto; }
+.day-tip-table table.route th { width: 7.2rem; white-space: nowrap; color: var(--ice); vertical-align: top; }
+.day-tip-table table.route td { color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar-actions">
+      <a class="topbar-back" href="/">← 行程總覽</a>
+      <button class="btn primary" type="button" id="expandAll">全部展開</button>
+      <button class="btn" type="button" id="collapseAll">全部收合</button>
+      <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
+      <a class="btn" href="#reminders">提醒</a>
+      <a class="btn" href="#photo-meals-gear">拍照／餐／設備</a>
+      <a class="btn" href="#money">現金／刷卡</a>
+      <a class="btn" href="#budget">省錢攻略</a>
+      <a class="btn" href="#luggage">行李</a>
+      <a class="btn" href="#extra">加點</a>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">AoSora · Faroe Islands · Mid July 2027</div>
+    <h1>法羅群島<span>盛夏</span></h1>
+    <p class="lead">2027/7/10–7/21 · 台北出發 · 含飛機。七月白晝很長，日落多半過了晚上十點。落地先住沃格島兩晚，再進托爾斯港，北上兩晚，起飛前一晚回到機場。飯店名待補，沒有綁機票。</p>
+    <div class="chips">
+      <span class="chip">12 天含飛</span>
+      <span class="chip">先住沃格島</span>
+      <span class="chip">卡拉島渡輪</span>
+      <span class="chip">帶無人機</span>
+      <span class="chip">含路網地圖</span>
+    </div>
+  </div>
+</header>
+
+<nav class="day-nav"><div class="wrap day-nav-inner" id="dayNav"></div></nav>
+
+<main>
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">總覽地圖</h2>
+    <p class="section-sub">青＝住宿、琥珀＝景點。實線＝開車（含每日折返與海底隧道）；琥珀虛線在逐日地圖裡代表渡輪、健行。點標記看「中文 · 原文」。</p>
+    <div id="overviewMap"></div>
+    <div class="map-legend">
+      <span><i style="background:#5ec8c7"></i>住宿 overnight</span>
+      <span><i style="background:#e0a35b"></i>清單裡的法羅點</span>
+      <span><i style="background:#e07a5f"></i>崖線日（湖崖／米林格／卡勒／雙柱）</span>
+      <span>底圖：CARTO Voyager · 路線預先以 OSRM 計算</span>
+    </div>
+    <div class="note">住宿順著走：沃格島、托爾斯港、克拉克斯維克，起飛前再回沃格島。Múlafossur 在加斯達魯，伯爾村再過去約六分鐘。Trælanípan 是索瓦格湖的懸崖。Mýlingur 在丘努維克後面。Líraberg 在桑島。</div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">住宿連住</h2>
+    <p class="section-sub">順著走，不落地當天就開去首都，也不把最北的村子和伯爾村日落排在同一天。起飛前只回機場睡一晚。</p>
+    <div class="stay-track">
+      <a class="stay-pill" href="#day-2"><div class="nights">2+1 晚</div><strong>瑟爾沃格 · Sørvágur</strong><span>7/11–7/12 落地 · 7/19 起飛前</span></a>
+      <a class="stay-pill" href="#day-4"><div class="nights">4 晚</div><strong>托爾斯港 · Tórshavn</strong><span>7/13–7/16 · 飯店名待補</span></a>
+      <a class="stay-pill" href="#day-8"><div class="nights">2 晚</div><strong>克拉克斯維克 · Klaksvík</strong><span>7/17–7/18 · 飯店名待補</span></a>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>這趟收進來的點</h3>
+        <ul>
+          <li>斯特勒姆島：教堂灣、索恩山、薩克森、福薩瀑布、丘努維克、米林格峰</li>
+          <li>桑島：利拉崖（海底隧道，不是卡拉島）</li>
+          <li>東島：芬寧峽灣、白崖觀景台</li>
+          <li>北島：克拉克山、維阿雷迪；卡拉島渡輪到卡勒燈塔</li>
+          <li>沃格島：穆拉瀑布、伯爾村、特拉蘭尼帕、海蝕雙柱。先住這裡</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>七月怎麼排</h3>
+        <ul>
+          <li>崖線只留給晴、風小的時段；有霧就換日，不要在稜線上賭</li>
+          <li>卡拉島是一整天：渡輪、單線隧道、燈塔健行</li>
+          <li>海蝕雙柱的船常因風取消，伯爾村岸邊是備案</li>
+          <li>靠右行駛。綿羊有路權</li>
+          <li>有帶無人機。風夠小才飛；伯爾村貼著機場，先看禁航區</li>
+          <li>住宿只換三個方向：西島、首都、北島，最後回到西島睡一晚</li>
+          <li>住宿、渡輪、出海船班要早訂。無風的黃昏小黑蚊多，帶防蚊液</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">據點車程</h2>
+    <p class="section-sub">純開車用 OSRM 估計。含拍照、單線會車、等渡輪，現場往往再加一截。卡拉島南谷到特羅倫尼斯模型寫 17 分，實際常要 30–40 分。</p>
+    <div class="card" style="overflow-x:auto">
+      <table class="route">
+        <thead><tr><th>路段</th><th>距離</th><th>純開</th><th>當天建議</th></tr></thead>
+        <tbody>
+          <tr><td>沃格機場 → 伯爾村 → 穆拉瀑布</td><td>12 km</td><td>約 20 分</td><td>落地晚上，不住首都</td></tr>
+          <tr><td>瑟爾沃格 → 特拉蘭尼帕 → 望柱處</td><td>19 km</td><td>約 20 分</td><td>沃格島整天</td></tr>
+          <tr><td>瑟爾沃格 → 索恩山 → 教堂灣</td><td>63 km</td><td>約 1.5 小時</td><td>換去托爾斯港</td></tr>
+          <tr><td>托爾斯港 ↔ 利拉崖</td><td>往返約 60 km</td><td>約 80 分</td><td>含桑島隧道</td></tr>
+          <tr><td>托爾斯港 → 薩克森</td><td>47 km</td><td>49 分</td><td>北岸</td></tr>
+          <tr><td>薩克森 → 福薩瀑布 → 丘努維克</td><td>27 km</td><td>30 分</td><td>同一條北岸</td></tr>
+          <tr><td>丘努維克 → 托爾斯港</td><td>53 km</td><td>57 分</td><td>回程</td></tr>
+          <tr><td>托爾斯港 → 芬寧峽灣 → 白崖</td><td>45 km</td><td>47 分</td><td>山路最後一段</td></tr>
+          <tr><td>白崖 → 克拉克斯維克</td><td>41 km</td><td>43 分</td><td>換宿</td></tr>
+          <tr><td>克拉克斯維克 ↔ 維阿雷迪</td><td>19 km</td><td>22 分</td><td>北端村莊</td></tr>
+          <tr><td>克拉克斯維克 → 瑟爾沃格</td><td>78 km</td><td>81 分</td><td>起飛前一天，上午先看維阿雷迪</td></tr>
+          <tr><td>克拉克斯維克 ↔ 卡拉島南谷</td><td>渡輪</td><td>船約 20 分</td><td>另計排隊裝車</td></tr>
+          <tr><td>南谷 → 特羅倫尼斯</td><td>17 km</td><td>模型 17 分</td><td>單線隧道，抓 30–40 分</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="stay">
+  <div class="wrap">
+    <h2 class="section-title">住宿 overnight</h2>
+    <p class="section-sub">連住據點（中文 · 原文）。只定到城鎮，飯店名待補。</p>
+    <div class="grid-3" id="stayCards"></div>
+  </div>
+</section>
+
+
+<section class="reveal" id="extra">
+  <div class="wrap">
+    <h2 class="section-title">還可以加的點</h2>
+    <p class="section-sub">穆拉瀑布和特拉蘭尼帕已經排進前兩晚。下面三個要換掉某一天才值得去，不另開據點。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>已排進去</h3>
+        <ul>
+          <li><strong>穆拉瀑布 Múlafossur</strong>：落地晚上。加斯達魯，伯爾村再過去約六分鐘</li>
+          <li><strong>特拉蘭尼帕 Trælanípan</strong>：索瓦格湖看起來掛在海上。和雙柱同一天，船優先</li>
+          <li><strong>丁加內斯 Tinganes</strong>：托爾斯港老城，入住那天晚上散步</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>要換日才去</h3>
+        <ul>
+          <li><strong>米克內斯 Mykines</strong>：七月還有海鸚鵡。要再多一晚沃格島，或拿掉雙柱那天。渡輪看天氣，鳥崖步道常要預約</li>
+          <li><strong>吉歐格 Gjógv</strong>：東島峽谷村。白崖若提早結束可繞，不值得多住</li>
+          <li><strong>韋斯特曼納海鳥船</strong>：開往托爾斯港的中途。雙柱船取消、又想看崖，改這趟，不要兩趟船都排</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="reminders">
+  <div class="wrap">
+    <h2 class="section-title">出發前一次打勾</h2>
+    <p class="section-sub">每日表格已有<strong>八欄</strong>（省錢、行李、預約、付款、拍照、三餐、設備、當日提醒）。下面是整趟共用的項目。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>證件與車</h3>
+        <ul>
+          <li>護照效期、租車用的國際駕照、信用卡（押金要信用卡）</li>
+          <li>沃格機場取還車。一般小型車就夠，不像冰島那樣非四輪驅動</li>
+          <li>靠右行駛。綿羊突然出現在路上，減速就好</li>
+          <li>緊急電話 112</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>隧道、渡輪、天氣</h3>
+        <ul>
+          <li>海底隧道（東島、北島、桑島）用車牌計費。<a href="https://www.tunnil.fo/" target="_blank" rel="noopener">tunnil.fo</a> 自己繳，免得租車行轉手加手續費。沃格隧道不收費</li>
+          <li>卡拉島渡輪看 <a href="https://www.ssl.fo/" target="_blank" rel="noopener">ssl.fo</a>，車位要先對船班</li>
+          <li>天氣與風：<a href="https://www.yr.no/" target="_blank" rel="noopener">yr.no</a>。道路：<a href="https://www.landsverk.fo/" target="_blank" rel="noopener">landsverk.fo</a></li>
+          <li>插頭歐規 Type C／K。離線地圖先下載</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>崖與村落</h3>
+        <ul>
+          <li>卡勒燈塔、米林格峰沒有欄杆。濕、霧、強風就停在下面</li>
+          <li>薩克森的潟湖與農地多半私人，以現場告示為準，不要翻柵欄</li>
+          <li>索恩山只到觀景停車場，不要走進雷達站</li>
+          <li>無人機：電池進艙。不飛機場附近、索恩山雷達、薩克森的房子與羊、人頭頂。風大就收</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>這頁沒有排進去的</h3>
+        <ul>
+          <li>清單裡那顆「法羅群島」本身不是景點</li>
+          <li>黑教堂是冰島的 Búðakirkja，不在這趟</li>
+          <li>米克內斯、吉歐格、韋斯特曼納海鳥船要換掉某一天才去，沒有另開一天</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="days-wrap">
+  <div class="wrap">
+    <h2 class="section-title">逐日行程</h2>
+    <p class="section-sub">每日表格：省錢、行李、預約、付款、拍照、三餐、設備、當日提醒。</p>
+    <div id="days"></div>
+  </div>
+</section>
+
+<section class="reveal" id="photo-meals-gear">
+  <div class="wrap">
+    <h2 class="section-title">拍照・三餐・設備</h2>
+    <p class="section-sub">每日表格已有這三欄。這裡是整趟的原則。七月托爾斯港日出約 04:10、日落約 22:30，出發前用 App 再對一次。黃金時刻很晚，伯爾村不要八點就收。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>光怎麼用</h3>
+        <ul>
+          <li><strong>穆拉瀑布</strong>：落地晚上。加斯達魯的水直接進海，伯爾村再過去六分鐘</li>
+          <li><strong>特拉蘭尼帕</strong>：湖掛在海上。和雙柱同一天，累就只留船</li>
+          <li><strong>伯爾村</strong>：晚上十點以後用長焦看廷霍爾姆。貼著機場，多半不能飛</li>
+          <li><strong>丘努維克</strong>：沙灘面向海蝕柱，傍晚側光；陰天也能拍草皮屋頂</li>
+          <li><strong>白崖</strong>：峽灣轉彎的主畫面，雲縫有側光就停久一點</li>
+          <li><strong>薩克森、教堂灣</strong>：柔光比大太陽好。瀑布用偏光鏡</li>
+          <li><strong>索恩山、米林格、卡勒</strong>：只有晴、風小才上。移動日不強排黃金時刻</li>
+          <li><strong>空拍</strong>：風小優先白崖、克拉克山、丘努維克看海蝕柱、利拉崖。卡勒燈塔只有風很小時才飛</li>
+          <li>伯爾村、瑟爾沃格、海蝕雙柱貼著沃格機場，多半在禁航區，用長焦。船上不飛</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>建議器材</h3>
+        <ul>
+          <li>一台機身，手機當備援，加防水袋</li>
+          <li>廣角加標準變焦就蓋得住崖、村、瀑布；可加 70–200 拍雙柱與海蝕柱</li>
+          <li>偏光鏡給海面、峽灣、瀑布。輕量腳架只在伯爾村與丘努維克用，稜線不要帶</li>
+          <li>備用電池。風大、潮濕很耗電。行動電源放日包</li>
+          <li>無人機放日包，備用電池兩顆以上。風大、潮濕很耗電</li>
+          <li>防風防水外套、有齒的健行鞋、手套、防蚊液</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>三餐節奏</h3>
+        <ul>
+          <li>托爾斯港、克拉克斯維克有超市（Bónus 等）和餐廳。瑟爾沃格選擇少，換島前先買</li>
+          <li>卡拉島、薩克森、白崖沿路沒有可靠的午餐，前一晚買便當</li>
+          <li>健行日：超市早餐加便當。回鎮再吃熱的</li>
+          <li>7/11、7/18 是週日，超市較早關。落地當天先補水與隔天早餐</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>App</h3>
+        <ul>
+          <li>天氣：<a href="https://www.yr.no/" target="_blank" rel="noopener">yr.no</a>（看陣風，無人機比看雨更需要）</li>
+          <li>道路：<a href="https://www.landsverk.fo/" target="_blank" rel="noopener">landsverk.fo</a></li>
+          <li>渡輪：<a href="https://www.ssl.fo/" target="_blank" rel="noopener">ssl.fo</a>；隧道費：<a href="https://www.tunnil.fo/" target="_blank" rel="noopener">tunnil.fo</a></li>
+          <li>日出日落：PhotoPills 或 Sun Surveyor。Google 離線地圖</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="money">
+  <div class="wrap">
+    <h2 class="section-title">現金與信用卡</h2>
+    <p class="section-sub">大半刷卡就夠（Visa／Mastercard／感應支付）。貨幣是丹麥克朗（DKK），法羅紙鈔也在這裡用。刷卡選 DKK，不要選換成台幣。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>哪裡刷卡</h3>
+        <ul>
+          <li>飯店、租車、超市、加油站、托爾斯港餐廳：刷卡</li>
+          <li>渡輪、海底隧道費：刷卡或線上繳</li>
+          <li>租車押金要信用卡，簽帳金融卡常被拒</li>
+          <li>小攤、少數停車場、村子裡的洗手間才用到現金</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>口袋現金</h3>
+        <ul>
+          <li>一人口袋約 DKK 300–600，不是整趟預算</li>
+          <li>在托爾斯港或克拉克斯維克的 ATM 領，不要在機場兌大額</li>
+          <li>ATM 與刷卡都選 DKK</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="budget">
+  <div class="wrap">
+    <h2 class="section-title">省錢攻略</h2>
+    <p class="section-sub">大筆出在機票、租車、隧道費、渡輪和船班。景點本身大多不用門票。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>先看這幾筆</h3>
+        <ul>
+          <li><strong>機票</strong>：進沃格機場的最後一程通常最貴，可改期比最便宜的艙等有用</li>
+          <li><strong>租車</strong>：小型車、機場取還，避免異地還車。保險看清沙石與玻璃</li>
+          <li><strong>隧道</strong>：東島、北島、桑島三段會重複走。自己在 tunnil.fo 繳</li>
+          <li><strong>卡拉島渡輪 + 海蝕雙柱船班</strong>：這兩筆是體驗，不是每天都有的開銷</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>可以省的</h3>
+        <ul>
+          <li>三個據點連住，不要每晚換村</li>
+          <li>超市早餐、便當。餐廳留在托爾斯港和克拉克斯維克</li>
+          <li>教堂灣、薩克森、伯爾村、白崖都不靠門票</li>
+          <li>霧天不去索恩山和稜線，把車與體力留到晴的那一天</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="luggage">
+  <div class="wrap">
+    <h2 class="section-title">行李策略</h2>
+    <p class="section-sub">中型拖箱加日包。健行、渡輪、崖邊只帶日包。拖箱放飯店，比放車廂安全。</p>
+    <div class="card" style="overflow-x:auto">
+      <table class="route">
+        <thead><tr><th>區段</th><th>拖箱</th><th>日包</th></tr></thead>
+        <tbody>
+          <tr><td>飛機日</td><td>托運。電池不要托運</td><td>證件、藥、外套、無人機與電池、行動電源</td></tr>
+          <tr><td>沃格島前兩晚</td><td>放瑟爾沃格飯店</td><td>瀑布、湖崖、船都只帶日包</td></tr>
+          <tr><td>托爾斯港四晚</td><td>放飯店</td><td>相機、雨衣、水、便當</td></tr>
+          <tr><td>米林格健行</td><td>放飯店</td><td>防風、水。無人機留在沙灘，不要背上稜線</td></tr>
+          <tr><td>卡拉島渡輪日</td><td>留在克拉克斯維克飯店</td><td>日包加無人機。風大就不要拿出來</td></tr>
+          <tr><td>起飛前一晚</td><td>放車廂，到瑟爾沃格再拿出來</td><td>維阿雷迪用日包。不再排主拍攝</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <h2 class="section-title">裝備與每日檢查</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>必帶</h3>
+        <ul>
+          <li>防水外套與褲子、中層、手套、帽子</li>
+          <li>有齒健行鞋。崖邊沒有欄杆，鞋比任何鏡頭重要</li>
+          <li>無人機、備用電池、車充、離線地圖、行動電源、相機雨罩</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出門前看一眼</h3>
+        <ul>
+          <li><a href="https://www.yr.no/" target="_blank" rel="noopener">yr.no</a> 陣風。風大就改期，也不要起飛</li>
+          <li><a href="https://www.landsverk.fo/" target="_blank" rel="noopener">landsverk.fo</a> 有沒有封路</li>
+          <li>渡輪日再對一次 <a href="https://www.ssl.fo/" target="_blank" rel="noopener">ssl.fo</a></li>
+          <li>油在托爾斯港或克拉克斯維克加滿再進北端與卡拉島</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">行程草案 · 地圖為 Leaflet + CARTO Voyager（淺色、含路網）。總覽含桑島、北岸、卡拉島渡輪與沃格島折返。點標記看名稱；下方按鈕用 Google 地名開啟，不是座標大頭針。車程為估計，風與單線會車以現場為準。</div>
+</footer>
+
+<script>
+const P = {
+  tpe: { zh: "桃園機場", orig: "Taiwan Taoyuan International Airport (TPE)", lat: 25.0797, lng: 121.2342, gmaps: "Taiwan Taoyuan International Airport" },
+  fae: { zh: "沃格機場", orig: "Vágar Airport (FAE)", lat: 62.06401, lng: -7.27906, gmaps: "Vágar Airport" },
+  torshavn: { zh: "托爾斯港", orig: "Tórshavn", lat: 62.01014, lng: -6.77157, gmaps: "Tórshavn, Faroe Islands" },
+  sorvagur: { zh: "瑟爾沃格", orig: "Sørvágur", lat: 62.07075, lng: -7.30605, gmaps: "Sørvágur, Faroe Islands" },
+  bour: { zh: "伯爾村", orig: "Bøur", lat: 62.08602, lng: -7.36822, gmaps: "Bøur, Faroe Islands" },
+  kirkjubour: { zh: "教堂灣", orig: "Kirkjubøur", lat: 61.95371, lng: -6.79341, gmaps: "Kirkjubøur, Faroe Islands" },
+  sornfelli: { zh: "索恩山", orig: "Sornfelli", lat: 62.06877, lng: -6.96704, gmaps: "Sornfelli, Faroe Islands" },
+  saksun: { zh: "薩克森", orig: "Saksun", lat: 62.24423, lng: -7.17125, gmaps: "Saksun, Faroe Islands" },
+  fossa: { zh: "福薩瀑布", orig: "Fossá, Haldórsvík", lat: 62.25137, lng: -7.07555, gmaps: "Fossá waterfall, Haldórsvík" },
+  tjornuvik: { zh: "丘努維克", orig: "Tjørnuvík", lat: 62.28951, lng: -7.14917, gmaps: "Tjørnuvík, Faroe Islands" },
+  mylingur: { zh: "米林格峰", orig: "Mýlingur", lat: 62.30167, lng: -7.21278, gmaps: "Mylingur, Faroe Islands" },
+  funnings: { zh: "芬寧峽灣", orig: "Funningsfjørður", lat: 62.23649, lng: -6.93152, gmaps: "Funningsfjørður, Faroe Islands" },
+  hvithamar: { zh: "白崖觀景台", orig: "Hvíthamar", lat: 62.29402, lng: -6.96375, gmaps: "Hvíthamar Viewpoint" },
+  klaksvik: { zh: "克拉克斯維克", orig: "Klaksvík", lat: 62.22549, lng: -6.58378, gmaps: "Klaksvík, Faroe Islands" },
+  klakkur: { zh: "克拉克山", orig: "Klakkur", lat: 62.23583, lng: -6.61660, gmaps: "Hiking Klakkur, Faroe Islands" },
+  sydradalur: { zh: "南谷渡口", orig: "Syðradalur, Kalsoy", lat: 62.24637, lng: -6.66533, gmaps: "Syðradalur, Kalsoy" },
+  trollanes: { zh: "特羅倫尼斯", orig: "Trøllanes", lat: 62.36129, lng: -6.78747, gmaps: "Trøllanes, Kalsoy" },
+  kallur: { zh: "卡勒燈塔", orig: "Kallur Lighthouse", lat: 62.37179, lng: -6.81480, gmaps: "Kallur Lighthouse" },
+  vidareidi: { zh: "維阿雷迪", orig: "Viðareiði", lat: 62.36020, lng: -6.53546, gmaps: "Viðareiði, Faroe Islands" },
+  liraberg: { zh: "利拉崖", orig: "Líraberg, Sandoy", lat: 61.90156, lng: -6.93568, gmaps: "Liraberg, Faroe Islands" },
+  drangarnir: { zh: "海蝕雙柱", orig: "Drangarnir", lat: 62.07540, lng: -7.41443, gmaps: "Drangarnir, Faroe Islands" },
+  mula: { zh: "穆拉瀑布", orig: "Múlafossur, Gásadalur", lat: 62.10750, lng: -7.43578, gmaps: "Múlafossur, Gásadalur" },
+  traelanipa: { zh: "特拉蘭尼帕", orig: "Trælanípan / Bøsdalafossur", lat: 62.02090, lng: -7.23009, gmaps: "Trælanípan, Faroe Islands" },
+  tinganes: { zh: "丁加內斯", orig: "Tinganes", lat: 62.00801, lng: -6.76929, gmaps: "Tinganes, Tórshavn" }
+};
+function placeLabel(p) { return p.zh + " · " + p.orig; }
+function placeShort(p) { return p.zh; }
+function mapsName(p) { return p.gmaps || p.orig || p.zh; }
+function mapsPlaceUrl(p) {
+  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(mapsName(p));
+}
+function mapsDirUrl(keys) {
+  const pts = (keys || []).map(k => P[k]).filter(Boolean);
+  if (pts.length < 2) return null;
+  const origin = encodeURIComponent(mapsName(pts[0]));
+  const destination = encodeURIComponent(mapsName(pts[pts.length - 1]));
+  const via = pts.slice(1, -1).slice(0, 9).map(p => encodeURIComponent(mapsName(p)));
+  let url = "https://www.google.com/maps/dir/?api=1&origin=" + origin + "&destination=" + destination + "&travelmode=driving";
+  if (via.length) url += "&waypoints=" + via.join("%7C");
+  return url;
+}
+
+const stays = [
+  { key: "sorvagur", nights: "2+1 晚", tip: "7/11–7/12 落地 · 7/19 起飛前 · 飯店名待補" },
+  { key: "torshavn", nights: "4 晚", tip: "7/13–7/16 · 飯店名待補" },
+  { key: "klaksvik", nights: "2 晚", tip: "7/17–7/18 · 飯店名待補" }
+];
+
+const days = [
+  {
+    id: "day-1", date: "7/10（六）", title: "台北出發", summary: "桃園起飛，歐洲轉機進沃格機場",
+    tags: [["flight","飛行日"],["stay","機上"]], stay: "機上", drive: "—", daylight: "—",
+    places: ["tpe"], center: "tpe", zoom: 10, dir: null,
+    timeline: [
+      { time: "依班機", title: "TPE 出發", desc: "法羅沒有台北直飛。常見是歐洲轉機，再接進 FAE 的短程。" },
+      { time: "機上", title: "休息", desc: "法羅比台北慢 7 小時（七月是夏令）。隔天落地即可。" }
+    ],
+    notes: ["時刻表會改，出發前再對一次轉機是否趕得上 FAE。","無人機和電池放隨身行李，不要托運。"]
+  },
+  {
+    id: "day-2", date: "7/11（日）", title: "落地 · 先住沃格島", summary: "取車後只在伯爾村和穆拉瀑布，不開去托爾斯港",
+    tags: [["stay","瑟爾沃格 ①"],["drive","機場附近"]], stay: "瑟爾沃格（飯店名待補）",
+    drive: "機場 → 伯爾村 11 分；伯爾村 → 穆拉瀑布約 6 分", daylight: "約 04:05–22:40（~18.6h）",
+    places: ["fae","bour","mula","sorvagur"], route: ["fae","bour","mula","sorvagur"], center: "bour", zoom: 11,
+    timeline: [
+      { time: "下午", title: "FAE 取車", desc: "確認保險、車牌、油量。押金用信用卡。今晚就住瑟爾沃格。" },
+      { time: "若還有光", title: "穆拉瀑布", desc: "伯爾村再過去約 6 分鐘，加斯達魯的瀑布直接進海。這是落地最值得停的點。" },
+      { time: "晚上十點前後", title: "伯爾村", desc: "七月日落約 22:40。用長焦看廷霍爾姆。這裡貼著機場，不飛無人機。" }
+    ],
+    notes: ["週日。瑟爾沃格店少，能買就先補水跟早餐。","不要當天開去托爾斯港，那一小時留到後天。"]
+  },
+  {
+    id: "day-3", date: "7/12（一）", title: "湖崖與海蝕雙柱", summary: "特拉蘭尼帕看湖掛在海上；有船就出海看雙柱",
+    tags: [["stay","瑟爾沃格 ②"],["drive","島內短途"]], stay: "瑟爾沃格",
+    drive: "到特拉蘭尼帕約 8 分；再到望柱處約 13 分", daylight: "約 04:08–22:37", highlight: true,
+    places: ["sorvagur","traelanipa","drangarnir","bour"], route: ["sorvagur","traelanipa","drangarnir","sorvagur"], center: "traelanipa", zoom: 11,
+    timeline: [
+      { time: "上午", title: "特拉蘭尼帕", desc: "走到懸崖看索瓦格湖。來回約 2–3 小時。風大就縮短，不要站到邊緣。" },
+      { time: "下午", title: "海蝕雙柱", desc: "船從伯爾村或瑟爾沃格出海。風大常取消，取消就留在望柱處用長焦。" },
+      { time: "若兩件事都想做", title: "船優先", desc: "船位和風向比較不能讓。湖崖明天就離開這島了，累的話只保留船。" }
+    ],
+    notes: ["沃格島多數點貼著機場。無人機先看禁航區，船上不飛。"],
+    warn: "崖邊沒有欄杆。船取消不是行程失敗。"
+  },
+  {
+    id: "day-4", date: "7/13（二）", title: "開進托爾斯港", summary: "晴才上索恩山，順路教堂灣，晚上走丁加內斯",
+    tags: [["stay","托爾斯港 ①"],["drive","換宿約 1.5 小時"]], stay: "托爾斯港（飯店名待補）",
+    drive: "瑟爾沃格 → 索恩山約 48 分；索恩山 → 教堂灣約 39 分", daylight: "約 04:12–22:34",
+    places: ["sorvagur","sornfelli","kirkjubour","tinganes","torshavn"], route: ["sorvagur","sornfelli","kirkjubour","tinganes"], center: "sornfelli", zoom: 9,
+    timeline: [
+      { time: "上午", title: "退房東行", desc: "拖箱上車。索恩山雲低就直接去教堂灣，不要耗在山路上。" },
+      { time: "中午", title: "教堂灣", desc: "草皮屋頂與石砌教堂。柔光就夠。" },
+      { time: "傍晚", title: "丁加內斯", desc: "托爾斯港老城岬角，散步即可。晚餐在港區解決。" }
+    ],
+    notes: ["若雙柱的船前一天取消、又想看海鳥崖，中途的韋斯特曼納船可以改這天，就不要再上索恩山。"]
+  },
+  {
+    id: "day-5", date: "7/14（三）", title: "利拉崖", summary: "海底隧道去桑島。利拉崖不在卡拉島",
+    tags: [["stay","托爾斯港 ②"],["drive","含桑島隧道"]], stay: "托爾斯港",
+    drive: "托爾斯港 → 利拉崖約 40 分往返再加停留", daylight: "約 04:15–22:30",
+    places: ["torshavn","liraberg"], route: ["torshavn","liraberg","torshavn"], center: "liraberg", zoom: 10,
+    timeline: [
+      { time: "上午", title: "過桑島隧道", desc: "隧道費記得到 tunnil.fo 用車牌繳。" },
+      { time: "中午", title: "利拉崖", desc: "風小可以從崖上飛海岸線。人不要站到邊上去。" },
+      { time: "下午", title: "回托爾斯港", desc: "這天故意留白，給前一天的換宿和後天的北岸。" }
+    ],
+    notes: ["利拉崖和卡勒燈塔是兩個地方。"]
+  },
+  {
+    id: "day-6", date: "7/15（四）", title: "北岸三點", summary: "薩克森、福薩瀑布、丘努維克。今天不上米林格",
+    tags: [["stay","托爾斯港 ③"],["drive","北岸來回"]], stay: "托爾斯港",
+    drive: "到薩克森約 49 分；三點之間約 30 分；回程約 57 分", daylight: "約 04:18–22:27",
+    places: ["torshavn","saksun","fossa","tjornuvik"], route: ["torshavn","saksun","fossa","tjornuvik","torshavn"], center: "saksun", zoom: 9,
+    timeline: [
+      { time: "上午", title: "薩克森", desc: "潟湖與草皮教堂。農地私人，看告示，不要翻柵欄，也不要飛過房子和羊。" },
+      { time: "中午", title: "福薩瀑布", desc: "哈爾瑟維克這條，水直接進海。偏光鏡有用。" },
+      { time: "下午", title: "丘努維克", desc: "沙灘上看海蝕柱。風小可以拉高拍，不要飛進村子。" }
+    ],
+    notes: ["沿路沒有穩定餐廳，午餐自備。無風時小黑蚊會很多。"]
+  },
+  {
+    id: "day-7", date: "7/16（五）", title: "米林格峰", summary: "從丘努維克上稜線。有霧或強風就留在沙灘",
+    tags: [["stay","托爾斯港 ④"],["drive","到丘努維克約 1 小時"]], stay: "托爾斯港",
+    drive: "托爾斯港 ↔ 丘努維克約 50–60 分。稜線不是開車", daylight: "約 04:22–22:23", highlight: true,
+    places: ["torshavn","tjornuvik","mylingur"], route: ["torshavn","tjornuvik"], center: "mylingur", zoom: 11,
+    timeline: [
+      { time: "早上", title: "只在乾、風小出發", desc: "yr.no 風大或雲蓋住稜線，直接改丘努維克沙灘。" },
+      { time: "白天", title: "米林格稜線", desc: "來回常見 4–6 小時。沒有欄杆。無人機留在沙灘。" },
+      { time: "傍晚", title: "回托爾斯港收行李", desc: "明天換去北島。今晚把拖箱收好。" }
+    ],
+    notes: ["Mýlingur 在丘努維克後面，不是艾伊那座山。"],
+    warn: "稜線暴露。濕滑、起霧、風大到站不穩，就回頭。"
+  },
+  {
+    id: "day-8", date: "7/17（六）", title: "白崖 · 進克拉克斯維克", summary: "芬寧峽灣與白崖在換宿的路上。克拉克山有力氣再走",
+    tags: [["stay","克拉克斯維克 ①"],["drive","換宿"]], stay: "克拉克斯維克（飯店名待補）",
+    drive: "到芬寧約 35 分；白崖再 12 分；白崖到克拉克斯維克約 43 分", daylight: "約 04:25–22:19",
+    places: ["torshavn","funnings","hvithamar","klaksvik","klakkur"], route: ["torshavn","funnings","hvithamar","klaksvik","klakkur","klaksvik"], center: "hvithamar", zoom: 9,
+    timeline: [
+      { time: "上午", title: "芬寧峽灣、白崖", desc: "白崖是這趟最適合飛的點之一。風小就從觀景台外側拍峽灣彎，不要飛進村子。" },
+      { time: "若提早結束", title: "可繞吉歐格", desc: "東島峽谷村。時間不夠就放棄，不值得為它多住一晚。" },
+      { time: "下午", title: "進克拉克斯維克", desc: "克拉克山是短走。腿還行、風又小就去；累了就休息，對明天的週日船班。" }
+    ],
+    notes: ["北島隧道費到 tunnil.fo 繳。晚上買卡拉島的便當。"]
+  },
+  {
+    id: "day-9", date: "7/18（日）", title: "卡拉島 · 卡勒燈塔", summary: "週日渡輪。單線隧道開到特羅倫尼斯，再走到燈塔",
+    tags: [["stay","克拉克斯維克 ②"],["drive","渡輪日"]], stay: "克拉克斯維克",
+    drive: "船約 20 分；南谷到特羅倫尼斯抓 30–40 分；燈塔健行另計", daylight: "約 04:29–22:15", highlight: true,
+    places: ["klaksvik","sydradalur","trollanes","kallur"], dir: null, center: "kallur", zoom: 11,
+    timeline: [
+      { time: "早上", title: "週日船班", desc: "班次可能比平日少。ssl.fo 先訂車位。拖箱留飯店。" },
+      { time: "船上之後", title: "開到特羅倫尼斯", desc: "單線隧道與會車彎。跟著號誌。" },
+      { time: "中午", title: "卡勒燈塔", desc: "沿崖約 45–75 分。風很小才飛，不要往海上硬推。" },
+      { time: "下午", title: "原船回來", desc: "錯過回程會困在島上。" }
+    ],
+    notes: ["利拉崖不在這座島，前幾天已經去過桑島。"],
+    warn: "燈塔崖邊沒有護欄。無人機也不要往海的一側硬推。"
+  },
+  {
+    id: "day-10", date: "7/19（一）", title: "維阿雷迪 · 回機場過夜", summary: "北端看一眼就南下。今晚住瑟爾沃格，不再排主拍攝",
+    tags: [["stay","瑟爾沃格 ③"],["drive","純開約 1 小時 40 分"]], stay: "瑟爾沃格",
+    drive: "到維阿雷迪 22 分；克拉克斯維克 → 瑟爾沃格約 81 分 / 78 km", daylight: "約 04:33–22:11",
+    places: ["klaksvik","vidareidi","sorvagur"], route: ["klaksvik","vidareidi","klaksvik","sorvagur"], center: "vidareidi", zoom: 8,
+    timeline: [
+      { time: "上午", title: "維阿雷迪", desc: "教堂與地峽。不要飛過村子。看完就走。" },
+      { time: "中午", title: "開回沃格島", desc: "這天的任務是睡在機場旁邊，不是再追一次伯爾村日落。" },
+      { time: "傍晚", title: "瑟爾沃格", desc: "對明天的班機。想再看雙柱也只停一下，不排船。" }
+    ],
+    notes: ["午餐在克拉克斯維克買了再走。瑟爾沃格晚餐選擇少。"]
+  },
+  {
+    id: "day-11", date: "7/20（二）", title: "還車 · 離開沃格", summary: "FAE 起飛，歐洲轉機",
+    tags: [["flight","飛行日"]], stay: "機上",
+    drive: "瑟爾沃格 → 機場約 6 分", daylight: "約 04:37–22:06",
+    places: ["sorvagur","fae"], route: ["sorvagur","fae"], center: "fae", zoom: 12,
+    timeline: [
+      { time: "依班機", title: "還車、報到", desc: "預留加油和檢查車況。FAE 很小，仍給轉機留餘裕。" },
+      { time: "起飛後", title: "歐洲 → 台北", desc: "多數情況隔天到桃園。" }
+    ],
+    notes: ["國際線建議起飛前 2 小時到 FAE。"]
+  },
+  {
+    id: "day-12", date: "7/21（三）", title: "抵達台北", summary: "行程結束",
+    tags: [["flight","返抵"]], stay: "家", drive: "—", daylight: "—",
+    places: ["tpe"], center: "tpe", zoom: 10, dir: null,
+    timeline: [
+      { time: "依班機", title: "TPE 落地", desc: "若前一晚已到，這天就是時差緩衝。" }
+    ],
+    notes: []
+  }
+];
+
+const dayTips = {
+  "day-1": { save: "選進 FAE 可改期的轉機", bag: "拖箱托運；日包放證件、藥、外套", book: "再對歐洲轉 FAE 是否趕得上", pay: "機場刷卡", photo: "—", meals: "機上餐；轉機點自備零食", gear: "相機、無人機與電池都進艙", watch: "法羅比台北慢 7 小時（七月夏令）。電池不要托運" },
+  "day-2": { save: "落地不另買行程。穆拉瀑布和伯爾村都不用門票", bag: "拖箱進瑟爾沃格飯店，不要在瀑布拖著走", book: "租車確認保險與車牌", pay: "押金要信用卡。選 DKK", photo: "穆拉瀑布用廣角。伯爾村晚上十點後用長焦。貼著機場，不飛", meals: "週日店少。能買就買水、早餐", gear: "無人機先留著。長焦、車充", watch: "不要當天開去托爾斯港。綿羊有路權" },
+  "day-3": { save: "船是這天的主要花費。湖崖不用門票，累就只上船", bag: "拖箱留飯店。崖和船都只帶日包", book: "雙柱船提早訂。七月船位較滿，當天看風", pay: "船班多半事先刷卡", photo: "特拉蘭尼帕拍湖掛在海上。雙柱在船上用廣角，不飛", meals: "早吃熱的。便當帶去步道", gear: "健行鞋、防風、廣角。無人機先確認禁航區，船上不帶", watch: "崖邊沒有欄杆。船取消就用長焦，不要硬飛" },
+  "day-4": { save: "索恩山雲低就跳過，省油也省時間", bag: "退房拖箱上車。景點只拿日包", book: "不用票。隧道費之後到 tunnil.fo 繳", pay: "沿路加油刷卡", photo: "教堂灣用柔光。索恩山只看不飛。丁加內斯晚上散步即可", meals: "路上簡餐。晚餐在托爾斯港", gear: "廣角。無人機這天可以不出來", watch: "換宿日不要再加第二趟船，除非雙柱已經取消" },
+  "day-5": { save: "利拉崖不用門票。這天故意少排，不把錢花在第二個付費活動", bag: "拖箱留托爾斯港", book: "桑島隧道用車牌計費", pay: "隧道費刷卡繳", photo: "風小再飛海岸線。不要飛過村子", meals: "港區早餐。桑島自備午餐", gear: "無人機、防風外套、廣角", watch: "利拉崖在桑島，不是卡拉島" },
+  "day-6": { save: "三個點都不用門票", bag: "日包。拖箱留飯店", book: "薩克森步道以現場告示為準", pay: "午餐前一天買好", photo: "丘努維克風小再飛海蝕柱。薩克森不飛過房子和羊", meals: "自備午餐。回港吃晚餐", gear: "偏光鏡、廣角、防蚊液", watch: "不要翻柵欄。今天不上米林格" },
+  "day-7": { save: "不上山就改沙灘，不必另買行程", bag: "無人機與拖箱留在下面", book: "出發前看 yr.no 陣風", pay: "自備糧食", photo: "稜線用腳走。空拍留在丘努維克沙灘", meals: "超市早餐加便當", gear: "健行鞋、防風、水。無人機不要背上稜線", watch: "沒有欄杆。霧或風大就回頭" },
+  "day-8": { save: "白崖順路換宿。克拉克山走不動就放棄", bag: "拖箱上車，觀景台只拿日包", book: "對明天 ssl.fo 的週日船班", pay: "隧道費與鎮上晚餐刷卡", photo: "白崖風小再飛。村子用腳拍", meals: "沿路無餐廳。晚餐在克拉克斯維克，順便買便當", gear: "無人機、備用電池。風大立刻收", watch: "吉歐格只在時間多的時候繞。不要從村子上空飛" },
+  "day-9": { save: "渡輪是這天的主要花費", bag: "拖箱留克拉克斯維克。日包加無人機", book: "週日船班可能較少，車位早訂", pay: "渡輪刷卡。島上別指望提款機", photo: "燈塔只有風很小時才飛", meals: "全天便當。回鎮再吃熱的", gear: "多一顆電池。風大全程不飛", watch: "單線隧道跟著號誌。回程船比空拍重要" },
+  "day-10": { save: "這天不買船、不排第二個日落", bag: "拖箱放車廂，到瑟爾沃格再進飯店", book: "對明天班機與還車時間", pay: "沿路加油刷卡", photo: "維阿雷迪早上用腳拍。不再追伯爾村主拍攝", meals: "在克拉克斯維克買午餐再走", gear: "日包即可。無人機可以不出來", watch: "純開約 1 小時 40 分。任務是睡在機場旁" },
+  "day-11": { save: "準時還車，避免逾時", bag: "清車。電池不要托運", book: "起飛前約 2 小時到 FAE", pay: "加油與還車刷卡。隧道費確認已繳", photo: "—", meals: "機場簡餐", gear: "相機、無人機與電池再進艙", watch: "機場裡不要飛" },
+  "day-12": { save: "—", bag: "落地提領", book: "—", pay: "—", photo: "—", meals: "—", gear: "—", watch: "時差緩衝" }
+};
+days.forEach(d => Object.assign(d, dayTips[d.id] || {}));
+
+const stayKeys = ["torshavn","klaksvik","sorvagur"];
+const highlightKeys = ["bour","mula","traelanipa","drangarnir","kirkjubour","liraberg","sornfelli","saksun","fossa","tjornuvik","mylingur","funnings","hvithamar","klakkur","sydradalur","trollanes","kallur","vidareidi","tinganes"];
+const hotKeys = new Set(["mylingur","kallur","drangarnir","traelanipa"]);
+const STRAIGHT = new Set(["tjornuvik|mylingur","mylingur|tjornuvik","klaksvik|sydradalur","sydradalur|klaksvik","trollanes|kallur","kallur|trollanes"]);
+const routeOrder = ["fae","bour","mula","traelanipa","drangarnir","sornfelli","kirkjubour","torshavn","liraberg","saksun","fossa","tjornuvik","mylingur","hvithamar","klaksvik","klakkur","kallur","vidareidi","sorvagur","fae"];
+const latlngs = routeOrder.map(k => [P[k].lat, P[k].lng]);
+
+const stayInfo = {
+  sorvagur: "7/11–7/12 落地 · 7/19 起飛前",
+  torshavn: "7/13–7/16 · 4 晚",
+  klaksvik: "7/17–7/18 · 2 晚"
+};
+
+const darkTiles = (map) => {
+  const base = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_4hbr_1_36eb6f469b628a5a8d5c116b", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 20
+  });
+  base.addTo(map);
+  return base;
+};
+function circleIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2px solid #e8eef2;box-shadow:0 0 0 4px rgba(0,0,0,.35)"></div>',
+    iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -8]
+  });
+}
+function labelIcon(text, color) {
+  return L.divIcon({
+    className: "",
+    html: '<div class="pin-label" style="border-color:' + color + '">' + text + '</div>',
+    iconSize: [0, 0], iconAnchor: [-8, 10]
+  });
+}
+
+function initOverviewMap() {
+  if (typeof L === "undefined") {
+    const el = document.getElementById("overviewMap");
+    if (el) el.innerHTML = '<div style="display:grid;place-items:center;height:100%;color:var(--muted);padding:1rem;text-align:center">地圖函式庫載入失敗（請用本機伺服器開啟，或檢查網路）</div>';
+    return null;
+  }
+  const map = L.map("overviewMap", { scrollWheelZoom: true, zoomControl: true });
+  darkTiles(map);
+  stayKeys.forEach(k => {
+    const p = P[k];
+    L.marker([p.lat, p.lng], { icon: circleIcon("#5ec8c7") }).addTo(map)
+      .bindPopup("<strong>" + placeLabel(p) + "</strong><br>" + (stayInfo[k] || "住宿") + "<br><small>" + p.lat.toFixed(3) + ", " + p.lng.toFixed(3) + "</small>");
+    L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), "#5ec8c7"), interactive: false }).addTo(map);
+  });
+  const fae = P.fae;
+  L.marker([fae.lat, fae.lng], { icon: circleIcon("#9aa8b5") }).addTo(map)
+    .bindPopup("<strong>" + placeLabel(fae) + "</strong><br>進出 FAE");
+  highlightKeys.forEach(k => {
+    const p = P[k];
+    const color = hotKeys.has(k) ? "#e07a5f" : "#e0a35b";
+    L.marker([p.lat, p.lng], { icon: circleIcon(color) }).addTo(map)
+      .bindPopup("<strong>" + placeLabel(p) + "</strong><br>" + (hotKeys.has(k) ? "崖線／海上" : "清單景點") + "<br><small>" + p.lat.toFixed(3) + ", " + p.lng.toFixed(3) + "</small>");
+  });
+  map.fitBounds(L.latLngBounds(latlngs).pad(0.18));
+  return map;
+}
+let overviewMap = null;
+try { overviewMap = initOverviewMap(); } catch (e) { console.warn("overview map failed", e); overviewMap = null; }
+
+async function loadPrecomputedRingRoute() {
+  if (Array.isArray(window.PRECOMPUTED_RING_ROUTE) && window.PRECOMPUTED_RING_ROUTE.length > 2) return window.PRECOMPUTED_RING_ROUTE;
+  try {
+    const res = await fetch("faroe-ring-route.json");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) { return null; }
+}
+async function fetchOsrmRoute(points) {
+  if (points.length < 2) return null;
+  const coords = points.map(function (ll) { return ll[1] + "," + ll[0]; }).join(";");
+  const url = "https://router.project-osrm.org/route/v1/driving/" + coords + "?overview=full&geometries=geojson&steps=false";
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("osrm " + res.status);
+  const data = await res.json();
+  if (!data.routes || !data.routes[0]) throw new Error("no route");
+  return data.routes[0].geometry.coordinates.map(function (c) { return [c[1], c[0]]; });
+}
+async function drawOverviewRoute() {
+  if (!overviewMap || typeof L === "undefined") return;
+  try {
+    const all = await loadPrecomputedRingRoute();
+    if (!all || all.length < 2) throw new Error("empty");
+    L.polyline(all, { color: "#5ec8c7", weight: 8, opacity: 0.16, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    L.polyline(all, { color: "#5ec8c7", weight: 3.25, opacity: 0.95, lineJoin: "round", lineCap: "round", smoothFactor: 0 }).addTo(overviewMap);
+    const fit = L.latLngBounds(all);
+    stayKeys.concat(highlightKeys).concat(["fae"]).forEach(function (k) {
+      const p = P[k];
+      if (p) fit.extend([p.lat, p.lng]);
+    });
+    overviewMap.fitBounds(fit.pad(0.12));
+  } catch (e) {
+    console.warn("route fallback", e);
+    L.polyline(latlngs, { color: "#5ec8c7", weight: 3, opacity: 0.45, dashArray: "6 10" }).addTo(overviewMap);
+    overviewMap.fitBounds(L.latLngBounds(latlngs).pad(0.15));
+  }
+}
+drawOverviewRoute();
+
+const stayCards = document.getElementById("stayCards");
+stays.forEach(function (s) {
+  const p = P[s.key];
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = "<h3>" + placeLabel(p) + "</h3><p><strong style=\"color:var(--ice)\">" + s.nights + "</strong> · " + s.tip + "<br><span style=\"color:var(--muted);font-size:.8rem\">" + p.lat.toFixed(3) + ", " + p.lng.toFixed(3) + "</span></p>";
+  stayCards.appendChild(el);
+});
+
+const daysRoot = document.getElementById("days");
+const nav = document.getElementById("dayNav");
+const dayMaps = new Map();
+
+days.forEach(function (d, i) {
+  const a = document.createElement("a");
+  a.href = "#" + d.id;
+  a.textContent = "D" + (i + 1);
+  a.title = d.date + " " + d.title;
+  nav.appendChild(a);
+
+  const el = document.createElement("details");
+  el.className = "day" + (d.highlight ? " highlight" : "");
+  el.id = d.id;
+
+  const tags = d.tags.map(function (t) { return '<span class="tag ' + t[0] + '">' + t[1] + "</span>"; }).join("");
+  const timeline = d.timeline.map(function (t) {
+    return '<div class="tl-item"><div class="time">' + t.time + "</div><strong>" + t.title + "</strong><p>" + (t.desc || "") + "</p></div>";
+  }).join("");
+  const notes = (d.notes || []).map(function (n) { return '<div class="note">' + n + "</div>"; }).join("");
+  const warn = d.warn ? '<div class="note warn">' + d.warn + "</div>" : "";
+  const pois = d.places.filter(function (k) { return P[k]; }).map(function (k) { return '<span class="poi">' + placeLabel(P[k]) + "</span>"; }).join("");
+  const dirKeys = d.dir === null ? null : (d.route || (d.places && d.places.length >= 2 ? d.places : null));
+  const dirHref = mapsDirUrl(dirKeys);
+  const dirBtn = dirHref ? '<a class="btn primary" target="_blank" rel="noopener" href="' + dirHref + '">Google 導航</a>' : "";
+  const gmapsList = d.places.filter(function (k) { return P[k]; }).map(function (k) {
+    return '<a class="btn" target="_blank" rel="noopener" href="' + mapsPlaceUrl(P[k]) + '">' + placeShort(P[k]) + "</a>";
+  }).join("");
+  const tipTable = '<div class="day-tip-table card" style="padding:.35rem .6rem;margin-top:1rem"><table class="route"><tbody>'
+    + "<tr><th>省錢</th><td>" + (d.save || "—") + "</td></tr>"
+    + "<tr><th>行李／寄放</th><td>" + (d.bag || "—") + "</td></tr>"
+    + "<tr><th>預約／票務</th><td>" + (d.book || "—") + "</td></tr>"
+    + "<tr><th>付款</th><td>" + (d.pay || "—") + "</td></tr>"
+    + "<tr><th>拍照</th><td>" + (d.photo || "—") + "</td></tr>"
+    + "<tr><th>三餐</th><td>" + (d.meals || "—") + "</td></tr>"
+    + "<tr><th>設備</th><td>" + (d.gear || "—") + "</td></tr>"
+    + "<tr><th>當日提醒</th><td>" + (d.watch || "—") + "</td></tr>"
+    + "</tbody></table></div>";
+
+  el.innerHTML = '<summary class="day-summary"><div class="day-num">D' + (i + 1) + "</div><div><h2>" + d.date + "｜" + d.title + "</h2><p>" + d.summary + '</p></div><div class="day-tags">' + tags + '</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>' + d.stay + '</span></div><div class="stat"><b>移動</b><span>' + d.drive + '</span></div><div class="stat"><b>日照參考</b><span>' + d.daylight + "</span></div></div><div class=\"timeline\">" + timeline + "</div>" + notes + warn + '<div class="poi-list">' + pois + '</div><div class="day-map" id="map-' + d.id + '"></div><div class="map-actions">' + dirBtn + gmapsList + "</div>" + tipTable + "</div>";
+  daysRoot.appendChild(el);
+
+  const initMap = function () {
+    if (typeof L === "undefined") return;
+    if (dayMaps.has(d.id)) { dayMaps.get(d.id).invalidateSize(); return; }
+    const mapEl = document.getElementById("map-" + d.id);
+    if (!mapEl || mapEl.clientHeight < 40) return;
+    const map = L.map(mapEl, { scrollWheelZoom: false });
+    darkTiles(map);
+    const bounds = [];
+    d.places.forEach(function (k, idx) {
+      const p = P[k];
+      const color = hotKeys.has(k) ? "#e07a5f" : (stayKeys.indexOf(k) >= 0 ? "#5ec8c7" : "#e0a35b");
+      L.marker([p.lat, p.lng], { icon: circleIcon(color) }).addTo(map)
+        .bindPopup("<strong>" + p.zh + "</strong><br>" + p.orig + "<br><small>" + p.lat.toFixed(4) + ", " + p.lng.toFixed(4) + "</small>");
+      if (idx === 0 || stayKeys.indexOf(k) >= 0 || hotKeys.has(k)) {
+        L.marker([p.lat, p.lng], { icon: labelIcon(placeShort(p), color), interactive: false }).addTo(map);
+      }
+      bounds.push([p.lat, p.lng]);
+    });
+    const lineKeys = (d.route && d.route.length > 1) ? d.route.slice() : d.places.slice();
+    if (lineKeys.indexOf("tjornuvik") >= 0 && d.places.indexOf("mylingur") >= 0 && lineKeys.indexOf("mylingur") < 0) {
+      const at = lineKeys.indexOf("tjornuvik");
+      lineKeys.splice(at + 1, 0, "mylingur", "tjornuvik");
+    }
+    if (bounds.length === 1) map.setView(bounds[0], d.zoom || 10);
+    else if (lineKeys.length > 1) {
+      map.fitBounds(bounds, { padding: [28, 28] });
+      (async function () {
+        const all = [];
+        for (let n = 0; n < lineKeys.length - 1; n++) {
+          const ka = lineKeys[n], kb = lineKeys[n + 1];
+          const A = P[ka], B = P[kb];
+          if (!A || !B) continue;
+          const gap = STRAIGHT.has(ka + "|" + kb);
+          let seg = null;
+          if (!gap) {
+            try { seg = await fetchOsrmRoute([[A.lat, A.lng], [B.lat, B.lng]]); } catch (err) { seg = null; }
+          }
+          if (!seg || seg.length < 2) seg = [[A.lat, A.lng], [B.lat, B.lng]];
+          L.polyline(seg, {
+            color: gap ? "#e0a35b" : "#5ec8c7",
+            weight: 3.25,
+            opacity: 0.95,
+            dashArray: gap ? "6 8" : null,
+            lineJoin: "round",
+            lineCap: "round",
+            smoothFactor: 0
+          }).addTo(map);
+          all.push.apply(all, seg);
+        }
+        d.places.forEach(function (k) { if (P[k]) all.push([P[k].lat, P[k].lng]); });
+        if (all.length > 1) map.fitBounds(all, { padding: [28, 28] });
+      })();
+    }
+    dayMaps.set(d.id, map);
+    setTimeout(function () { map.invalidateSize(); }, 80);
+  };
+  el.addEventListener("toggle", function () { if (el.open) setTimeout(initMap, 60); });
+  if (el.open) setTimeout(initMap, 120);
+});
+
+document.getElementById("expandAll").onclick = function () {
+  document.querySelectorAll("details.day").forEach(function (d) {
+    d.open = true;
+    setTimeout(function () {
+      const map = dayMaps.get(d.id);
+      if (map) map.invalidateSize();
+    }, 100);
+  });
+};
+document.getElementById("collapseAll").onclick = function () {
+  document.querySelectorAll("details.day").forEach(function (d) { d.open = false; });
+};
+
+const navLinks = [].slice.call(nav.querySelectorAll("a"));
+const io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (en) {
+    if (!en.isIntersecting) return;
+    navLinks.forEach(function (l) { l.classList.toggle("active", l.getAttribute("href") === "#" + en.target.id); });
+  });
+}, { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 });
+document.querySelectorAll("details.day").forEach(function (d) { io.observe(d); });
+
+window.addEventListener("load", function () {
+  if (overviewMap) overviewMap.invalidateSize();
+  document.querySelectorAll("details.day[open]").forEach(function (d) {
+    const map = dayMaps.get(d.id);
+    if (map) map.invalidateSize();
+  });
+});
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!reduceMotion) {
+  document.documentElement.classList.add("motion-on");
+  document.querySelectorAll("section.reveal").forEach(function (el, i) {
+    el.style.transitionDelay = Math.min(i * 0.05, 0.25) + "s";
+  });
+  const revealIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add("in"); revealIO.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: "0px 0px -4% 0px" });
+  document.querySelectorAll(".reveal").forEach(function (el) { revealIO.observe(el); });
+  setTimeout(function () {
+    document.querySelectorAll(".reveal:not(.in)").forEach(function (el) { el.classList.add("in"); });
+  }, 1200);
+}
+
+const actionBar = document.querySelector(".topbar");
+const navEl = document.querySelector(".day-nav");
+if (actionBar && navEl) {
+  const syncChrome = function () {
+    const stuck = navEl.getBoundingClientRect().top <= 0.5;
+    actionBar.classList.toggle("is-swapped", stuck);
+    navEl.classList.toggle("scrolled", stuck);
+  };
+  syncChrome();
+  window.addEventListener("scroll", syncChrome, { passive: true });
+  window.addEventListener("resize", syncChrome);
+}
+</script>
+</body>
+</html>

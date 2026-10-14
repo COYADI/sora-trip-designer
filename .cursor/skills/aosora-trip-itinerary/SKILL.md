@@ -94,6 +94,7 @@ aosora-trip/
   - Simplify dense OSRM output (RDP ~40 m)
 - **UX**: progressive enhancement; try/catch around Leaflet; never leave `.reveal` stuck at `opacity: 0`
 - **Hub**: brand-first; trip cards use `data-start` / `data-end` (YYYY-MM-DD); JS buckets into **ongoing → future → past** (hide empty sections). Ongoing/future: earliest start first; past: most recent end first
+- **Days accordion**: default **all collapsed** on load (do not auto-open highlight / first days). Users expand via day-nav or Expand all.
 - **Trip pages**: sticky `.topbar` (back + expand/collapse/print + section jump links) at top; `.day-nav` under hero. On scroll, when day-nav sticks, topbar slides away (`.is-swapped`)
 - Recommended **topbar jump links** (when sections exist): `#reminders` 提醒 · `#photo-meals-gear` 拍照／餐／設備 · `#money` 現金／刷卡 · `#budget` 省錢攻略 · `#luggage` 行李
 - If renaming a trip slug, leave a tiny redirect folder at the old path (meta refresh + `location.replace`)

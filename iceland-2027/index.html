@@ -1497,7 +1497,6 @@ days.forEach((d, i) => {
   const el = document.createElement("details");
   el.className = "day" + (d.highlight ? " highlight" : "");
   el.id = d.id;
-  if (d.highlight || i < 2) el.open = true;
 
   const tags = d.tags.map(([k, t]) => `<span class="tag ${k}">${t}</span>`).join("");
   const timeline = d.timeline.map(t => `
