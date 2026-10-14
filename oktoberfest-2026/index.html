@@ -690,6 +690,11 @@ footer {
   .card, .day { box-shadow: none; }
   .reveal { opacity: 1; transform: none; }
 }
+
+.day-tip-table { margin-top: 1rem; overflow-x: auto; }
+.day-tip-table table.route th { width: 7.2rem; white-space: nowrap; color: var(--ice); vertical-align: top; }
+.day-tip-table table.route td { color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+
 </style>
 
 </head>
@@ -704,6 +709,11 @@ footer {
       <button class="btn" type="button" onclick="window.print()">列印 / PDF</button>
       <a class="btn" href="https://www.oktoberfest.de/en" target="_blank" rel="noopener">Oktoberfest 官網</a>
       <a class="btn" href="https://www.bahn.com/" target="_blank" rel="noopener">DB / 火車</a>
+      <a class="btn" href="#reminders">提醒</a>
+      <a class="btn" href="#photo-meals-gear">拍照／餐／設備</a>
+      <a class="btn" href="#money">現金／刷卡</a>
+      <a class="btn" href="#budget">省錢攻略</a>
+      <a class="btn" href="#luggage">行李</a>
     </div>
   </div>
 </div>
@@ -803,11 +813,250 @@ footer {
   </div>
 </section>
 
+
+<section class="reveal" id="reminders">
+  <div class="wrap">
+    <h2 class="section-title">還有哪些「要提醒的小事」</h2>
+    <p class="section-sub">已寫進每日表格的八欄之外，整趟共用、出發前可一次打勾的類型如下。本趟是中歐城市／鐵路（布拉格→慕尼黑→維也納），不是阿爾卑斯高山健行。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>已進每日表</h3>
+        <ul>
+          <li><strong>省錢</strong> — 早鳥火車、Bayern-Ticket、套票取捨</li>
+          <li><strong>行李／寄放</strong> — 拖箱或日包、飯店暫存</li>
+          <li><strong>預約／票務</strong> — 帳篷、城堡、美泉時段</li>
+          <li><strong>當日提醒</strong> — 末班車／船、入場規則、統一日</li>
+          <li><strong>付款</strong> — CZK／EUR、刷卡或現金</li>
+          <li><strong>拍照／三餐／設備</strong> — 黃金時、吃什麼、帶什麼鏡頭</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>出發前總檢（整趟一次）</h3>
+        <ul>
+          <li><strong>證件</strong>：護照效期、信用卡雙卡</li>
+          <li><strong>插頭</strong>：捷克／德國／奧地利 Type C／E／F（轉接頭備一顆）</li>
+          <li><strong>App</strong>：PID／IDOS、DB Navigator、ÖBB、MVV、Wiener Linien、Google Maps 離線</li>
+          <li><strong>保險</strong>：旅遊險含取消／醫療</li>
+          <li><strong>通訊</strong>：eSIM／漫遊；備用離線地圖</li>
+          <li><strong>緊急</strong>：全歐 112</li>
+          <li><strong>伴手禮</strong>：MANUFAKTURA 可詢問退稅／duty-free</li>
+          <li><strong>啤酒節</strong>：Oktoberfest 帳篷座位務必事先預約</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>城市／鐵路專屬</h3>
+        <ul>
+          <li>長程車：布拉格→慕尼黑、慕尼黑→維也納座位早訂</li>
+          <li>Bayern-Ticket：國王湖日歸；留意平日／假日時段規則</li>
+          <li>美泉宮時段票、美景上宮；慎買 Vienna PASS</li>
+          <li>9/29 帳篷日控酒量與貴重品</li>
+          <li>10/3 德國統一日：人在維也納影響小，仍查德境動態</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>城市常識</h3>
+        <ul>
+          <li>小攤／公廁／部分市場攤可能要現金（布拉格尤備 CZK）</li>
+          <li>測速與行人優先；電車門小心</li>
+          <li>週日部分店休；超市可六晚補貨</li>
+          <li>小費多已含服務費，尾數取整即可</li>
+          <li>退稅留單據；出境機場辦理</li>
+          <li>無人機：城市與湖區預設不帶飛</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="reveal">
   <div class="wrap">
     <h2 class="section-title">逐日行程</h2>
-    <p class="section-sub">住宿為城市級；景點與咖啡／店舖為推薦填充。</p>
+    <p class="section-sub">每日表格：省錢、行李、預約、付款、拍照、三餐、設備、當日提醒。</p>
     <div id="days"></div>
+  </div>
+</section>
+
+<section class="reveal" id="photo-meals-gear">
+  <div class="wrap">
+    <h2 class="section-title">拍照・三餐・設備</h2>
+    <p class="section-sub">每日表格已有「拍照／三餐／設備」三欄；這裡是整趟共用原則。9 月底—10 月初中歐大約 06:45–07:30 日出、18:30–19:15 日落，請出發前用 App 再對。</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>拍照原則</h3>
+        <ul>
+          <li><strong>查理大橋</strong>：日落／藍調；人潮改側道或橋頭。</li>
+          <li><strong>庫倫洛夫</strong>：河彎晨光；城堡高處俯瞰。</li>
+          <li><strong>國王湖</strong>：倒影清晨最穩；聖巴多羅買。</li>
+          <li><strong>維也納</strong>：建築柔光與咖啡館窗光；館內多半禁閃光／腳架。</li>
+          <li>移動日（布拉格↔慕尼黑、慕尼黑↔維也納）不硬排黃金時。</li>
+          <li>啤酒節帳篷內光線雜、難拍；外圍與日景為主。</li>
+          <li>無人機：預設不帶飛。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>建議器材清單</h3>
+        <ul>
+          <li><strong>機身</strong>：一台主力＋手機備援。</li>
+          <li><strong>鏡頭</strong>：廣角拍巷弄／建築；標準變焦蓋日常。兩鏡夠用。</li>
+          <li><strong>濾鏡</strong>：國王湖可選 CPL；城市多半不必。</li>
+          <li><strong>腳架</strong>：市區與博物館多半用不到；勿帶進館。</li>
+          <li><strong>其他</strong>：備用電池、記憶卡、擦鏡布、行動電源、薄雨罩。</li>
+          <li><strong>鞋</strong>：舒適步行鞋（城堡石板、湖岸、啤酒節站很久）。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>三餐節奏</h3>
+        <ul>
+          <li><strong>早</strong>：飯店或超市麵包／優格；日歸日出發前吃飽。</li>
+          <li><strong>午</strong>：庫倫洛夫／國王湖自備或野餐最省；城市可市場點心。</li>
+          <li><strong>晚</strong>：啤酒節主餐放帳篷（貴）；其餘城市選一家久坐即可。</li>
+          <li><strong>超市</strong>：Billa／Lidl／Albert 等；週日可能休—六晚補貨。</li>
+          <li>火車移動日帶零食與水，車上餐較貴。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>App／小工具</h3>
+        <ul>
+          <li>日出日落：PhotoPills／Sun Surveyor／天氣 App</li>
+          <li>交通：PID／IDOS、DB Navigator、ÖBB、MVV、Wiener Linien</li>
+          <li>離線地圖＋軌跡備份</li>
+          <li>行動電源 10000mAh+</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="money">
+  <div class="wrap">
+    <h2 class="section-title">現金與信用卡</h2>
+    <p class="section-sub">結論：<strong>大半用信用卡就夠</strong>（Visa／Mastercard／感應支付）。現金只當「口袋零用＋備援」。本趟<strong>無 CHF</strong>；布拉格備少量 <strong>CZK</strong>，德奧以 <strong>EUR</strong> 為主。刷卡一律選當地幣，不要選折算成 TWD（DCC）。</p>
+
+    <div class="card" style="margin-bottom:1rem">
+      <h3>能不能刷卡？</h3>
+      <table class="route">
+        <thead><tr><th>項目</th><th>捷克（布拉格／CK）</th><th>德／奧（慕尼黑→維也納）</th></tr></thead>
+        <tbody>
+          <tr><td>飯店、火車站、大部分餐廳</td><td>刷卡 OK</td><td>刷卡 OK</td></tr>
+          <tr><td>市區交通票／App</td><td>刷卡／App OK</td><td>刷卡／App OK</td></tr>
+          <tr><td>博物館、美泉、美景</td><td>—</td><td>刷卡 OK</td></tr>
+          <tr><td>Oktoberfest 帳篷</td><td>—</td><td>多可刷卡；備少量現金</td></tr>
+          <tr><td>小攤、公廁、部分市場攤</td><td>常要 CZK 現金</td><td>可能要 EUR 現金／硬幣</td></tr>
+          <tr><td>租車押金</td><td colspan="2">本行程預設不租車；若加購再備信用卡</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>建議帶多少現金（口袋用）</h3>
+        <ul>
+          <li><strong>一人粗估</strong>：CZK <strong>800–1,500</strong>（布拉格小額）＋ EUR <strong>150–250</strong>（德奧約一週）＝口袋現鈔大約 <strong>等值 TWD 6,000–12,000</strong> 級距（匯率會變）。</li>
+          <li><strong>兩人同行</strong>：可共享，整趟口袋現鈔約 CZK 1,500–2,500 ＋ EUR 250–350 通常夠（不含大額住宿／火車票）。</li>
+          <li><strong>不必</strong>：把飯店、長程火車、博物館預算都換成現金——那些刷卡更安全。</li>
+          <li><strong>面額</strong>：CZK／EUR 以中小面額為主；備一點硬幣給廁所／咪錶。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>怎麼換／怎麼提最划算</h3>
+        <ul>
+          <li>優先<strong>當地 ATM</strong>提 CZK／EUR；選「以當地幣計價、不轉成 TWD」。</li>
+          <li>避開機場大額兌幣櫃檯匯率。</li>
+          <li>出發前向銀行開<strong>海外交易</strong>；備兩張不同銀行卡。</li>
+          <li>查卡片是否收海外手續費；旅行卡／雙幣卡較省。</li>
+          <li>捷克花完再進德奧，避免回程還抱一堆 CZK。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>刷卡注意</h3>
+        <ul>
+          <li>終端機問「用 TWD 還是 CZK／EUR」→ <strong>一定選當地幣</strong>。</li>
+          <li>美國運通（Amex）在小店接受度較低，主力用 Visa／Master。</li>
+          <li>感應支付（Apple／Google Pay）在三國都常見。</li>
+          <li>本趟無瑞士；不要誤換 CHF。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>什麼情況才需要多帶現金</h3>
+        <ul>
+          <li>計畫跑很多市場小攤、只收現金的小店</li>
+          <li>卡片額度緊、或不想依賴 ATM</li>
+          <li>反之：全程連鎖飯店＋線上購票＋大城市 → 現金可再少一截</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="budget">
+  <div class="wrap">
+    <h2 class="section-title">省錢攻略（套票／交通／景點／住宿）</h2>
+    <p class="section-sub">依本行程「布拉格→慕尼黑 Oktoberfest→維也納」火車串聯量身；價格會變，出發前用官網再對。原則：長程早鳥、Bayern-Ticket 拼團、少買用不到的大 Pass，啤酒節餐飲當「體驗預算」控量。</p>
+
+    <div class="card" style="margin-bottom:1rem">
+      <h3>先抓最大帳單（優先順序）</h3>
+      <ul>
+        <li><strong>1. 長程火車</strong>：Praha→München、München→Wien 早鳥／Saver 通常比當日現買便宜很多。</li>
+        <li><strong>2. Oktoberfest 餐飲</strong>：帳篷內啤酒與主餐偏貴；控杯數、日間自由區較省。</li>
+        <li><strong>3. 住宿區位</strong>：舊城／一區溢價高；次級街區＋地鐵常更划算。</li>
+        <li><strong>4. 景點套票</strong>：Vienna PASS 若只去少數館多半不划算；美泉時段＋美景上宮單買通常夠。</li>
+      </ul>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>捷克・交通與票</h3>
+        <ul>
+          <li>機場→市區：巴士／火車通常比計程車省。</li>
+          <li>PID／IDOS 查票；市區日票視移動量再買。</li>
+          <li>庫倫洛夫：巴士／火車來回比價；城堡套票一次買齊。</li>
+          <li>伴手禮：MANUFAKTURA 可問退稅／duty-free。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>慕尼黑・啤酒節與國王湖</h3>
+        <ul>
+          <li><strong>Bayern-Ticket</strong>：國王湖日歸多人最划算；單人先算清楚。</li>
+          <li>帳篷座位事先預約；無訂位則早到拼長桌。</li>
+          <li>MVV 日票／短程票依當天景點密度選。</li>
+          <li>新天鵝堡／BMW 為自由清單—時間與預算夠再加。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>維也納・票券</h3>
+        <ul>
+          <li>交通：Wiener Linien 24／48／72h；博物館不多就買純交通票。</li>
+          <li><strong>Vienna PASS</strong>：適合一天塞很多付費館；本行程節奏偏鬆，多半不如單買。</li>
+          <li>美泉＋霍夫堡可看 Sisi Ticket；美景上宮單買《吻》。</li>
+          <li>普拉特公園本體便宜（摩天輪另計）；Wachau 等日歸用 ÖBB 早鳥。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>餐飲與雜支</h3>
+        <ul>
+          <li>超市解決早餐與日歸便當。</li>
+          <li>啤酒節當體驗：預算先框「幾杯＋一套餐」。</li>
+          <li>博物館多可線上早鳥；熱門時段現場可能售完。</li>
+          <li>旅遊保險含取消，比臨時改票可能更省。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <h3>建議採買清單（依序）</h3>
+      <table class="route">
+        <thead><tr><th>項目</th><th>建議</th><th>何時買</th></tr></thead>
+        <tbody>
+          <tr><td>Praha → München</td><td>早鳥／Saver＋座位</td><td>愈早愈好</td></tr>
+          <tr><td>München → Wien Railjet</td><td>早鳥／Saver＋座位</td><td>愈早愈好</td></tr>
+          <tr><td>Oktoberfest 帳篷</td><td>座位預約</td><td>出發前盡早</td></tr>
+          <tr><td>Bayern-Ticket</td><td>國王湖日歸</td><td>當日或前一晚</td></tr>
+          <tr><td>國王湖船票</td><td>現場或官網</td><td>當日早</td></tr>
+          <tr><td>美泉／美景</td><td>單票或時段；慎買 PASS</td><td>出發前一週</td></tr>
+          <tr><td>維也納交通</td><td>48／72h 視停留</td><td>抵達日</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 
@@ -856,6 +1105,61 @@ footer {
   </div>
 </section>
 
+<section class="reveal" id="luggage">
+  <div class="wrap">
+    <h2 class="section-title">行李怎麼帶</h2>
+    <p class="section-sub">結論先講：<strong>整趟可以帶行李箱</strong>（城市日與火車移動 OK），但不適合拖著箱子逛庫倫洛夫石板、國王湖岸或啤酒節會場。標準配備是「1 個中型行李箱＋ 1 個日用背包」。</p>
+
+    <div class="card" style="margin-bottom:1rem">
+      <h3>一段話版</h3>
+      <ul>
+        <li><strong>移動日／住飯店</strong>：拖行李箱 OK（機場、長程火車、飯店）。</li>
+        <li><strong>CK／國王湖／啤酒節晚場</strong>：行李箱留飯店，只背日用背包。</li>
+        <li><strong>轉房日早上</strong>：優先請飯店暫存，再搭車；車站置物櫃次選。</li>
+        <li>火車有行李架／行李區；貴重品隨身。</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem; overflow-x:auto">
+      <h3>逐段能不能拖箱子</h3>
+      <table class="route">
+        <thead><tr><th>路段</th><th>大行李箱</th><th>怎麼做</th></tr></thead>
+        <tbody>
+          <tr><td>PRG → 布拉格市區</td><td>可以</td><td>拖箱入住或先寄櫃台再出遊。</td></tr>
+          <tr><td>庫倫洛夫日歸</td><td>不行</td><td>箱留布拉格飯店；只背日包。</td></tr>
+          <tr><td>布拉格城堡區</td><td>留飯店</td><td>小包＋水即可。</td></tr>
+          <tr><td>Praha → München 火車</td><td>可以</td><td>行李架／行李區；貴重品隨身。</td></tr>
+          <tr><td>Oktoberfest 主日</td><td>不行</td><td>箱留飯店；小包防濺。</td></tr>
+          <tr><td>國王湖日歸</td><td>不行</td><td>箱留慕尼黑；Bayern-Ticket＋日包。</td></tr>
+          <tr><td>München → Wien Railjet</td><td>可以</td><td>同上；抵達飯店放下再逛街。</td></tr>
+          <tr><td>維也納市區日</td><td>留飯店</td><td>博物館日背小包。</td></tr>
+          <tr><td>VIE 離境</td><td>可以</td><td>CAT／S-Bahn／ÖBB／計程車；09:00 前到。</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>建議帶什麼尺寸</h3>
+        <ul>
+          <li><strong>一人</strong>：24–26 吋軟殼行李箱＋ 20–30L 日用背包。</li>
+          <li><strong>兩人</strong>：共 1–2 個中型箱，比一人一個超大箱好搬上火車。</li>
+          <li>日用背包裝得下薄外套、水、零食、證件小額現金。</li>
+          <li>打包：層狀衣物＋洗衣一次，比帶兩週全套更省空間。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>寄放／暫存點</h3>
+        <ul>
+          <li><strong>第一優先：住的飯店</strong> — 提早到、退房日幾乎都能暫存（9/28、10/1、10/5 移動日靠這個）。</li>
+          <li><strong>車站／機場置物櫃</strong> — 次選；適合空檔觀光再取行李。</li>
+          <li>不建議拖箱進啤酒節會場或爬城堡坡道。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="reveal">
   <div class="wrap">
     <h2 class="section-title">裝備與每日檢查</h2>
@@ -865,16 +1169,18 @@ footer {
         <ul>
           <li>舒適步行鞋（城堡／湖岸／啤酒節）</li>
           <li>薄外套：9 月底中歐早晚涼</li>
-          <li>悠遊／交通卡或預載票 App（PID、MVV、Wiener Linien）</li>
-          <li>現金小額（捷克克朗／歐元零錢）</li>
+          <li>Type C／E／F 轉接頭；行動電源</li>
+          <li>交通 App（PID、DB、ÖBB、MVV、Wiener Linien）</li>
+          <li>少量 CZK＋EUR 口袋現金</li>
         </ul>
       </div>
       <div class="card">
         <h3>出發前</h3>
         <ul>
           <li>Oktoberfest 帳篷訂位</li>
-          <li>長程火車座位預留</li>
-          <li>Bayern-Ticket／國王湖船班</li>
+          <li>長程火車座位預留（早鳥）</li>
+          <li>Bayern-Ticket／國王湖船班節奏</li>
+          <li>美泉時段／美景上宮</li>
           <li>回程 CI64：09:00 前到 VIE</li>
           <li>10/3 德國統一日店休／交通備註</li>
         </ul>
@@ -882,6 +1188,7 @@ footer {
     </div>
   </div>
 </section>
+
 </main>
 
 <footer>
@@ -905,7 +1212,7 @@ const P = {
   munichHbf: { zh: "慕尼黑中央車站", orig: "Munchen Hbf", lat: 48.1402, lng: 11.5583, gmaps: "Munchen Hauptbahnhof" },
   marien: { zh: "瑪利亞廣場", orig: "Marienplatz", lat: 48.1374, lng: 11.5755, gmaps: "Marienplatz Munich" },
   oktoberfest: { zh: "啤酒節會場", orig: "Theresienwiese", lat: 48.1319, lng: 11.5497, gmaps: "Theresienwiese Munich" },
-  viktualien: { zh: "谷物市場", orig: "Viktualienmarkt", lat: 48.1351, lng: 11.5762, gmaps: "Viktualienmarkt Munich" },
+  viktualien: { zh: "穀物市場", orig: "Viktualienmarkt", lat: 48.1351, lng: 11.5762, gmaps: "Viktualienmarkt Munich" },
   residenz: { zh: "王宮 Residenz", orig: "Munich Residenz", lat: 48.1405, lng: 11.5789, gmaps: "Munich Residenz" },
   konigssee: { zh: "國王湖", orig: "Konigssee", lat: 47.5914, lng: 12.9875, gmaps: "Konigssee Berchtesgaden" },
   barth: { zh: "聖巴多羅買教堂", orig: "St. Bartholoma", lat: 47.5547, lng: 12.9728, gmaps: "St. Bartholoma Konigssee" },
@@ -968,6 +1275,14 @@ const days = [
       { time: "晚", title: "入住布拉格", desc: "市區住宿（飯店名待補）。" }
     ],
     notes: ["班機時刻以當日為準","住宿：布拉格市區 · 飯店名待補"]
+    save: "機場進市區比價巴士／火車 vs 計程車；勿在機場大額兌幣。",
+    bag: "先到飯店寄放行李箱再出遊；市區可拖箱。",
+    book: "無重預約；確認飯店入住／寄物即可。",
+    pay: "機場或市區 ATM 提少量 CZK；刷卡選 CZK，勿選 DCC折 TWD。",
+    photo: "查理大橋日落／藍調；人潮可改側道或橋頭取景。",
+    meals: "輕食補眠即可；晚餐舊城一帶。",
+    gear: "手機＋一顆標準鏡頭；行動電源。",
+    watch: "時差／早班落地疲勞；別排太滿。",
   },
   {
     id: "day-2", date: "9/26（六）", title: "庫倫洛夫一日", summary: "Cesky Krumlov 日歸；晚回布拉格",
@@ -981,6 +1296,14 @@ const days = [
       { time: "晚", title: "回布拉格入住", desc: "同飯店續住。" }
     ],
     notes: ["城堡票可能可跨兩日使用，現場／官網再確認","住宿：布拉格續住 · 飯店名待補"]
+    save: "巴士／火車來回或日票比價；避免現場臨時貴票。",
+    bag: "只背日用背包；大箱留布拉格飯店。",
+    book: "庫倫洛夫城堡票（確認是否可跨時段）。",
+    pay: "小攤／廁所備 CZK；多數餐廳可刷卡。",
+    photo: "河彎晨光最佳；城堡高處俯瞰。",
+    meals: "自備或野餐午餐；晚回布拉格再餐。",
+    gear: "步行鞋；廣角拍河彎。",
+    watch: "留意末班回程巴士／火車。",
   },
   {
     id: "day-3", date: "9/27（日）", title: "城堡區・小區", summary: "布拉格城堡、聖維特、黃金小巷、馬拉斯特拉納",
@@ -995,6 +1318,14 @@ const days = [
       { time: "晚", title: "布拉格最後一晚", desc: "隔日轉慕尼黑；整理行李。" }
     ],
     notes: ["行程彈性，可插咖啡／伴手禮","住宿：布拉格續住 · 飯店名待補"]
+    save: "城堡套票一次買齊；電車上山比計程車省。",
+    bag: "日用背包；晚間整理轉慕尼黑行李。",
+    book: "城堡／黃金小巷票種與時段（若有）。",
+    pay: "刷卡 OK；小額 CZK 備援。",
+    photo: "晨間柔光拍城堡與小巷；窄巷廣角。",
+    meals: "城堡區咖啡簡餐；可插自由清單店舖。",
+    gear: "廣角拍巷弄；腳架可省。",
+    watch: "電車上山動線；隔日早火車預留。",
   },
   {
     id: "day-4", date: "9/28（一）", title: "布拉格 → 慕尼黑", summary: "Praha hl.n. → München Hbf（RegioJet／DB 約 5.5–6h）→ 瑪利亞廣場 → 傍晚 Theresienwiese 探路",
@@ -1010,6 +1341,14 @@ const days = [
       { time: "晚", title: "Theresienwiese 探路", desc: "啤酒節會場外圍熟悉動線；正式進帳篷留明天。" }
     ],
     notes: ["車次／班表以當日為準","住宿：慕尼黑市區 · 飯店名待補"]
+    save: "長程火車早鳥／Saver；避免當日現買。",
+    bag: "行李箱上火車行李架；Hbf 可先寄再入住。",
+    book: "座位預約；確認車次。",
+    pay: "改 EUR 為主；捷克尾聲花完 CZK。",
+    photo: "移動日不硬排黃金時；抵達後街景即可。",
+    meals: "火車零食／簡餐；慕尼黑輕食。",
+    gear: "輕裝相機；貴重品隨身。",
+    watch: "Hbf 出站動線與行李；晚間只探路。",
   },
   {
     id: "day-5", date: "9/29（二）", title: "Oktoberfest 主日", summary: "帳篷為主；午後 Viktualienmarkt／Marienplatz／Residenz 再進帳篷",
@@ -1020,10 +1359,18 @@ const days = [
     center: "oktoberfest", zoom: 14,
     timeline: [
       { time: "午前后", title: "啤酒節帳篷", desc: "座位建議事先預約；無訂位則早到拼長桌。" },
-      { time: "午後", title: "谷物市場・廣場・王宮", desc: "喘口氣、散步；視體力回帳篷。" },
+      { time: "午後", title: "穀物市場・廣場・王宮", desc: "喘口氣、散步；視體力回帳篷。" },
       { time: "晚", title: "再進帳篷／市區晚餐", desc: "同飯店續住。" }
     ],
     notes: ["帳篷座位請提前預約","住宿：慕尼黑續住 · 飯店名待補"]
+    save: "帳篷餐飲貴—控杯數；日間自由區較省。",
+    bag: "大箱留飯店；只帶小包進場。",
+    book: "帳篷座位務必事先預約。",
+    pay: "卡＋少量 EUR 現金；攤位可能偏現金。",
+    photo: "帳篷內光線雜、難拍；外圍與日景為主。",
+    meals: "主餐放帳篷；下午市場點心即可。",
+    gear: "防澂／防撞；少帶鏡頭。",
+    watch: "入場規則、排隊；勿酒後遺失證件。",
   },
   {
     id: "day-6", date: "9/30（三）", title: "國王湖一日", summary: "Bayern-Ticket 日歸：船、聖巴多羅買、Obersee；晚回慕尼黑",
@@ -1038,6 +1385,14 @@ const days = [
       { time: "晚", title: "回慕尼黑同飯店", desc: "隔日轉維也納；早點休息。" }
     ],
     notes: ["Bayern-Ticket 時段／人數以當日規則為準","住宿：慕尼黑續住 · 飯店名待補"]
+    save: "Bayern-Ticket 多人最划算；單人先算清楚。",
+    bag: "日用背包；箱留慕尼黑飯店。",
+    book: "船票／Bayern-Ticket；查末班回程。",
+    pay: "EUR；船上／湖區小額現金備援。",
+    photo: "湖面倒影清晨最佳；聖巴多羅買教堂。",
+    meals: "自備午餐最省；船上簡餐貴。",
+    gear: "可選 CPL 壓反光；步行鞋。",
+    watch: "末班船與回慕尼黑末班火車。",
   },
   {
     id: "day-7", date: "10/1（四）", title: "慕尼黑 → 維也納", summary: "München Hbf → Wien Hbf Railjet 約 4h；史蒂芬大教堂、咖啡館",
@@ -1052,6 +1407,14 @@ const days = [
       { time: "傍晚", title: "史蒂芬大教堂・咖啡館", desc: "市中心散步，適應節奏。" }
     ],
     notes: ["車次以當日為準","住宿：維也納市區 · 飯店名待補"]
+    save: "Railjet 早鳥／Saver；座位一起訂。",
+    bag: "行李箱上火車；抵達飯店寄放。",
+    book: "座位預約；維也納交通票可抵達日買。",
+    pay: "EUR；刷卡 OK。",
+    photo: "移動日跳過黃金時；傍晚史蒂芬外觀。",
+    meals: "火車簡餐；抵達後咖啡館。",
+    gear: "輕裝；貴重品隨身。",
+    watch: "抵達緩衝；隔日美泉時段。",
   },
   {
     id: "day-8", date: "10/2（五）", title: "美泉・美景・環城大道", summary: "Schönbrunn、Belvedere（克林姆《吻》）、Ringstrasse",
@@ -1066,6 +1429,14 @@ const days = [
       { time: "傍晚", title: "環城大道", desc: "Ringstrasse 電車或步行一段。" }
     ],
     notes: ["博物館票／時段可預購","住宿：維也納續住 · 飯店名待補"]
+    save: "美泉／美景單票 vs Vienna PASS—館不多別買 PASS。",
+    bag: "日用背包；箱留飯店。",
+    book: "美泉宮殿時段票；美景上宮。",
+    pay: "刷卡 OK。",
+    photo: "花園側光／建築柔光；館內禁閃常禁腳架。",
+    meals: "博物館咖啡或附近簡餐。",
+    gear: "館內手機／小機即可；不帶腳架進館。",
+    watch: "克林姆《吻》排隊；預留步行。",
   },
   {
     id: "day-9", date: "10/3（六）", title: "霍夫堡・藝術史・MQ", summary: "Hofburg、Kunsthistorisches、博物館區、Naschmarkt；德國統一日留意慕尼黑／德境動態",
@@ -1081,6 +1452,14 @@ const days = [
       { time: "備註", title: "德國統一日", desc: "今日為德國國慶；若行程仍牽涉德境交通／店休，多留彈性（人在維也納影響較小）。" }
     ],
     notes: ["10/3 德國統一日：德境可能店休或人潮","住宿：維也納續住 · 飯店名待補"]
+    save: "Sisi Ticket 若併美泉／霍夫堡再算；KHM 視興趣。",
+    bag: "日用背包。",
+    book: "博物館票；交通日票。",
+    pay: "刷卡 OK。",
+    photo: "霍夫堡建築與廣場光。",
+    meals: "納許市場小吃。",
+    gear: "手機即可；不必重裝備。",
+    watch: "德國統一日—人在維也納影響小，但查德境動態。",
   },
   {
     id: "day-10", date: "10/4（日）", title: "深挖維也納或一日遊", summary: "普拉特／購物／咖啡，或 Wachau／Bratislava／Salzburg 日歸",
@@ -1095,6 +1474,14 @@ const days = [
       { time: "晚", title: "整理行李", desc: "隔日早赴機場。" }
     ],
     notes: ["一日遊請預留回程緩衝","住宿：維也納續住 · 飯店名待補"]
+    save: "普拉特本體便宜；一日遊用 ÖBB 早鳥，別為一天買大 Pass。",
+    bag: "日用背包；晚間打包。",
+    book: "若日歸先訂早鳥票。",
+    pay: "刷卡 OK。",
+    photo: "市區柔光；不硬排。",
+    meals: "咖啡館補遺。",
+    gear: "輕裝。",
+    watch: "整理行李備明早離境；日歸留回程緩衝。",
   },
   {
     id: "day-11", date: "10/5（一）", title: "退房・VIE 離境", summary: "退房 → 維也納機場；建議 09:00 前到；CI64 11:25",
@@ -1107,6 +1494,14 @@ const days = [
       { time: "11:25", title: "CI64 起飛", desc: "華航；時刻以當日班表為準。" }
     ],
     notes: ["班機：CI64（10/5 11:25）","機場建議 09:00 前抵達"]
+    save: "CAT vs S-Bahn／ÖBB 比價；不必硬上最貴。",
+    bag: "拖箱直達機場。",
+    book: "確認 CI64；報到時間。",
+    pay: "刷卡 OK。",
+    photo: "—",
+    meals: "機場。",
+    gear: "—",
+    watch: "09:00 前到 VIE。",
   }
 ];
 
@@ -1243,7 +1638,17 @@ days.forEach((d, i) => {
   const dirHref = mapsDirUrl(d.route || null);
   const dirBtn = dirHref ? `<a class="btn primary" target="_blank" rel="noopener" href="${dirHref}">Google 導航</a>` : "";
   const gmapsList = d.places.filter(k => P[k]).map(k => `<a class="btn" target="_blank" rel="noopener" href="${mapsPlaceUrl(P[k])}">${placeShort(P[k])}</a>`).join("");
-  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>移動</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div></div>`;
+  const tipTable = `<div class="day-tip-table card" style="padding:.35rem .6rem;margin-top:1rem"><table class="route"><tbody>
+  <tr><th>省錢</th><td>${d.save || "—"}</td></tr>
+  <tr><th>行李／寄放</th><td>${d.bag || "—"}</td></tr>
+  <tr><th>預約／票務</th><td>${d.book || "—"}</td></tr>
+  <tr><th>付款</th><td>${d.pay || "—"}</td></tr>
+  <tr><th>拍照</th><td>${d.photo || "—"}</td></tr>
+  <tr><th>三餐</th><td>${d.meals || "—"}</td></tr>
+  <tr><th>設備</th><td>${d.gear || "—"}</td></tr>
+  <tr><th>當日提醒</th><td>${d.watch || "—"}</td></tr>
+</tbody></table></div>`;
+  el.innerHTML = `<summary class="day-summary"><div class="day-num">D${i + 1}</div><div><h2>${d.date}｜${d.title}</h2><p>${d.summary}</p></div><div class="day-tags">${tags}</div></summary><div class="day-body"><div class="stat-row"><div class="stat"><b>住宿</b><span>${d.stay}</span></div><div class="stat"><b>移動</b><span>${d.drive}</span></div><div class="stat"><b>日照參考</b><span>${d.daylight}</span></div></div><div class="timeline">${timeline}</div>${notes}<div class="poi-list">${pois}</div><div class="day-map" id="map-${d.id}"></div><div class="map-actions">${dirBtn}${gmapsList}</div>${tipTable}</div>`;
   daysRoot.appendChild(el);
   const initMap = () => {
     if (typeof L === "undefined") return;
